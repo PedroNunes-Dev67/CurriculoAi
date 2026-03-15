@@ -34,9 +34,20 @@ export default function Login() {
         ></TextInput>
       </View>
       <View style={GlobalStyles.inputTS}>
-            <View style={{backgroundColor: "#3498db", borderRadius: 50, padding: 8, marginRight: 10,}}>
-                <AntDesign name="lock" size={20} color="white" />
-            </View>
+        <View
+          style={{
+            backgroundColor: "#3498db", borderRadius: 50, padding: 8, marginRight: 10,}}
+        >
+          <MaterialCommunityIcons name="lock" size={20} color="white" />
+        </View>
+        <TextInput
+          style={GlobalStyles.inputTextDentro}
+          placeholder="Digite sua senha"
+          placeholderTextColor="#777"
+          keyboardType="default"
+          secureTextEntry={true}
+          autoCapitalize="none"
+        ></TextInput>
       </View>
     </View>
   );
