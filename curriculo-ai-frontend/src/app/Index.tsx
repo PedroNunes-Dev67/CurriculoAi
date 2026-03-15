@@ -1,8 +1,7 @@
-import React from "react";
-import { Text, View, Image, ScrollView, TextInput } from "react-native";
-import { GlobalStyles } from "../components/style";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import AntDesign from '@expo/vector-icons/AntDesign';
+import React from "react";
+import { Image, Text, TextInput, View , Button, TouchableOpacity} from "react-native";
+import { GlobalStyles } from "../components/style";
 
 export default function Login() {
   return (
@@ -13,7 +12,7 @@ export default function Login() {
           width: 300,
           height: 300,
           resizeMode: "contain",
-          marginTop: -470,
+          marginTop: -20,
         }}
       ></Image>
       <Text style={GlobalStyles.titulo}>Que bom ter você aqui!</Text>
@@ -49,6 +48,9 @@ export default function Login() {
           autoCapitalize="none"
         ></TextInput>
       </View>
+      <TouchableOpacity style={GlobalStyles.botao}>
+       <Text style={GlobalStyles.textoBotao}>Entrar</Text>
+      </TouchableOpacity>
     </View>
   );
 }

@@ -1,3 +1,4 @@
+import { Button } from 'react-native';
 import { StyleSheet } from 'react-native';
 
 export const GlobalStyles = StyleSheet.create({
@@ -28,8 +29,7 @@ export const GlobalStyles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 15,
-        marginBottom: 20,
-        marginTop: 30,
+        marginTop: 15,
     },
     inputTextDentro: {
         flex: 1,
@@ -40,4 +40,19 @@ export const GlobalStyles = StyleSheet.create({
         textAlignVertical: 'center',
 
     },
+    botao: {
+    width: '90%',
+    height: 55,
+    backgroundColor: '#3498db',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+},
+
+textoBotao: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+},
 });
