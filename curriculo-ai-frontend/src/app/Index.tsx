@@ -49,6 +49,17 @@ export default function Login() {
         onChangeText={setSenha}>
       </Input>
       <ButtonConfirm text="Entrar" onPress={testarInput}></ButtonConfirm>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 16 }}>
+  <View style={{ flex: 1, height: 1, backgroundColor: '#ffffff40', marginLeft: 40 }} />
+  <Text style={{ color: '#fff', marginHorizontal: 20 }}>ou</Text>
+  <View style={{ flex: 1, height: 1, backgroundColor: '#ffffff40', marginRight: 40  }} />
+</View>
+<View>
+  <Text style={{ color: '#fff', marginHorizontal: 20 }}>Não possui uma conta?</Text>
+</View>
+<TouchableOpacity style={GlobalStyles.botaoCadastro}>
+  <Text style={GlobalStyles.textoBotao}>Cadastre-se</Text>
+</TouchableOpacity>
     </View>
   );
 }
