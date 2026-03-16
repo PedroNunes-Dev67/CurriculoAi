@@ -66,5 +66,6 @@ botaoCadastro: {
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20,
+    marginBottom: 80.
 },
 });

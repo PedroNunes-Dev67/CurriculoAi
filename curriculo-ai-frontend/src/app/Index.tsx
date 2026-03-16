@@ -13,6 +13,7 @@ export default function Login() {
   function testarInput(){
       console.log("Email:"+email)
       console.log("Senha:"+senha)
+    
   }
 
   return (
@@ -23,7 +24,7 @@ export default function Login() {
           width: 300,
           height: 300,
           resizeMode: "contain",
-          marginTop: -20,
+          marginTop: 40,
         }}
       ></Image>
       <Text style={GlobalStyles.titulo}>Que bom ter você aqui!</Text>
