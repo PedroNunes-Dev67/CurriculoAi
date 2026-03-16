@@ -8,15 +8,16 @@ type inputProps={
     placeholderTextColor:any,
     keyboardType:any,
     autoCapitalize:any,
-    secureTextEntry?: boolean
+    secureTextEntry?: boolean,
+    value?:string,
+    onChangeText?:(text:string) => void
 }
 
-export function Input({icone,placeholder,placeholderTextColor,keyboardType,autoCapitalize,secureTextEntry}: inputProps){
+export function Input({icone,placeholder,placeholderTextColor,keyboardType,autoCapitalize,secureTextEntry,value,onChangeText}: inputProps){
     return(
         <View style={GlobalStyles.inputTS}>
             <View
-                style={{backgroundColor: "#3498db", borderRadius: 50, padding: 8, marginRight: 10,}}
-            >
+                style={{backgroundColor: "#3498db", borderRadius: 50, padding: 8, marginRight: 10,}}>
             <MaterialCommunityIcons name = {icone} size={20} color="white" />
             </View>
             <TextInput
@@ -26,6 +27,8 @@ export function Input({icone,placeholder,placeholderTextColor,keyboardType,autoC
             keyboardType = {keyboardType}
             secureTextEntry = {secureTextEntry}
             autoCapitalize = {autoCapitalize}
+            value = {value}
+            onChangeText = {onChangeText}
             ></TextInput>
       </View>
     );
