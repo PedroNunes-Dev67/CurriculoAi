@@ -1,4 +1,3 @@
-import { Button } from 'react-native';
 import { StyleSheet } from 'react-native';
 
 export const GlobalStyles = StyleSheet.create({
@@ -38,7 +37,7 @@ export const GlobalStyles = StyleSheet.create({
         fontSize: 16,
         marginLeft: 10,
         textAlignVertical: 'center',
-
+        border:'none'
     },
     botao: {
     width: '90%',
