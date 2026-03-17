@@ -65,7 +65,7 @@ export default function Login() {
         <Text style={{ color: '#fff', marginHorizontal: 20 }}>Não possui uma conta?</Text>
       </View>
       
-      <ButtonConfirm text="Cadastre-se"></ButtonConfirm>
+      <ButtonConfirm text="Cadastre-se" onPress={() => router.push('/(tabs)/cadastro')}/>
     </View>
   );
 }
