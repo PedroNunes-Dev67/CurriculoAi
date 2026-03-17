@@ -1,19 +1,27 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React, {useState} from "react";
-import { Image, Text, TextInput, View , Button, TouchableOpacity} from "react-native";
-import { GlobalStyles } from "../components/style";
-import { Input } from "../components/input-component";
+import { router } from 'expo-router';
+import React, { useState } from "react";
+import { Alert, Image, Text, View } from "react-native";
 import ButtonConfirm from "../components/button-confirm-compent";
+import Divisao from "../components/divisao-component";
+import { Input } from "../components/input-component";
+import { GlobalStyles } from "../components/style";
 
 export default function Login() {
+
+  const usuario = {email:'pedro@gmail.com', senha:'1234'}
 
   const [email,setEmail] = useState('');
   const [senha,setSenha] = useState('');
 
   function testarInput(){
-      console.log("Email:"+email)
-      console.log("Senha:"+senha)
-    
+    if (usuario.email === email && usuario.senha === senha){
+      Alert.alert('Bem vindo ao CurriculoAI')
+      router.navigate('/cadastro')
+    }
+    else{
+      Alert.alert('Error! Usuário incorreto')
+    }
+      
   }
 
   return (
@@ -50,17 +58,14 @@ export default function Login() {
         onChangeText={setSenha}>
       </Input>
       <ButtonConfirm text="Entrar" onPress={testarInput}></ButtonConfirm>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 16 }}>
-  <View style={{ flex: 1, height: 1, backgroundColor: '#ffffff40', marginLeft: 40 }} />
-  <Text style={{ color: '#fff', marginHorizontal: 20 }}>ou</Text>
-  <View style={{ flex: 1, height: 1, backgroundColor: '#ffffff40', marginRight: 40  }} />
-</View>
-<View>
-  <Text style={{ color: '#fff', marginHorizontal: 20 }}>Não possui uma conta?</Text>
-</View>
-<TouchableOpacity style={GlobalStyles.botaoCadastro}>
-  <Text style={GlobalStyles.textoBotao}>Cadastre-se</Text>
-</TouchableOpacity>
+
+      <Divisao></Divisao>
+
+      <View>
+        <Text style={{ color: '#fff', marginHorizontal: 20 }}>Não possui uma conta?</Text>
+      </View>
+      
+      <ButtonConfirm text="Cadastre-se"></ButtonConfirm>
     </View>
   );
 }
