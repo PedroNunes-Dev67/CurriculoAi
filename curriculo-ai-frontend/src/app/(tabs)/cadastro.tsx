@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import React, { useState } from "react";
-import { Alert, Text, View } from "react-native";
+import { Alert, Text, View, Image } from "react-native";
 import ButtonConfirm from "../../components/button-confirm-compent";
 import Divisao from "../../components/divisao-component";
 import { Input } from "../../components/input-component";
@@ -93,7 +93,7 @@ export default function Cadastro() {
     return;
   }
 
-  router.push('/(tabs)/cadastro2');
+  router.push('/(tabs)/Formacao');
 }
 
   function handleVoltarLogin() {
@@ -101,9 +101,17 @@ export default function Cadastro() {
   }
 
   return (
-    <View style={GlobalStyles.fundoazullogin}>
-      <Text style={GlobalStyles.titulo}>Crie sua conta</Text>
-      <Text style={GlobalStyles.subtitulo}>Etapa 1 de 4 — Dados pessoais</Text>
+    <View style={[GlobalStyles.fundoazullogin, {paddingTop:100}]}>
+      <Image source={require("../../assets/images/robofdpnopc.png")}
+        style={{
+          width: 200,
+          height: 150,
+          resizeMode: "contain",
+          marginTop: 20,
+        }}></Image>
+      <Text style={GlobalStyles.titulo}>Ótima iniciativa!</Text>
+      <Text style={[GlobalStyles.subtitulo, {textAlign: 'center', width:380, fontSize:16}]}>Vamos realizar uma breve análise sobre seu perfil</Text>
+      <Text style={[GlobalStyles.subtitulo, {fontSize: 16, margin:0}]}>Etapa 1 de 4 — Dados pessoais</Text>
 
       {/* Indicador de progresso */}
       <ProgressIndicator etapaAtual={1} />
@@ -157,17 +165,6 @@ export default function Cadastro() {
 
       {/* Botão Próximo */}
       <ButtonConfirm text="Próximo" onPress={handleProximo} />
-
-      <Divisao />
-
-      {/* Voltar para o login */}
-      <View>
-        <Text style={{ color: '#fff', marginHorizontal: 20 }}>
-          Já possui uma conta?
-        </Text>
-      </View>
-
-      <ButtonConfirm text="Fazer Login" onPress={handleVoltarLogin} />
     </View>
   );
 }
