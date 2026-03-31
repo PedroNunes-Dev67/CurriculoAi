@@ -93,11 +93,11 @@ export default function Cadastro() {
     return;
   }
 
-  router.push('/(tabs)/Formacao');
+  router.push('/(tabs)/formacao');
 }
 
   function handleVoltarLogin() {
-    router.navigate('/Login');
+    router.navigate('/login');
   }
 
   return (
