@@ -16,7 +16,7 @@ export default function Login() {
   function testarInput(){
     if (usuario.email === email && usuario.senha === senha){
       Alert.alert('Bem vindo ao CurriculoAI')
-      router.navigate('/cadastro')
+      router.push('/(tabs)/cadastro');
     }
     else{
       Alert.alert('Error! Usuário incorreto')
