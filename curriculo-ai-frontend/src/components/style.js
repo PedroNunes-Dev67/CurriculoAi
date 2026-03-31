@@ -6,6 +6,7 @@ export const GlobalStyles = StyleSheet.create({
         backgroundColor: '#000c26',
         alignItems: 'center',
         justifyContent: 'center',
+        paddingBottom:100
     },
     titulo: {
         color: '#FFFFFF',
