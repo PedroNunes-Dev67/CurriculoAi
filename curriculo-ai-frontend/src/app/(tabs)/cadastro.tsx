@@ -1,8 +1,7 @@
 import { router } from 'expo-router';
 import React, { useState } from "react";
-import { Alert, Text, View, Image } from "react-native";
+import { Alert, Image, ScrollView, Text, View } from "react-native";
 import ButtonConfirm from "../../components/button-confirm-compent";
-import Divisao from "../../components/divisao-component";
 import { Input } from "../../components/input-component";
 import { GlobalStyles } from "../../components/style";
 
@@ -93,21 +92,21 @@ export default function Cadastro() {
     return;
   }
 
-  router.push('/(tabs)/formacao');
+  router.push('/Formacao');
 }
 
   function handleVoltarLogin() {
-    router.navigate('/login');
+    router.navigate('/Login');
   }
 
   return (
-    <View style={[GlobalStyles.fundoazullogin, {paddingTop:100}]}>
+    <ScrollView style={{backgroundColor:'#000c26'}} contentContainerStyle={{alignItems:'center'}} showsVerticalScrollIndicator={false}>
       <Image source={require("../../assets/images/robofdpnopc.png")}
         style={{
           width: 200,
           height: 150,
           resizeMode: "contain",
-          marginTop: 20,
+          marginTop:50
         }}></Image>
       <Text style={GlobalStyles.titulo}>Ótima iniciativa!</Text>
       <Text style={[GlobalStyles.subtitulo, {textAlign: 'center', width:380, fontSize:16}]}>Vamos realizar uma breve análise sobre seu perfil</Text>
@@ -165,6 +164,6 @@ export default function Cadastro() {
 
       {/* Botão Próximo */}
       <ButtonConfirm text="Próximo" onPress={handleProximo} />
-    </View>
+    </ScrollView>
   );
 }
