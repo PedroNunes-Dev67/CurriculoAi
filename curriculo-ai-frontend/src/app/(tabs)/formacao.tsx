@@ -1,6 +1,8 @@
+import ButtonConfirm from "@/src/components/button-confirm-compent";
 import FormacaoComponent from "@/src/components/formacao-component";
 import Input from "@/src/components/input-component";
 import { GlobalStyles } from "@/src/components/style";
+import { router } from "expo-router";
 import { useState } from "react";
 import { View, Image, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -54,9 +56,13 @@ function ProgressIndicator({ etapaAtual }: { etapaAtual: number }) {
   )
 }
 
+function handleProximo(){
+  router.push("/dispo")
+}
+
 export default function Formacao() {
-  const [area, setArea] = useState('');
   const [formacoes, setFormacoes] = useState([{ id: 1 }]);
+  const [area, setArea] = useState('');
 
   function adicionarFormacao() {
     setFormacoes([...formacoes, { id: formacoes.length + 1 }]);
@@ -68,7 +74,7 @@ export default function Formacao() {
   }
 
   return (
-    <View style={[GlobalStyles.fundoazullogin, { paddingTop: 100 }]}>
+    <View style={[GlobalStyles.fundoazullogin, { paddingTop: 20 }]}>
       <KeyboardAwareScrollView
         contentContainerStyle={{ alignItems: 'center', paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}>
@@ -93,7 +99,10 @@ export default function Formacao() {
         <Text style={[GlobalStyles.subtitulo, {marginTop:0}]}>Área</Text>
         <Input 
           placeholder="Área" 
-          placeholderTextColor={"#777"}></Input>
+          placeholderTextColor={"#777"}
+          value={area}
+          onChangeText={setArea}>
+        </Input>
 
         {formacoes.map((f, index) => (
           <FormacaoComponent
@@ -109,6 +118,8 @@ export default function Formacao() {
           <Text style={styles.botaoTexto}>+ Adicionar formação</Text>
         </TouchableOpacity>
 
+          {/* Botão Próximo */}
+          <ButtonConfirm text="Próximo" onPress={handleProximo} />
       </KeyboardAwareScrollView>
     </View>
   );
