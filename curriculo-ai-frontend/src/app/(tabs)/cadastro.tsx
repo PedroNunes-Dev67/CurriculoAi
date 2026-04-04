@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import React, { useState } from "react";
 import { Alert, Image, ScrollView, Text, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import ButtonConfirm from "../../components/button-confirm-compent";
 import { Input } from "../../components/input-component";
 import { GlobalStyles } from "../../components/style";
@@ -100,14 +101,20 @@ export default function Cadastro() {
   }
 
   return (
-    <ScrollView style={{backgroundColor:'#000c26'}} contentContainerStyle={{alignItems:'center'}} showsVerticalScrollIndicator={false}>
+    <KeyboardAwareScrollView
+      style={{backgroundColor:'#000c26'}}
+      contentContainerStyle={{alignItems:'center'}}
+      showsVerticalScrollIndicator={false}
+      enableOnAndroid={true}
+      extraScrollHeight={20}
+    >
       <Image source={require("../../assets/images/robofdpnopc.png")}
         style={{
           width: 200,
           height: 150,
           resizeMode: "contain",
           marginTop:50
-        }}></Image>
+        }}/>
       <Text style={GlobalStyles.titulo}>Ótima iniciativa!</Text>
       <Text style={[GlobalStyles.subtitulo, {textAlign: 'center', width:380, fontSize:16}]}>Vamos realizar uma breve análise sobre seu perfil</Text>
       <Text style={[GlobalStyles.subtitulo, {fontSize: 16, margin:0}]}>Etapa 1 de 4 — Dados pessoais</Text>
@@ -152,7 +159,7 @@ export default function Cadastro() {
         onChangeText={setSenha}
       />
       <Input
-        icone={'lock'} 
+        icone={'lock'}
         placeholder="Confirme sua senha"
         placeholderTextColor={'#777'}
         keyboardType={'default'}
@@ -164,6 +171,6 @@ export default function Cadastro() {
 
       {/* Botão Próximo */}
       <ButtonConfirm text="Próximo" onPress={handleProximo} />
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
