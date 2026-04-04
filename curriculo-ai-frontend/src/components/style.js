@@ -6,18 +6,20 @@ export const GlobalStyles = StyleSheet.create({
         backgroundColor: '#000c26',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingBottom:100
+        fontFamily: 'Segoe UI'
     },
     titulo: {
         color: '#FFFFFF',
         fontSize: 25,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        fontFamily: 'Segoe UI'
     },
     subtitulo: {
         color: '#FFFFFF',
         fontSize: 20,
         fontWeight: 'bold',
-        marginTop: 22
+        marginTop: 22,
+        fontFamily: 'Segoe UI'
     },
     inputTS: {
         width: 272,

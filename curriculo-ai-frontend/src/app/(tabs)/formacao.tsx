@@ -1,5 +1,11 @@
+import ButtonConfirm from "@/src/components/button-confirm-compent";
+import FormacaoComponent from "@/src/components/formacao-component";
+import Input from "@/src/components/input-component";
 import { GlobalStyles } from "@/src/components/style";
-import { View, Image, Text } from "react-native";
+import { router } from "expo-router";
+import { useState } from "react";
+import { View, Image, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 // Indicador de progresso (As 4 etapas)
 function ProgressIndicator({ etapaAtual }: { etapaAtual: number }) {
@@ -50,21 +56,84 @@ function ProgressIndicator({ etapaAtual }: { etapaAtual: number }) {
   )
 }
 
-export default function Formacao(){
-    return(
-        <View style={[GlobalStyles.fundoazullogin, {paddingTop:100}]}>
-            <Image source={require("../../assets/images/robofdpnopc.png")}
-                    style={{
-                      width: 200,
-                      height: 150,
-                      resizeMode: "contain",
-                      marginTop: 20,
-                    }}></Image>
-                  <Text style={GlobalStyles.titulo}>Me conte mais sobre você</Text>
-                  <Text style={[GlobalStyles.subtitulo, {fontSize: 16, margin:0}]}>Etapa 2 de 4 — Formação</Text>
-            
-                  {/* Indicador de progresso */}
-                  <ProgressIndicator etapaAtual={2} />
-        </View>
-    )
+function handleProximo(){
+  router.push("/dispo")
 }
+
+export default function Formacao() {
+  const [formacoes, setFormacoes] = useState([{ id: 1 }]);
+  const [area, setArea] = useState('');
+
+  function adicionarFormacao() {
+    setFormacoes([...formacoes, { id: formacoes.length + 1 }]);
+  }
+
+  function removerFormacao(id: number) {
+    if (formacoes.length === 1) return; // mínimo 1
+    setFormacoes(formacoes.filter(f => f.id !== id));
+  }
+
+  return (
+    <View style={[GlobalStyles.fundoazullogin, { paddingTop: 20 }]}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={{ alignItems: 'center', paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}>
+
+        <Image
+                  source={require("../../assets/images/robofdpnopc.png")}
+                  style={{
+                    width: 200,
+                    height: 150,
+                    resizeMode: "contain",
+                    marginTop: 20,
+                  }}
+                />
+        
+                <Text style={GlobalStyles.titulo}>Me conte mais sobre você</Text>
+                <Text style={[GlobalStyles.subtitulo]}>
+                  Etapa 2 de 4 — Formação
+                </Text>
+        
+                <ProgressIndicator etapaAtual={2} />
+
+        <Text style={[GlobalStyles.subtitulo, {marginTop:0}]}>Área</Text>
+        <Input 
+          placeholder="Área" 
+          placeholderTextColor={"#777"}
+          value={area}
+          onChangeText={setArea}>
+        </Input>
+
+        {formacoes.map((f, index) => (
+          <FormacaoComponent
+            key={f.id}
+            numero={index + 1}
+            onRemover={() => removerFormacao(f.id)}
+            podeRemover={formacoes.length > 1}
+          />
+        ))}
+
+        {/* Botão para adicionar nova formação */}
+        <TouchableOpacity onPress={adicionarFormacao} style={styles.botaoAdicionar}>
+          <Text style={styles.botaoTexto}>+ Adicionar formação</Text>
+        </TouchableOpacity>
+
+          {/* Botão Próximo */}
+          <ButtonConfirm text="Próximo" onPress={handleProximo} />
+      </KeyboardAwareScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  botaoAdicionar: {
+    marginTop: 16,
+    borderWidth: 1.5,
+    borderColor: '#fff',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    borderStyle: 'dashed',
+  },
+  botaoTexto: { color: '#fff', fontSize: 16 }
+});
