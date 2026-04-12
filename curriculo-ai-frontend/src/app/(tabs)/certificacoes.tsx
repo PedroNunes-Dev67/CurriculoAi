@@ -2,7 +2,7 @@ import ButtonConfirm from "@/src/components/button-confirm-compent";
 import { Input } from "@/src/components/input-component";
 import { GlobalStyles } from "@/src/components/style";
 import { useState } from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Image, Text, TouchableOpacity, View, StyleSheet } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 // Indicador de progresso
@@ -34,10 +34,13 @@ function ProgressIndicator({ etapaAtual }: { etapaAtual: number }) {
               backgroundColor: isAtual ? '#fff' : 'rgba(255,255,255,0.25)',
               alignItems: 'center',
               justifyContent: 'center',
+              borderWidth: isAtual ? 0 : 1.5,
+              borderColor: 'rgba(255,255,255,0.5)',
             }}>
               <Text style={{
                 color: isAtual ? '#1a6dcc' : 'rgba(255,255,255,0.7)',
-                fontWeight: 'bold',
+                fontWeight: isAtual ? 'bold' : '500',
+                fontSize: isAtual ? 16 : 13,
               }}>
                 {etapa}
               </Text>
@@ -68,10 +71,7 @@ export default function Certificacoes() {
         ...prev,
         { nome: "", instituicao: "", ano: "" }
       ];
-
-      // 👇 abre a nova e fecha as outras
       setAbertaIndex(novas.length - 1);
-
       return novas;
     });
   }
@@ -83,10 +83,7 @@ export default function Certificacoes() {
   ) {
     setCertificacoes(prev => {
       const novas = [...prev];
-      novas[index] = {
-        ...novas[index],
-        [campo]: valor
-      };
+      novas[index] = { ...novas[index], [campo]: valor };
       return novas;
     });
   }
@@ -96,8 +93,7 @@ export default function Certificacoes() {
   }
 
   return (
-    <View style={[GlobalStyles.fundoazullogin, { paddingTop: 80 }]}>
-      
+    <View style={[GlobalStyles.fundoazullogin, { paddingTop: 20 }]}>
       <KeyboardAwareScrollView
         contentContainerStyle={{ alignItems: 'center', paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
@@ -112,98 +108,66 @@ export default function Certificacoes() {
           }}
         />
 
-        <Text style={GlobalStyles.titulo}>Suas Certificações</Text>
-        <Text style={[GlobalStyles.subtitulo, { fontSize: 16 }]}>
-          Etapa 4 de 4 — Destaque seus cursos
+        <Text style={GlobalStyles.titulo}>Me conte mais sobre você</Text>
+        <Text style={GlobalStyles.subtitulo}>
+          Etapa 4 de 4 — Certificações
         </Text>
 
         <ProgressIndicator etapaAtual={4} />
 
         {certificacoes.map((cert, index) => {
-  const aberta = abertaIndex === index;
+          const aberta = abertaIndex === index;
+          return (
+            <View key={index} style={styles.card}>
+              {/* Header */}
+              <TouchableOpacity
+                onPress={() => setAbertaIndex(aberta ? null : index)}
+                style={styles.cardHeader}
+              >
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.cardTitulo}>
+                    {cert.nome?.trim() ? cert.nome : `Certificação ${index + 1}`}
+                  </Text>
+                  {!aberta && (cert.instituicao || cert.ano) && (
+                    <Text style={styles.cardPreview}>
+                      {cert.instituicao} {cert.ano ? `• ${cert.ano}` : ""}
+                    </Text>
+                  )}
+                </View>
+                <Text style={styles.seta}>{aberta ? "▲" : "▼"}</Text>
+              </TouchableOpacity>
 
-  return (
-    <View
-      key={index}
-      style={{
-        width: "90%",
-        marginBottom: 12,
-        borderRadius: 10,
-        backgroundColor: "#0a1f3d",
-        padding: 10,
-      }}
-    >
-      {/* Header */}
-      <TouchableOpacity
-        onPress={() => setAbertaIndex(aberta ? null : index)}
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: 10,
-          borderRadius: 8,
-          backgroundColor: aberta ? "#123766" : "#0f2a4d",
-        }}
-      >
-        <View style={{ flex: 1 }}>
-          <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 15 }}>
-            {cert.nome?.trim()
-              ? cert.nome
-              : `Certificação ${index + 1}`}
-          </Text>
+              {/* Conteúdo */}
+              {aberta && (
+                <View style={{ marginTop: 10, alignItems: 'center' }}>  {/* 👈 adiciona alignItems center */}
+                  <Input
+                    placeholder="Nome da certificação"
+                    placeholderTextColor="#777"
+                    value={cert.nome}
+                    onChangeText={(text) => atualizarCampo(index, "nome", text)}
+                  />
+                  <Input
+                    placeholder="Instituição"
+                    placeholderTextColor="#777"
+                    value={cert.instituicao}
+                    onChangeText={(text) => atualizarCampo(index, "instituicao", text)}
+                  />
+                  <Input
+                    placeholder="Ano de conclusão"
+                    placeholderTextColor="#777"
+                    keyboardType="numeric"
+                    value={cert.ano}
+                    onChangeText={(text) => atualizarCampo(index, "ano", text)}
+                  />
+                </View>
+              )}
+            </View>
+          );
+        })}
 
-          {/* Preview quando fechado */}
-          {!aberta && (cert.instituicao || cert.ano) && (
-            <Text style={{ color: "#aaa", fontSize: 12, marginTop: 2 }}>
-              {cert.instituicao} {cert.ano ? `• ${cert.ano}` : ""}
-            </Text>
-          )}
-        </View>
-
-        {/* Setinha */}
-        <Text style={{ color: "#fff", fontSize: 16 }}>
-          {aberta ? "▲" : "▼"}
-        </Text>
-      </TouchableOpacity>
-
-      {/* Conteúdo */}
-      {aberta && (
-        <View style={{ marginTop: 10 }}>
-          <Input
-            placeholder="Nome da certificação"
-            placeholderTextColor={'#777'}
-            value={cert.nome}
-            onChangeText={(text) => atualizarCampo(index, "nome", text)}
-          />
-
-          <Input
-            placeholder="Instituição"
-            placeholderTextColor={'#777'}
-            value={cert.instituicao}
-            onChangeText={(text) => atualizarCampo(index, "instituicao", text)}
-          />
-
-          <Input
-            placeholder="Ano de conclusão"
-            placeholderTextColor={'#777'}
-            keyboardType={'numeric'}
-            value={cert.ano}
-            onChangeText={(text) => atualizarCampo(index, "ano", text)}
-          />
-        </View>
-      )}
-    </View>
-  );
-})}
-
-        <TouchableOpacity onPress={adicionarCertificacao}>
-          <Text style={{
-            color: "#fff",
-            marginVertical: 10,
-            fontWeight: "bold"
-          }}>
-            + Adicionar outra certificação
-          </Text>
+        {/* Botão adicionar — estilo igual ao de formação */}
+        <TouchableOpacity onPress={adicionarCertificacao} style={styles.botaoAdicionar}>
+          <Text style={styles.botaoTexto}>+ Adicionar certificação</Text>
         </TouchableOpacity>
 
         <ButtonConfirm text="Finalizar" onPress={handleFinalizar} />
@@ -211,3 +175,48 @@ export default function Certificacoes() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    width: "95%", 
+    marginBottom: 12,
+    borderRadius: 10,
+    backgroundColor: "#0a1f3d",
+    padding: 10,
+  },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: "#0f2a4d",
+  },
+  cardTitulo: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 15,
+  },
+  cardPreview: {
+    color: "#aaa",
+    fontSize: 12,
+    marginTop: 2,
+  },
+  seta: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  botaoAdicionar: {
+    marginTop: 16,
+    borderWidth: 1.5,
+    borderColor: '#fff',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    borderStyle: 'dashed',
+  },
+  botaoTexto: {
+    color: '#fff',
+    fontSize: 16,
+  },
+});
