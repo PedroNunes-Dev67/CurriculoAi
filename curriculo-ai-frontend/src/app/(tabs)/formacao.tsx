@@ -17,7 +17,7 @@ function ProgressIndicator({ etapaAtual }: { etapaAtual: number }) {
       marginVertical: 20,
       gap: 8,
     }}>
-      {[1, 2, 3, 4].map((etapa) => {
+      {[1, 2, 3, 4, 5].map((etapa) => {
         const isAtual = etapa === etapaAtual;
         return (
           <View key={etapa} style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -57,7 +57,7 @@ function ProgressIndicator({ etapaAtual }: { etapaAtual: number }) {
 }
 
 function handleProximo(){
-  router.push("/dispo")
+  router.push("/experiencia")
 }
 
 export default function Formacao() {
@@ -91,7 +91,7 @@ export default function Formacao() {
         
                 <Text style={GlobalStyles.titulo}>Me conte mais sobre você</Text>
                 <Text style={[GlobalStyles.subtitulo]}>
-                  Etapa 2 de 4 — Formação
+                  Etapa 2 de 5 — Formação
                 </Text>
         
                 <ProgressIndicator etapaAtual={2} />

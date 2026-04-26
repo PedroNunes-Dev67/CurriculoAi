@@ -74,22 +74,23 @@ function Cabecalho() {
           width: 200,
           height: 150,
           resizeMode: "contain",
-          marginTop: 20,
+          marginTop: 100,
         }}
       />
       <Text
         style={{
-          fontSize: 25,
+          fontSize: 20,
           color: "#fff",
           textAlign: "center",
           fontWeight: "bold",
+          marginBottom: 20,
         }}
       >
-        Gostariamos de saber sobre sua disponibilidade e sobre seus
-        conhecimentos linguísticos.
+        Gostariamos de saber sobre sua disponibilidade e
+        conhecimentos linguísticos!
       </Text>
       <Text style={[GlobalStyles.subtitulo, { fontSize: 16, margin: 0 }]}>
-        Etapa 4 de 4 — Disponibilidade/Idiomas
+        Etapa 5 de 5 - Disponibilidade e Idiomas
       </Text>
       <ProgressIndicator etapaAtual={5} />
     </>
@@ -116,9 +117,9 @@ function DataInicio({
   return (
     <>
       <Text
-        style={[GlobalStyles.subtitulo, { margin: 1, textAlign: "center" }]}
+        style={[GlobalStyles.subtitulo, { fontSize: 15, margin: 10, textAlign: "center" }]}
       >
-        Digite sua data para disponibilidade de inicio:
+        Digite sua data para disponibilidade de início:
       </Text>
       <Input
         icone="calendar"

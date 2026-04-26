@@ -4,6 +4,7 @@ import { GlobalStyles } from "@/src/components/style";
 import { useState } from "react";
 import { Image, Text, TouchableOpacity, View, StyleSheet } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useRouter } from 'expo-router';
 
 // Indicador de progresso
 function ProgressIndicator({ etapaAtual }: { etapaAtual: number }) {
@@ -15,7 +16,7 @@ function ProgressIndicator({ etapaAtual }: { etapaAtual: number }) {
       marginVertical: 20,
       gap: 8,
     }}>
-      {[1, 2, 3, 4].map((etapa) => {
+      {[1, 2, 3, 4, 5].map((etapa) => {
         const isAtual = etapa === etapaAtual;
         return (
           <View key={etapa} style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -59,6 +60,9 @@ type Certificacao = {
 };
 
 export default function Certificacoes() {
+
+  const router = useRouter();
+
   const [certificacoes, setCertificacoes] = useState<Certificacao[]>([
     { nome: "", instituicao: "", ano: "" }
   ]);
@@ -89,7 +93,7 @@ export default function Certificacoes() {
   }
 
   function handleFinalizar() {
-    console.log(certificacoes);
+    router.push('/disponibilidade');
   }
 
   return (
@@ -108,9 +112,9 @@ export default function Certificacoes() {
           }}
         />
 
-        <Text style={GlobalStyles.titulo}>Me conte mais sobre você</Text>
+        <Text style={GlobalStyles.titulo}>Me conte mais sobre você!</Text>
         <Text style={GlobalStyles.subtitulo}>
-          Etapa 4 de 4 — Certificações
+          Etapa 4 de 5 — Certificações
         </Text>
 
         <ProgressIndicator etapaAtual={4} />
@@ -170,7 +174,7 @@ export default function Certificacoes() {
           <Text style={styles.botaoTexto}>+ Adicionar certificação</Text>
         </TouchableOpacity>
 
-        <ButtonConfirm text="Finalizar" onPress={handleFinalizar} />
+        <ButtonConfirm text="Próximo" onPress={handleFinalizar} />
       </KeyboardAwareScrollView>
     </View>
   );
