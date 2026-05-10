@@ -1,6 +1,5 @@
 package br.com.CurriculoAi.entities;
 
-import br.com.CurriculoAi.enums.Idioma;
 import br.com.CurriculoAi.enums.NivelIdioma;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,12 +23,11 @@ public class IdiomasUser {
     @Column(nullable = false)
     private NivelIdioma nivel;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Idioma idioma;
-
     @ManyToOne
-    @JoinColumn(name = "id_user", nullable = false)
+    @JoinColumn(name = "id_usuario")
     private UsuarioCad usuarioCad;
 
+    @ManyToOne
+    @JoinColumn(name = "id_idioma")
+    private Idioma idioma;
 }

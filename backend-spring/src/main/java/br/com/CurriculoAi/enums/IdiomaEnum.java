@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.enums;
 
-public enum Idioma {
+public enum IdiomaEnum {
     INGLES,
     MANDARIM,
     HINDI,
