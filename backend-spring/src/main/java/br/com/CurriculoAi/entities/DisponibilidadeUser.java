@@ -1,5 +1,6 @@
 package br.com.CurriculoAi.entities;
 
+import br.com.CurriculoAi.enums.ModeloDetrabalho;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,12 +27,14 @@ public class DisponibilidadeUser {
     @Column(name = "carga_horaria", nullable = false)
     private Integer cargaHoraria;
 
-    private Boolean remoto;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "modelo_trabalho", nullable = false)
+    private ModeloDetrabalho modeloTrabalho;
 
     @Column(name = "tipo_contrato", nullable = false)
     private String tipoContrato;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "id_user", nullable = false)
     private UsuarioCad usuarioCad;
 
