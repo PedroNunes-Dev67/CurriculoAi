@@ -5,6 +5,7 @@ import br.com.CurriculoAi.entities.UsuarioCad;
 import br.com.CurriculoAi.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,5 +27,20 @@ public class UsuarioController {
     )
     public UsuarioCadDTO createUsuario(@RequestBody UsuarioCadDTO usuarioCad){
         return service.createUsuario(usuarioCad);
+    }
+
+    @PutMapping(value = "/update/{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public UsuarioCadDTO updateUsuario(@RequestBody UsuarioCadDTO usuarioCadDTO, @PathVariable("id") Long id){
+        return service.updateUsuario(usuarioCadDTO);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteUsuario(@PathVariable("id") Long id){
+
+        service.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }
