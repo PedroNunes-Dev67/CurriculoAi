@@ -58,7 +58,8 @@ public class UsuarioService {
                 .senha(passwordEncoder.encode(usuarioCadDTO.getSenha()))
                 .email(usuarioCadDTO.getEmail())
                 .id(usuarioCadDTO.getId())
-                .area(area).build();
+                .area(area)
+                .build();
 
         UsuarioCad savedEntity = repository.save(entity);
 
