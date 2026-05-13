@@ -5,6 +5,7 @@ import br.com.CurriculoAi.DTO.UsuarioCadDTO;
 import br.com.CurriculoAi.entities.AreaUser;
 import br.com.CurriculoAi.entities.Role;
 import br.com.CurriculoAi.entities.UsuarioCad;
+import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.mapper.UsuarioMapper;
 import br.com.CurriculoAi.repositories.AreaUserRepository;
 import br.com.CurriculoAi.repositories.RoleRepository;
@@ -53,7 +54,7 @@ public class UsuarioService {
         logger.info("Procurando o usuario pelo id");
 
         var entity = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Esse id não foi encontrado no sistema"));
+                .orElseThrow(() -> new ResourceNotFoundException("Esse id não foi encontrado no sistema"));
         return entity;
     }
 
@@ -63,15 +64,15 @@ public class UsuarioService {
         logger.info("Criando o usuario");
 
         if (usuarioCadDTO.areaId() == null) {
-            throw new RuntimeException("AreaId não pode ser null");
+            throw new ResourceNotFoundException("AreaId não pode ser null");
         }
 
         //Busca o id no banco para ver se existe
         AreaUser area = areaUserRepository.findById(usuarioCadDTO.areaId())
-                .orElseThrow(() -> new RuntimeException("Área não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Área não encontrada"));
 
         Role role = roleRepository.findById(1L)
-                .orElseThrow(() -> new RuntimeException("Role não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Role não encontrada"));
 
 
         var entity = UsuarioCad.builder()
@@ -106,7 +107,7 @@ public class UsuarioService {
     public UsuarioCadDTO updateUsuario(UsuarioCadDTO usuarioCadDTO) {
 
        var entity = repository.findById(usuarioCadDTO.id())
-                .orElseThrow(() -> new RuntimeException("Esse id não foi encontrado no sistema"));
+                .orElseThrow(() -> new ResourceNotFoundException("Esse id não foi encontrado no sistema"));
 
        // verifica se a senha não chegou vazia
         if (usuarioCadDTO.senha() != null &&
@@ -119,7 +120,7 @@ public class UsuarioService {
 
        //busca area no banco
         AreaUser area = areaUserRepository.findById(usuarioCadDTO.areaId())
-                .orElseThrow(() -> new RuntimeException("Área não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Área não encontrada"));
 
                 entity.setNome(usuarioCadDTO.nome());
                 entity.setSenha(passwordEncoder.encode(usuarioCadDTO.senha()));
@@ -137,10 +138,19 @@ public class UsuarioService {
         logger.info("Deletando o usuario");
 
         var entity = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Esse id não foi encontrado no sistema"));
+                .orElseThrow(() -> new ResourceNotFoundException("Esse id não foi encontrado no sistema"));
 
          repository.delete(entity);
     }
 
+    public UsuarioCadDTO me(){
+
+        UsuarioCad usuarioAutenticado = (UsuarioCad) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        UsuarioCad usurioBuscado = repository.findById(usuarioAutenticado.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+
+        return mapper.toDto(usurioBuscado);
+    }
 
 }
