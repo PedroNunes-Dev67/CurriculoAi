@@ -1,5 +1,6 @@
 package br.com.CurriculoAi.controllers;
 
+import br.com.CurriculoAi.DTO.LoginDto;
 import br.com.CurriculoAi.DTO.UsuarioCadDTO;
 import br.com.CurriculoAi.entities.UsuarioCad;
 import br.com.CurriculoAi.services.UsuarioService;
@@ -27,6 +28,14 @@ public class UsuarioController {
     )
     public UsuarioCadDTO createUsuario(@RequestBody UsuarioCadDTO usuarioCad){
         return service.createUsuario(usuarioCad);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginDto loginDto){
+
+        String token = service.login(loginDto);
+
+        return ResponseEntity.ok(token);
     }
 
     @PutMapping(value = "/update/{id}",

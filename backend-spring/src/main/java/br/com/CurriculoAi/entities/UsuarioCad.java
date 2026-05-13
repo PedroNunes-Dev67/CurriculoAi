@@ -36,7 +36,7 @@ public class UsuarioCad implements UserDetails {
     @JoinColumn(name = "id_area", nullable = false)
     private AreaUser area;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "role_user",
             joinColumns = @JoinColumn(name = "id_user"),
