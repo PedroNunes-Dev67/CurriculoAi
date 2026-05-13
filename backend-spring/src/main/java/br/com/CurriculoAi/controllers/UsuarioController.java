@@ -52,4 +52,12 @@ public class UsuarioController {
         service.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioCadDTO> me(){
+
+        UsuarioCadDTO usuario = service.me();
+
+        return ResponseEntity.ok(usuario);
+    }
 }

@@ -142,5 +142,14 @@ public class UsuarioService {
          repository.delete(entity);
     }
 
+    public UsuarioCadDTO me(){
+
+        UsuarioCad usuarioAutenticado = (UsuarioCad) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        UsuarioCad usurioBuscado = repository.findById(usuarioAutenticado.getId())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        return mapper.toDto(usurioBuscado);
+    }
 
 }
