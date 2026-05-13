@@ -1,19 +1,14 @@
 package br.com.CurriculoAi.services;
 
-import br.com.CurriculoAi.DTO.LoginDto;
 import br.com.CurriculoAi.DTO.UsuarioCadDTO;
 import br.com.CurriculoAi.entities.AreaUser;
-import br.com.CurriculoAi.entities.Role;
 import br.com.CurriculoAi.entities.UsuarioCad;
 import br.com.CurriculoAi.mapper.UsuarioMapper;
 import br.com.CurriculoAi.repositories.AreaUserRepository;
-import br.com.CurriculoAi.repositories.RoleRepository;
 import br.com.CurriculoAi.repositories.UsuarioCadRepository;
-import br.com.CurriculoAi.security.TokenService;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.logging.Logger;
@@ -23,37 +18,24 @@ public class UsuarioService {
 
     private Logger logger = Logger.getLogger(UsuarioService.class.getName());
 
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    UsuarioMapper mapper;
 
-    private final UsuarioMapper mapper;
+    @Autowired
+    AreaUserRepository areaUserRepository;
 
-    private final AreaUserRepository areaUserRepository;
-
-    private final UsuarioCadRepository repository;
-
-    private final AuthenticationManager authenticationManager;
-
-    private final TokenService tokenService;
-
-    private final RoleRepository roleRepository;
-
-    public UsuarioService(PasswordEncoder passwordEncoder, UsuarioMapper mapper, AreaUserRepository areaUserRepository, UsuarioCadRepository repository, AuthenticationManager authenticationManager, TokenService tokenService, RoleRepository roleRepository) {
-        this.passwordEncoder = passwordEncoder;
-        this.mapper = mapper;
-        this.areaUserRepository = areaUserRepository;
-        this.repository = repository;
-        this.authenticationManager = authenticationManager;
-        this.tokenService = tokenService;
-        this.roleRepository = roleRepository;
-    }
+    @Autowired
+    UsuarioCadRepository repository;
 
     public UsuarioCad findByid(Long id) {
 
         logger.info("Procurando o usuario pelo id");
 
         var entity = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Esse id não foi encontrado no sistema"));
+                .orElseThrow(() -> new RuntimeException("Esse id não foi encontrado no sistema"));;
         return entity;
     }
 
@@ -62,73 +44,55 @@ public class UsuarioService {
 
         logger.info("Criando o usuario");
 
-        if (usuarioCadDTO.areaId() == null) {
+        if (usuarioCadDTO.getAreaId() == null) {
             throw new RuntimeException("AreaId não pode ser null");
         }
 
         //Busca o id no banco para ver se existe
-        AreaUser area = areaUserRepository.findById(usuarioCadDTO.areaId())
+        AreaUser area = areaUserRepository.findById(usuarioCadDTO.getAreaId())
                 .orElseThrow(() -> new RuntimeException("Área não encontrada"));
-
-        Role role = roleRepository.findById(1L)
-                .orElseThrow(() -> new RuntimeException("Role não encontrada"));
 
 
         var entity = UsuarioCad.builder()
-                .nome(usuarioCadDTO.nome())
-                .senha(passwordEncoder.encode(usuarioCadDTO.senha()))
-                .email(usuarioCadDTO.email())
-                .id(usuarioCadDTO.id())
+                .nome(usuarioCadDTO.getNome())
+                .senha(passwordEncoder.encode(usuarioCadDTO.getSenha()))
+                .email(usuarioCadDTO.getEmail())
+                .id(usuarioCadDTO.getId())
                 .area(area)
                 .build();
 
-        entity.getRoles().add(role);
-
         UsuarioCad savedEntity = repository.save(entity);
 
-        return mapper.toDto(savedEntity);
+        return mapper.toDTO(savedEntity);
 
-    }
-
-    public String login(LoginDto loginDto){
-
-        var usernamepasswor = new UsernamePasswordAuthenticationToken(loginDto.email(),loginDto.senha());
-
-        var authentication = authenticationManager.authenticate(usernamepasswor);
-
-        UsuarioCad usuarioAutenticado = (UsuarioCad) authentication.getPrincipal();
-
-        String token = tokenService.gerarToken(usuarioAutenticado);
-
-        return token;
     }
 
     public UsuarioCadDTO updateUsuario(UsuarioCadDTO usuarioCadDTO) {
 
-       var entity = repository.findById(usuarioCadDTO.id())
+       var entity = repository.findById(usuarioCadDTO.getId())
                 .orElseThrow(() -> new RuntimeException("Esse id não foi encontrado no sistema"));
 
        // verifica se a senha não chegou vazia
-        if (usuarioCadDTO.senha() != null &&
-                !usuarioCadDTO.senha().isBlank()) {
+        if (usuarioCadDTO.getSenha() != null &&
+                !usuarioCadDTO.getSenha().isBlank()) {
 
             entity.setSenha(
-                    passwordEncoder.encode(usuarioCadDTO.senha())
+                    passwordEncoder.encode(usuarioCadDTO.getSenha())
             );
         }
 
        //busca area no banco
-        AreaUser area = areaUserRepository.findById(usuarioCadDTO.areaId())
+        AreaUser area = areaUserRepository.findById(usuarioCadDTO.getAreaId())
                 .orElseThrow(() -> new RuntimeException("Área não encontrada"));
 
-                entity.setNome(usuarioCadDTO.nome());
-                entity.setSenha(passwordEncoder.encode(usuarioCadDTO.senha()));
-                entity.setEmail(usuarioCadDTO.email());
+                entity.setNome(usuarioCadDTO.getNome());
+                entity.setSenha(passwordEncoder.encode(usuarioCadDTO.getSenha()));
+                entity.setEmail(usuarioCadDTO.getEmail());
                 entity.setArea(area);
 
         UsuarioCad savedEntity = repository.save(entity);
 
-        return mapper.toDto(savedEntity);
+        return mapper.toDTO(savedEntity);
 
     }
 

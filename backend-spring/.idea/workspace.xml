@@ -5,36 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9688353f-75cc-4450-8ad2-aef4ba1396ff" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/DTO/LoginDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/InitialzrData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/controllers/TestController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/repositories/RoleRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/security/SecurityAuthenticationFilter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/security/TokenService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/entities/Role.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/enums/RoleEnum.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/security/SecurityConfiguration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/security/UserDetailsService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/DTO/UsuarioCadDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/DTO/UsuarioCadDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/config/SecurityConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/controllers/UsuarioController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/controllers/UsuarioController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/entities/UsuarioCad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/entities/UsuarioCad.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/mapper/UsuarioMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/mapper/UsuarioMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/security/SecurityConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/security/SecurityConfiguration.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/services/UsuarioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/br/com/CurriculoAi/services/UsuarioService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application-test.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application-test.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/CurriculoAi-0.0.1-SNAPSHOT.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/CurriculoAi-0.0.1-SNAPSHOT.jar.original" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application-prod.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application-prod.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application-test.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application-test.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/br/com/CurriculoAi/entities/DisponibilidadeUser.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/br/com/CurriculoAi/entities/DisponibilidadeUser.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/br/com/CurriculoAi/entities/IdiomasUser.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/br/com/CurriculoAi/entities/IdiomasUser.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/br/com/CurriculoAi/entities/UsuarioCad.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/br/com/CurriculoAi/entities/UsuarioCad.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/br/com/CurriculoAi/enums/Idioma.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/br/com/CurriculoAi/repositories/UsuarioCadRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/br/com/CurriculoAi/repositories/UsuarioCadRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,17 +21,12 @@
   </component>
   <component name="CopilotPersistence">
     <persistenceIdMap>
-      <entry key="_/home/pedro-nunes/Projetos/CurriculoAi/backend-spring" value="3DdnTMmt5tFVRxdTSOWcj2wyeGK" />
       <entry key="_C:/Meusprojetos/CurriculoAI/backend-spring" value="3DEufFE3uU3KRAqAANRSFeqE8nE" />
     </persistenceIdMap>
-  </component>
-  <component name="CopilotUserSelectedChatMode">
-    <option name="chatModeId" value="Ask" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -72,28 +45,30 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;Maven.CurriculoAi [compile].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.CurriculoAi [install].executor&quot;: &quot;Run&quot;,
     &quot;Maven.CurriculoAi [package].executor&quot;: &quot;Run&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;Spring Boot.CurriculoAiApplication.executor&quot;: &quot;Run&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;branch-pedro&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Meusprojetos/CurriculoAI/backend-spring&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+    &quot;last_opened_file_path&quot;: &quot;C:/Meusprojetos/CurriculoAI/backend-spring&quot;
   }
 }</component>
   <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="backend-spring" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="backend-spring" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
     <configuration name="CurriculoAiApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UnknownPolicyInFreeMode" />
       <module name="CurriculoAi" />
@@ -130,9 +105,6 @@
       <updated>1777859651529</updated>
     </task>
     <servers />
-  </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

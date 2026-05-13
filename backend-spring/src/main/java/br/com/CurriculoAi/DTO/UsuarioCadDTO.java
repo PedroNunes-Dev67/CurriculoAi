@@ -1,14 +1,24 @@
 package br.com.CurriculoAi.DTO;
 
-public record UsuarioCadDTO (
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-        Long id,
-         String nome,
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class UsuarioCadDTO {
 
-         String senha,
+    private Long id;
 
-         String email,
+    private String nome;
 
-         Long areaId
-){
+    private String senha;
+
+    private String email;
+
+    private Long areaId;
 }

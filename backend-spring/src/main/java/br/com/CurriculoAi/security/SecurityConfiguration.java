@@ -2,7 +2,6 @@ package br.com.CurriculoAi.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,7 +9,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -21,11 +19,6 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    private final SecurityAuthenticationFilter securityAuthenticationFilter;
-
-    public SecurityConfiguration(SecurityAuthenticationFilter securityAuthenticationFilter) {
-        this.securityAuthenticationFilter = securityAuthenticationFilter;
-    }
 
     //libera todas as rotas por enquanto, rlx ai pedroca
     @Bean
@@ -38,19 +31,17 @@ public class SecurityConfiguration {
                         headers.frameOptions(frame -> frame.disable())
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/teste/teste-candidato").hasRole("CANDIDATO")
+                        .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().permitAll()
-                )
-                .addFilterBefore(securityAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                );
 
         return http.build();
     }
 
     //Responsavel pela autenticação do usuário
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager() throws Exception {
+        return new AuthenticationConfiguration().getAuthenticationManager();
     }
 
     @Bean
