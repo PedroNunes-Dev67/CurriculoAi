@@ -7,11 +7,16 @@ import org.commonmark.renderer.html.HtmlRenderer;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
+import java.util.logging.Logger;
 
 @Service
 public class PdfService {
 
+    Logger logger = Logger.getLogger(PdfService.class.getName());
+
     public byte[] generatePdfFromMarkdown(String markdown) throws Exception {
+
+        logger.info("Iniciando a geração do PDF");
 
         // Markdown -> HTML
         Parser parser = Parser.builder().build();

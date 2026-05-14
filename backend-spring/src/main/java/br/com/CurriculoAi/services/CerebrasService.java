@@ -10,9 +10,12 @@ import org.springframework.web.client.RestTemplate;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @Service
 public class CerebrasService {
+
+    private Logger logger = Logger.getLogger(UsuarioService.class.getName());
 
     @Value("${cerebras.api.key}")
     private String apiKey;
@@ -24,6 +27,8 @@ public class CerebrasService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public String gerarMarkdawn(CerebrasRequestDTO requestDTO) throws Exception {
+
+        logger.info("Iniciando a geração do markdown");
 
         //envia o request para o cerebras
         String bodyJson = objectMapper.writeValueAsString(requestDTO);
@@ -38,6 +43,8 @@ public class CerebrasService {
         HttpEntity<String> request =
                 new HttpEntity<>(bodyJson, headers);
 
+        logger.info("Enviando request para o cerebras");
+
         //recebe a resposta do cerebras
         ResponseEntity<Map> response =
                 restTemplate.postForEntity(
@@ -47,6 +54,8 @@ public class CerebrasService {
                 );
         List<Map> choices =
                 (List<Map>) response.getBody().get("choices");
+
+        logger.info("Recebendo resposta do cerebras");
 
         //pega o markdown
         Map message =
