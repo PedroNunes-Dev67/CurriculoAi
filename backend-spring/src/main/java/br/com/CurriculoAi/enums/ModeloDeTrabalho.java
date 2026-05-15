@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.enums;
 
-public enum ModeloDetrabalho {
+public enum ModeloDeTrabalho {
     PRESENCIAL,
     REMOTO,
     HIBRIDO
