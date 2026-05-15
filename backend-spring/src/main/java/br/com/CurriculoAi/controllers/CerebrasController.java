@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.controllers;
 
-import br.com.CurriculoAi.DTO.CerebrasRequestDTO;
+import br.com.CurriculoAi.DTO.CurriculoDTO;
 import br.com.CurriculoAi.services.CerebrasService;
 import br.com.CurriculoAi.services.PdfService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,21 +19,17 @@ public class CerebrasController {
     @Autowired
     private PdfService pdfService;
 
-    //gera transforma o markdown em pdf
     @PostMapping("/pdf")
     public ResponseEntity<byte[]> gerarPdf(
-            @RequestBody CerebrasRequestDTO request
+            @RequestBody CurriculoDTO curriculo
     ) throws Exception {
 
-        //cria o curriculo em md
-        String markdown =
-                cerebrasService.gerarMarkdawn(request);
+        // gera markdown via IA
+        String markdown = cerebrasService.gerarMarkdawn(curriculo);
 
-        //transforma o md em pdf
-        byte[] pdf =
-                pdfService.generatePdfFromMarkdown(markdown);
+        // converte markdown em PDF
+        byte[] pdf = pdfService.generatePdfFromMarkdown(markdown);
 
-        //retorna o pdf já convertido
         return ResponseEntity.ok()
                 .header(
                         HttpHeaders.CONTENT_DISPOSITION,
