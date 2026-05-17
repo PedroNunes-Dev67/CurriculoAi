@@ -1,4 +1,4 @@
-package br.com.CurriculoAi.DTO;
+package br.com.CurriculoAi.DTO.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,10 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AreaUserDTO {
+public class AreaUserDTOResponse {
 
     private Long areaId;
-
     private String nomeArea;
-
 }
