@@ -6,10 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -33,8 +30,11 @@ public class UsuarioCad implements UserDetails {
     private String senha;
 
     @ManyToOne
-    @JoinColumn(name = "id_area", nullable = false)
+    @JoinColumn(name = "id_area")
     private AreaUser area;
+
+    @OneToMany(mappedBy = "usuarioCad", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<FormacaoUser> formacoes = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

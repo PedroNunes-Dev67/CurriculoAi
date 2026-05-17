@@ -1,8 +1,7 @@
 package br.com.CurriculoAi.services;
 
-import br.com.CurriculoAi.DTO.LoginDto;
-import br.com.CurriculoAi.DTO.UsuarioCadDTO;
-import br.com.CurriculoAi.entities.AreaUser;
+import br.com.CurriculoAi.DTO.request.UsuarioDtoRequest;
+import br.com.CurriculoAi.DTO.response.*;
 import br.com.CurriculoAi.entities.Role;
 import br.com.CurriculoAi.entities.UsuarioCad;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
@@ -17,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 @Service
@@ -39,7 +39,9 @@ public class UsuarioService {
 
     private final RoleRepository roleRepository;
 
-    public UsuarioService(PasswordEncoder passwordEncoder, UsuarioMapper mapper, AreaUserRepository areaUserRepository, UsuarioCadRepository repository, AuthenticationManager authenticationManager, TokenService tokenService, RoleRepository roleRepository) {
+    private final TokenIdentificacaoUsuarioService tokenIdentificacaoUsuarioService;
+
+    public UsuarioService(PasswordEncoder passwordEncoder, UsuarioMapper mapper, AreaUserRepository areaUserRepository, UsuarioCadRepository repository, AuthenticationManager authenticationManager, TokenService tokenService, RoleRepository roleRepository, TokenIdentificacaoUsuarioService tokenIdentificacaoUsuarioService) {
         this.passwordEncoder = passwordEncoder;
         this.mapper = mapper;
         this.areaUserRepository = areaUserRepository;
@@ -47,6 +49,7 @@ public class UsuarioService {
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
         this.roleRepository = roleRepository;
+        this.tokenIdentificacaoUsuarioService = tokenIdentificacaoUsuarioService;
     }
 
     public UsuarioCad findByid(Long id) {
@@ -59,18 +62,11 @@ public class UsuarioService {
     }
 
 
-    public UsuarioCadDTO createUsuario(UsuarioCadDTO usuarioCadDTO) {
+    public UsuarioTokenIdentResponseDto createUsuario(UsuarioDtoRequest usuarioCadDTO) {
 
         logger.info("Criando o usuario");
 
-        if (usuarioCadDTO.areaId() == null) {
-            throw new ResourceNotFoundException("AreaId não pode ser null");
-        }
-
-        //Busca o id no banco para ver se existe
-        AreaUser area = areaUserRepository.findById(usuarioCadDTO.areaId())
-                .orElseThrow(() -> new ResourceNotFoundException("Área não encontrada"));
-
+        //Registra como ROLE_CANDIDATO TODO: VER DEPOIS COMO UTILIZAR DE RECRUTADOR
         Role role = roleRepository.findById(1L)
                 .orElseThrow(() -> new ResourceNotFoundException("Role não encontrada"));
 
@@ -79,21 +75,23 @@ public class UsuarioService {
                 .nome(usuarioCadDTO.nome())
                 .senha(passwordEncoder.encode(usuarioCadDTO.senha()))
                 .email(usuarioCadDTO.email())
-                .id(usuarioCadDTO.id())
-                .area(area)
                 .build();
 
         entity.getRoles().add(role);
 
         UsuarioCad savedEntity = repository.save(entity);
 
-        return mapper.toDto(savedEntity);
+        String tokenDeIdentificacao = tokenIdentificacaoUsuarioService.gerarTokenDeIdentificacao(savedEntity);
+
+        UsuarioTokenIdentResponseDto responseDto = new UsuarioTokenIdentResponseDto(savedEntity.getId(), savedEntity.getNome(), tokenDeIdentificacao);
+
+        return responseDto;
 
     }
 
-    public String login(LoginDto loginDto){
+    public String login(LoginDtoResponse loginDtoResponse){
 
-        var usernamepasswor = new UsernamePasswordAuthenticationToken(loginDto.email(),loginDto.senha());
+        var usernamepasswor = new UsernamePasswordAuthenticationToken(loginDtoResponse.email(), loginDtoResponse.senha());
 
         var authentication = authenticationManager.authenticate(usernamepasswor);
 
@@ -104,34 +102,6 @@ public class UsuarioService {
         return token;
     }
 
-    public UsuarioCadDTO updateUsuario(UsuarioCadDTO usuarioCadDTO) {
-
-       var entity = repository.findById(usuarioCadDTO.id())
-                .orElseThrow(() -> new ResourceNotFoundException("Esse id não foi encontrado no sistema"));
-
-       // verifica se a senha não chegou vazia
-        if (usuarioCadDTO.senha() != null &&
-                !usuarioCadDTO.senha().isBlank()) {
-
-            entity.setSenha(
-                    passwordEncoder.encode(usuarioCadDTO.senha())
-            );
-        }
-
-       //busca area no banco
-        AreaUser area = areaUserRepository.findById(usuarioCadDTO.areaId())
-                .orElseThrow(() -> new ResourceNotFoundException("Área não encontrada"));
-
-                entity.setNome(usuarioCadDTO.nome());
-                entity.setSenha(passwordEncoder.encode(usuarioCadDTO.senha()));
-                entity.setEmail(usuarioCadDTO.email());
-                entity.setArea(area);
-
-        UsuarioCad savedEntity = repository.save(entity);
-
-        return mapper.toDto(savedEntity);
-
-    }
 
     public void deleteUser(Long id) {
 
@@ -143,14 +113,31 @@ public class UsuarioService {
          repository.delete(entity);
     }
 
-    public UsuarioCadDTO me(){
+    public UsuarioFullContentDtoResponse me(){
 
         UsuarioCad usuarioAutenticado = (UsuarioCad) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        UsuarioCad usurioBuscado = repository.findById(usuarioAutenticado.getId())
+        UsuarioCad usuarioBuscado = repository.findById(usuarioAutenticado.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
-        return mapper.toDto(usurioBuscado);
+        UsuarioDtoResponse usuario = mapper.toDto(usuarioBuscado);
+        AreaUserDTOResponse area = new AreaUserDTOResponse(usuarioBuscado.getArea().getId(), usuarioBuscado.getArea().getNomeArea());
+        List<FormacaoDtoResponse> formacoes = usuarioBuscado.getFormacoes()
+                .stream()
+                .map(formacao -> {
+                    return new FormacaoDtoResponse(
+                            formacao.getId(),
+                            formacao.getArea(),
+                            formacao.getTipoFormacao(),
+                            formacao.getDataInicio(),
+                            formacao.getDataConclusao(),
+                            formacao.getEmAndamento(),
+                            usuario
+                    );
+                })
+                .toList();
+
+        return new UsuarioFullContentDtoResponse(usuario, area, formacoes);
     }
 
 }
