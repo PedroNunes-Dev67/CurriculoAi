@@ -38,7 +38,7 @@ public class ExperienciaUser {
     private LocalDate dataFim;
 
     @Column(nullable = false)
-    private String habilidades;
+    private String descricao;
 
     @Column(name = "trabalho_atual")
     private Boolean trabalhoAtual;

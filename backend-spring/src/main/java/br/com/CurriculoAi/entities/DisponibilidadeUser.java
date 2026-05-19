@@ -1,6 +1,7 @@
 package br.com.CurriculoAi.entities;
 
 import br.com.CurriculoAi.enums.ModeloDetrabalho;
+import br.com.CurriculoAi.enums.TipoContrato;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,15 +25,13 @@ public class DisponibilidadeUser {
     @Column(name = "disponibilidade_init", nullable = false)
     private LocalDate disponibilidadeInicio;
 
-    @Column(name = "carga_horaria", nullable = false)
-    private Integer cargaHoraria;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "modelo_trabalho", nullable = false)
     private ModeloDetrabalho modeloTrabalho;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "tipo_contrato", nullable = false)
-    private String tipoContrato;
+    private TipoContrato tipoContrato;
 
     @OneToOne
     @JoinColumn(name = "id_user", nullable = false)

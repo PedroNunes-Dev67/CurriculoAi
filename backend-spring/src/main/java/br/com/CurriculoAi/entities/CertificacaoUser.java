@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "certificacao_user")
 @Getter
@@ -18,14 +20,28 @@ public class CertificacaoUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nome_plataforma", nullable = false, length = 80)
-    private String nomePlataforma;
+    @Column(name = "nome_certificacao")
+    private String nomeCertificacao;
+
+    @Column(name = "instituicao", nullable = false, length = 80)
+    private String instituicao;
+
+    @Column(name = "data_de_conclusao")
+    private LocalDate dataConclusao;
 
     @Lob //avisa ao hibernate que é um largeObject
     @Column(name = "certificado", nullable = false)
     private byte[] certificado;
 
+    @Column(name = "em_andamento")
+    private Boolean emAndamento;
+
     @ManyToOne
     @JoinColumn(name = "id_user", nullable = false)
     private UsuarioCad usuarioCad;
+
+    public void estaEmAndamento(){
+
+        this.emAndamento = this.dataConclusao != null;
+    }
 }
