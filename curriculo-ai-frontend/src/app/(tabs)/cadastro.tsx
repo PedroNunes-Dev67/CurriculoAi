@@ -16,7 +16,7 @@ function ProgressIndicator({ etapaAtual }: { etapaAtual: number }) {
       marginVertical: 20,
       gap: 8,
     }}>
-      {[1, 2, 3, 4].map((etapa) => {
+      {[1, 2, 3, 4, 5].map((etapa) => {
         const isAtual = etapa === etapaAtual;
         return (
           <View key={etapa} style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -117,7 +117,7 @@ export default function Cadastro() {
         }}/>
       <Text style={GlobalStyles.titulo}>Ótima iniciativa!</Text>
       <Text style={[GlobalStyles.subtitulo, {textAlign: 'center', width:380, fontSize:16}]}>Vamos realizar uma breve análise sobre seu perfil</Text>
-      <Text style={[GlobalStyles.subtitulo, {fontSize: 16, margin:0}]}>Etapa 1 de 4 — Dados pessoais</Text>
+      <Text style={[GlobalStyles.subtitulo, {fontSize: 16, margin:0}]}>Etapa 1 de 5 - Dados pessoais</Text>
 
       {/* Indicador de progresso */}
       <ProgressIndicator etapaAtual={1} />
