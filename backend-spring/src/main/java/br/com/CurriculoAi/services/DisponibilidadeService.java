@@ -6,7 +6,6 @@ import br.com.CurriculoAi.entities.DisponibilidadeUser;
 import br.com.CurriculoAi.entities.TokenIdentificacaoUsuario;
 import br.com.CurriculoAi.entities.UsuarioCad;
 import br.com.CurriculoAi.enums.ModeloDetrabalho;
-import br.com.CurriculoAi.enums.TipoContrato;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.repositories.DisponibilidadeUserRepository;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
@@ -36,7 +35,6 @@ public class DisponibilidadeService {
                 null,
                 disponibilidadeDtoRequest.disponibilidadeInicio(),
                 ModeloDetrabalho.from(disponibilidadeDtoRequest.modeloTrabalho()),
-                TipoContrato.from(disponibilidadeDtoRequest.tipoContrato()),
                 usuario);
 
         DisponibilidadeUser disponibilidadeUserSalva = disponibilidadeUserRepository.save(novaDisponibilidade);

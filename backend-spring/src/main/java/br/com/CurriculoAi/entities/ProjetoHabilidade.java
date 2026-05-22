@@ -6,21 +6,25 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Table
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "token_usuario")
-public class TokenIdentificacaoUsuario {
+public class ProjetoHabilidade {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_token")
+    @Column(name = "id_projeto_habilidade")
     private Long id;
-    private String token;
 
-    @JoinColumn(name = "id_usuario")
-    @OneToOne(fetch = FetchType.EAGER)
-    private UsuarioCad usuarioCad;
+    @ManyToOne
+    @JoinColumn(name = "id_projeto")
+    private Projeto projeto;
+
+    @ManyToOne
+    @JoinColumn(name = "id_habilidade")
+    private Habilidade habilidade;
 }

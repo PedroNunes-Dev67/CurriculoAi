@@ -113,7 +113,7 @@ public class UsuarioService {
          repository.delete(entity);
     }
 
-    public UsuarioFullContentDtoResponse me(){
+    /*public UsuarioFullContentDtoResponse me(){
 
         UsuarioCad usuarioAutenticado = (UsuarioCad) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -138,6 +138,6 @@ public class UsuarioService {
                 .toList();
 
         return new UsuarioFullContentDtoResponse(usuario, area, formacoes);
-    }
+    }*/
 
 }

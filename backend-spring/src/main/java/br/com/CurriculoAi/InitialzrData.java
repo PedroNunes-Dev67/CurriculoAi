@@ -1,8 +1,7 @@
 package br.com.CurriculoAi;
 
-import br.com.CurriculoAi.entities.AreaUser;
+import br.com.CurriculoAi.entities.Area;
 import br.com.CurriculoAi.entities.Role;
-import br.com.CurriculoAi.enums.IdiomaEnum;
 import br.com.CurriculoAi.enums.RoleEnum;
 import br.com.CurriculoAi.repositories.AreaUserRepository;
 import br.com.CurriculoAi.repositories.RoleRepository;
@@ -26,7 +25,7 @@ public class InitialzrData implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        AreaUser area1 = new AreaUser(null, "ADS");
+        Area area1 = new Area(null, "ADS");
 
         Role role1 = new Role(null, RoleEnum.ROLE_CANDIDATO);
         Role role2 = new Role(null, RoleEnum.ROLE_RECRUTADOR);

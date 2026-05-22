@@ -3,7 +3,7 @@ package br.com.CurriculoAi.DTO.request;
 import java.time.LocalDate;
 
 public record FormacaoDtoRequest(
-        String area,
+        Long id_area,
         String tipoFormacao,
         LocalDate dataInicio,
         LocalDate dataConclusao,

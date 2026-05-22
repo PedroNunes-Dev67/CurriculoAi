@@ -1,6 +1,5 @@
 package br.com.CurriculoAi.entities;
 
-import br.com.CurriculoAi.enums.IdiomaEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,16 +10,15 @@ import lombok.Setter;
 @Table
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class Idioma {
+@AllArgsConstructor
+public class Empresa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_idioma")
-    private long id;
+    @Column(name = "id_empresa")
+    private Long id;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private IdiomaEnum idioma;
+    private String nome;
 }

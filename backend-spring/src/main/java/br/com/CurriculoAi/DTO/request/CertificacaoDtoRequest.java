@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public record CertificacaoDtoRequest(
         String nomeCertificacao,
-        String instituicao,
+        Long id_instituicao,
         LocalDate dataConclusao,
         byte[] certificado
 ) {

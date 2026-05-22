@@ -1,9 +1,8 @@
 package br.com.CurriculoAi.services;
 
 import br.com.CurriculoAi.DTO.request.AreaUserAddDtoRequest;
-import br.com.CurriculoAi.DTO.response.FormacaoDtoResponse;
 import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
-import br.com.CurriculoAi.entities.AreaUser;
+import br.com.CurriculoAi.entities.Area;
 import br.com.CurriculoAi.entities.TokenIdentificacaoUsuario;
 import br.com.CurriculoAi.entities.UsuarioCad;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
@@ -12,8 +11,6 @@ import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
 import br.com.CurriculoAi.repositories.UsuarioCadRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class AreaUserService {
@@ -38,7 +35,7 @@ public class AreaUserService {
         //Pego usuário contido no token
         UsuarioCad usuario = tokenIdentificacao.getUsuarioCad();
 
-        AreaUser areaBuscada = areaUserRepository.findById(areaUserAddDtoRequest.idArea())
+        Area areaBuscada = areaUserRepository.findById(areaUserAddDtoRequest.idArea())
                 .orElseThrow(() -> new ResourceNotFoundException("Área com id "+areaUserAddDtoRequest.idArea()+" não encontrada"));
 
         usuario.setArea(areaBuscada);

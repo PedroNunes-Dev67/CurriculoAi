@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public record FormacaoDtoResponse(
         Long id,
-        String area,
+        AreaUserDTOResponse area,
         String tipoFormacao,
         LocalDate dataInicio,
         LocalDate dataConclusao,

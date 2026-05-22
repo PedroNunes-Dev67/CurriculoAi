@@ -31,8 +31,9 @@ public class UsuarioCad implements UserDetails {
 
     @ManyToOne
     @JoinColumn(name = "id_area")
-    private AreaUser area;
+    private Area area;
 
+    @Builder.Default
     @OneToMany(mappedBy = "usuarioCad", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<FormacaoUser> formacoes = new ArrayList<>();
 
@@ -42,6 +43,19 @@ public class UsuarioCad implements UserDetails {
             joinColumns = @JoinColumn(name = "id_user"),
             inverseJoinColumns = @JoinColumn(name = "id_role")
     )
+
+    @Builder.Default
+    @OneToMany(mappedBy = "usuario")
+    private List<IdiomasUser> idiomas = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "usuario")
+    private List<UsuarioRedeSocial> redeSocials = new ArrayList<>();
+
+    @OneToMany(mappedBy = "usuario")
+    @Builder.Default
+    private List<UsuarioHabilidade> habilidades = new ArrayList<>();
+
     @Builder.Default
     private Set<Role> roles = new HashSet<>();
 

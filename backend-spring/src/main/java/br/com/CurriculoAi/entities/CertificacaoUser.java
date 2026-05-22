@@ -23,8 +23,9 @@ public class CertificacaoUser {
     @Column(name = "nome_certificacao")
     private String nomeCertificacao;
 
-    @Column(name = "instituicao", nullable = false, length = 80)
-    private String instituicao;
+    @ManyToOne
+    @JoinColumn(name = "id_instituicao")
+    private Instituicao instituicao;
 
     @Column(name = "data_de_conclusao")
     private LocalDate dataConclusao;
