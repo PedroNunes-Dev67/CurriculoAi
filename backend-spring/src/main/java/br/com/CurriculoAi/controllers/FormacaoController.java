@@ -3,6 +3,7 @@ package br.com.CurriculoAi.controllers;
 import br.com.CurriculoAi.DTO.request.FormacaoDtoRequest;
 import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.services.FormacaoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/formacao")
+@Tag(name = "Formação Controller", description = "Responsável por controlar as ações relacionadas as formações do usuário")
 public class FormacaoController {
 
     private final FormacaoService formacaoService;

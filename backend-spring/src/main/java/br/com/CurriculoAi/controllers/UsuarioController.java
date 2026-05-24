@@ -6,6 +6,7 @@ import br.com.CurriculoAi.DTO.response.UsuarioFullContentDtoResponse;
 import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.entities.UsuarioCad;
 import br.com.CurriculoAi.services.UsuarioService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/usuario")
+@Tag(name = "Usuário Controller", description = "Responsável por controlar as ações relacionadas aos usuários")
 public class UsuarioController {
 
     @Autowired
