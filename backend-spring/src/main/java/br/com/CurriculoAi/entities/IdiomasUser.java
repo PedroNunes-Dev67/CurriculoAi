@@ -25,7 +25,7 @@ public class IdiomasUser {
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")
-    private UsuarioCad usuarioCad;
+    private UsuarioCad usuario;
 
     @ManyToOne
     @JoinColumn(name = "id_idioma")

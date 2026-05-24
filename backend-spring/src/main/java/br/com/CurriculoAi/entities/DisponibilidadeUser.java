@@ -19,23 +19,17 @@ public class DisponibilidadeUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_disponibilidade")
     private Long id;
 
     @Column(name = "disponibilidade_init", nullable = false)
     private LocalDate disponibilidadeInicio;
 
-    @Column(name = "carga_horaria", nullable = false)
-    private Integer cargaHoraria;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "modelo_trabalho", nullable = false)
     private ModeloDeTrabalho modeloTrabalho;
 
-    @Column(name = "tipo_contrato", nullable = false)
-    private String tipoContrato;
-
     @OneToOne
     @JoinColumn(name = "id_user", nullable = false)
     private UsuarioCad usuarioCad;
-
 }
