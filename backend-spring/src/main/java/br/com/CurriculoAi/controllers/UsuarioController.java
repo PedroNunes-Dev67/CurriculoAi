@@ -1,17 +1,21 @@
 package br.com.CurriculoAi.controllers;
 
-import br.com.CurriculoAi.DTO.LoginDto;
-import br.com.CurriculoAi.DTO.UsuarioCadDTO;
+import br.com.CurriculoAi.DTO.request.UsuarioDtoRequest;
+import br.com.CurriculoAi.DTO.response.LoginDtoResponse;
+import br.com.CurriculoAi.DTO.response.UsuarioFullContentDtoResponse;
+import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.entities.UsuarioCad;
 import br.com.CurriculoAi.services.UsuarioService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/usuario")
+@Tag(name = "Usuário Controller", description = "Responsável por controlar as ações relacionadas aos usuários")
 public class UsuarioController {
 
     @Autowired
@@ -26,37 +30,33 @@ public class UsuarioController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public UsuarioCadDTO createUsuario(@RequestBody UsuarioCadDTO usuarioCad){
-        return service.createUsuario(usuarioCad);
+    public ResponseEntity<UsuarioTokenIdentResponseDto> createUsuario(@RequestBody UsuarioDtoRequest usuarioCad){
+
+        UsuarioTokenIdentResponseDto usuario = service.createUsuario(usuarioCad);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDto loginDto){
+    public ResponseEntity<String> login(@RequestBody LoginDtoResponse loginDtoResponse){
 
-        String token = service.login(loginDto);
+        String token = service.login(loginDtoResponse);
 
         return ResponseEntity.ok(token);
     }
 
-    @PutMapping(value = "/update/{id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public UsuarioCadDTO updateUsuario(@RequestBody UsuarioCadDTO usuarioCadDTO, @PathVariable("id") Long id){
-        return service.updateUsuario(usuarioCadDTO);
-    }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteUsuario(@PathVariable("id") Long id){
+    public ResponseEntity<Void> deleteUsuario(@PathVariable("id") Long id){
 
         service.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UsuarioCadDTO> me(){
+    public ResponseEntity<UsuarioFullContentDtoResponse> me(){
 
-        UsuarioCadDTO usuario = service.me();
+        UsuarioFullContentDtoResponse usuario = service.me();
 
         return ResponseEntity.ok(usuario);
     }

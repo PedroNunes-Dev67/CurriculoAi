@@ -1,5 +1,6 @@
 package br.com.CurriculoAi.entities;
 
+import br.com.CurriculoAi.enums.TipoFormacao;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,11 +21,13 @@ public class FormacaoUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "area", nullable = false, length = 80)
-    private String area;
+    @ManyToOne
+    @JoinColumn(name = "area", nullable = false)
+    private Area area;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "tipo_formacao", nullable = false, length = 80)
-    private String tipoFormacao;
+    private TipoFormacao tipoFormacao;
 
     @Column(name = "data_inicio", nullable = false)
     private LocalDate dataInicio;

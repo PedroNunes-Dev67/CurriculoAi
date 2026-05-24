@@ -6,10 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -33,8 +30,24 @@ public class UsuarioCad implements UserDetails {
     private String senha;
 
     @ManyToOne
-    @JoinColumn(name = "id_area", nullable = false)
-    private AreaUser area;
+    @JoinColumn(name = "id_area")
+    private Area area;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "usuarioCad", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<FormacaoUser> formacoes = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "usuario")
+    private List<IdiomasUser> idiomas = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "usuario")
+    private List<UsuarioRedeSocial> redeSocials = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "usuario")
+    private List<UsuarioHabilidade> habilidades = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -44,6 +57,17 @@ public class UsuarioCad implements UserDetails {
     )
     @Builder.Default
     private Set<Role> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "usuarioCad", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<ExperienciaUser> experiencias = new ArrayList<>();
+
+    @OneToMany(mappedBy = "usuarioCad", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<CertificacaoUser> certificacoes = new ArrayList<>();
+
+    @OneToOne(mappedBy = "usuarioCad", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private DisponibilidadeUser disponibilidade;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

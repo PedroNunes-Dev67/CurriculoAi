@@ -22,11 +22,13 @@ public class ExperienciaUser {
     @Column(name = "id_experiencia")
     private Long id;
 
-    @Column(nullable = false)
-    private String area;
+    @ManyToOne
+    @JoinColumn(name = "id_area")
+    private Area area;
 
-    @Column(nullable = false)
-    private String empresa;
+    @ManyToOne
+    @JoinColumn(name = "id_empresa")
+    private Empresa empresa;
 
     @Column(name= "data_inicio", nullable = false)
     private LocalDate dataInicio;
@@ -38,7 +40,7 @@ public class ExperienciaUser {
     private LocalDate dataFim;
 
     @Column(nullable = false)
-    private String habilidades;
+    private String descricao;
 
     @Column(name = "trabalho_atual")
     private Boolean trabalhoAtual;

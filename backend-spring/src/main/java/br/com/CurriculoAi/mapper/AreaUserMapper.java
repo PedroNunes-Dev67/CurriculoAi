@@ -1,13 +1,12 @@
 package br.com.CurriculoAi.mapper;
 
-import br.com.CurriculoAi.DTO.AreaUserDTO;
-import br.com.CurriculoAi.entities.AreaUser;
+import br.com.CurriculoAi.DTO.response.AreaDTOResponse;
+import br.com.CurriculoAi.entities.Area;
+import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+@Mapper(componentModel = "spring")
 public interface AreaUserMapper {
 
-        @Mapping(target = "area", ignore = true)
-        AreaUserDTO toDTO(AreaUser entity);
-
-
-    }
+        AreaDTOResponse toDTO(Area area);
+}
