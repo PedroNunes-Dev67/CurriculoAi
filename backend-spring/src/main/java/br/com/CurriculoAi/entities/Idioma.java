@@ -22,5 +22,5 @@ public class Idioma {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private IdiomaEnum idioma;
+    private IdiomaEnum idiomaNome;
 }

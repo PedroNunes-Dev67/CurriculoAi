@@ -11,7 +11,7 @@ import org.mapstruct.Mapping;
         ExperienciaMapper.class,
         CertificacaoMapper.class,
         DisponibilidadeMapper.class,
-        IdiomaMapper.class,
+        IdiomaUserMapper.class,
         AreaUserMapper.class
 })
 public interface UsuarioMapper{
