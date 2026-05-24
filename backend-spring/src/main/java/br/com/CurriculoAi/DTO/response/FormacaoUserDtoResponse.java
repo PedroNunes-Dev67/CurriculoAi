@@ -1,16 +1,13 @@
 package br.com.CurriculoAi.DTO.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.time.LocalDate;
 
-public record FormacaoDtoResponse(
+public record FormacaoUserDtoResponse(
         Long id,
-        AreaUserDTOResponse area,
+        AreaDTOResponse area,
         String tipoFormacao,
         LocalDate dataInicio,
         LocalDate dataConclusao,
-        Boolean emAndamento,
-        UsuarioDtoResponse usuario
+        Boolean emAndamento
 ) {
 }

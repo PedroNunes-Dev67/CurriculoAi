@@ -1,9 +1,6 @@
 package br.com.CurriculoAi.services;
 
 import br.com.CurriculoAi.DTO.request.FormacaoDtoRequest;
-import br.com.CurriculoAi.DTO.response.AreaUserDTOResponse;
-import br.com.CurriculoAi.DTO.response.FormacaoDtoResponse;
-import br.com.CurriculoAi.DTO.response.UsuarioDtoResponse;
 import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.entities.Area;
 import br.com.CurriculoAi.entities.FormacaoUser;

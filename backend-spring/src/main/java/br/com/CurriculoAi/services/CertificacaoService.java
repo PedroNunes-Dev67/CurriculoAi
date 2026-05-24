@@ -60,13 +60,15 @@ public class CertificacaoService {
                     Instituicao instituicao = Optional.ofNullable(instituicoesPorId.get(certificacao.id_instituicao()))
                             .orElseThrow(() -> new ResourceNotFoundException("Instituição com id: "+certificacao.id_instituicao()+" não encontrada"));
 
+                    boolean emAndamento = certificacao.dataConclusao() == null;
+
                     CertificacaoUser certificacaoNova =  new CertificacaoUser(
                             null,
                             certificacao.nomeCertificacao(),
                             instituicao,
                             certificacao.dataConclusao(),
                             certificacao.certificado(),
-                            false,
+                            emAndamento,
                             usuario
                     );
 

@@ -1,5 +1,6 @@
 package br.com.CurriculoAi.entities;
 
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "certificacao_user")
+@Table
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,8 +31,7 @@ public class CertificacaoUser {
     @Column(name = "data_de_conclusao")
     private LocalDate dataConclusao;
 
-    @Lob //avisa ao hibernate que é um largeObject
-    @Column(name = "certificado", nullable = false)
+    @Column(name = "certificado", nullable = false, columnDefinition = "bytea")
     private byte[] certificado;
 
     @Column(name = "em_andamento")
@@ -43,6 +43,6 @@ public class CertificacaoUser {
 
     public void estaEmAndamento(){
 
-        this.emAndamento = this.dataConclusao != null;
+        this.emAndamento = this.dataConclusao == null;
     }
 }

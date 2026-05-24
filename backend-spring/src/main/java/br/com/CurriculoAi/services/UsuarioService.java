@@ -113,31 +113,15 @@ public class UsuarioService {
          repository.delete(entity);
     }
 
-    /*public UsuarioFullContentDtoResponse me(){
+    public UsuarioFullContentDtoResponse me(){
 
         UsuarioCad usuarioAutenticado = (UsuarioCad) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         UsuarioCad usuarioBuscado = repository.findById(usuarioAutenticado.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
-        UsuarioDtoResponse usuario = mapper.toDto(usuarioBuscado);
-        AreaUserDTOResponse area = new AreaUserDTOResponse(usuarioBuscado.getArea().getId(), usuarioBuscado.getArea().getNomeArea());
-        List<FormacaoDtoResponse> formacoes = usuarioBuscado.getFormacoes()
-                .stream()
-                .map(formacao -> {
-                    return new FormacaoDtoResponse(
-                            formacao.getId(),
-                            formacao.getArea(),
-                            formacao.getTipoFormacao(),
-                            formacao.getDataInicio(),
-                            formacao.getDataConclusao(),
-                            formacao.getEmAndamento(),
-                            usuario
-                    );
-                })
-                .toList();
+        UsuarioFullContentDtoResponse usuarioFullContentDtoResponse = mapper.toFullContentDto(usuarioBuscado);
 
-        return new UsuarioFullContentDtoResponse(usuario, area, formacoes);
-    }*/
-
+        return usuarioFullContentDtoResponse;
+    }
 }

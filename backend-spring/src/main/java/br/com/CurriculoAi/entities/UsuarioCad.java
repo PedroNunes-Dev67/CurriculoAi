@@ -37,13 +37,6 @@ public class UsuarioCad implements UserDetails {
     @OneToMany(mappedBy = "usuarioCad", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<FormacaoUser> formacoes = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "role_user",
-            joinColumns = @JoinColumn(name = "id_user"),
-            inverseJoinColumns = @JoinColumn(name = "id_role")
-    )
-
     @Builder.Default
     @OneToMany(mappedBy = "usuario")
     private List<IdiomasUser> idiomas = new ArrayList<>();
@@ -52,12 +45,29 @@ public class UsuarioCad implements UserDetails {
     @OneToMany(mappedBy = "usuario")
     private List<UsuarioRedeSocial> redeSocials = new ArrayList<>();
 
-    @OneToMany(mappedBy = "usuario")
     @Builder.Default
+    @OneToMany(mappedBy = "usuario")
     private List<UsuarioHabilidade> habilidades = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "role_user",
+            joinColumns = @JoinColumn(name = "id_user"),
+            inverseJoinColumns = @JoinColumn(name = "id_role")
+    )
     @Builder.Default
     private Set<Role> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "usuarioCad", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<ExperienciaUser> experiencias = new ArrayList<>();
+
+    @OneToMany(mappedBy = "usuarioCad", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<CertificacaoUser> certificacoes = new ArrayList<>();
+
+    @OneToOne(mappedBy = "usuarioCad", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private DisponibilidadeUser disponibilidade;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

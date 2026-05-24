@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.DTO.response;
 
-public record UsuarioDtoResponse (
+public record UsuarioCadDtoResponse(
         Long id,
         String nome,
         String email

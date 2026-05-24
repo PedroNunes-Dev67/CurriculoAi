@@ -36,8 +36,6 @@ public class ExperienciaService {
     @Transactional
     public UsuarioTokenIdentResponseDto cadastrarExperiencias(List<ExperienciaDtoRequest> experiencias, String token){
 
-        if (experiencias.isEmpty()) throw new ListIsEmptyException("Lista de experiências vazia");
-
         TokenIdentificacaoUsuario tokenIdentificacaoUsuario = tokenIdentificacaoUsurioRepository.findByToken(token)
                 .orElseThrow(() -> new ResourceNotFoundException("Token não encotrado"));
 

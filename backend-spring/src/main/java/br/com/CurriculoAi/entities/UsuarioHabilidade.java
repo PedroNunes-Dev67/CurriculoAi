@@ -23,6 +23,6 @@ public class UsuarioHabilidade {
     private UsuarioCad usuario;
 
     @ManyToOne
-    @JoinColumn(name = "id_usuario")
+    @JoinColumn(name = "id_habilidade")
     private Habilidade habilidade;
 }
