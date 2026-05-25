@@ -2,16 +2,15 @@ package br.com.CurriculoAi.services;
 
 import br.com.CurriculoAi.DTO.request.FormacaoDtoRequest;
 import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
-import br.com.CurriculoAi.entities.Area;
-import br.com.CurriculoAi.entities.FormacaoUser;
-import br.com.CurriculoAi.entities.TokenIdentificacaoUsuario;
-import br.com.CurriculoAi.entities.UsuarioCad;
+import br.com.CurriculoAi.entities.*;
 import br.com.CurriculoAi.enums.TipoFormacao;
 import br.com.CurriculoAi.exceptions.ListIsEmptyException;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.repositories.AreaUserRepository;
+import br.com.CurriculoAi.repositories.CursoRepository;
 import br.com.CurriculoAi.repositories.FormacaoUserRepository;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,19 +21,14 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class FormacaoService {
 
     private final FormacaoUserRepository formacaoUserRepository;
     private final TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository;
-    private final AreaUserRepository areaUserRepository;
+    private final CursoRepository cursoRepository;
 
-    public FormacaoService(FormacaoUserRepository formacaoUserRepository, TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository, AreaUserRepository areaUserRepository) {
-        this.formacaoUserRepository = formacaoUserRepository;
-        this.tokenIdentificacaoUsurioRepository = tokenIdentificacaoUsurioRepository;
-        this.areaUserRepository = areaUserRepository;
-    }
-
-    //Passo a lista contida no DTO da Area es o dados do método que está chamando
+    //Passo a lista contida no DTO do curso es o dados do método que está chamando
     @Transactional
     public UsuarioTokenIdentResponseDto addFormacaoUser(List<FormacaoDtoRequest> formacoes, String tokenIdentificacao){
 
@@ -47,29 +41,29 @@ public class FormacaoService {
         UsuarioCad usuario = token.getUsuarioCad();
 
         // Pegas todos os ids das áreas sem repetir
-        List<Long> idsAreas = formacoes
+        List<Long> idsCurso = formacoes
                 .stream()
-                .map(FormacaoDtoRequest::id_area)
+                .map(FormacaoDtoRequest::id_curso)
                 .distinct()
                 .toList();
 
-        //Busca todas as áreas no banco em mantém em 'cache'
-        Map<Long, Area> areasPorId = areaUserRepository
-                .findAllById(idsAreas)
+        //Busca todas os cursos no banco em mantém em 'cache'
+        Map<Long, Curso> cursosPorId = cursoRepository
+                .findAllById(idsCurso)
                 .stream()
-                .collect(Collectors.toMap(Area::getId, Function.identity()));
+                .collect(Collectors.toMap(Curso::getId, Function.identity()));
 
         List<FormacaoUser> formacoesSalvas = formacoes
                 .stream()
                 .map(formacao -> {
 
-                    //Busca no cache as áres do usuário, pode vir null ai por o Optional
-                    Area area = Optional.ofNullable(areasPorId.get(formacao.id_area()))
-                            .orElseThrow(() -> new ResourceNotFoundException("Área com id: "+formacao.id_area()+" não encontrada"));
+                    //Busca no cache os cursos do usuário, pode vir null ai por isso o Optional
+                    Curso curso = Optional.ofNullable(cursosPorId.get(formacao.id_curso()))
+                            .orElseThrow(() -> new ResourceNotFoundException("Curso com id: "+formacao.id_curso()+" não encontrado"));
 
                     return new FormacaoUser(
                             null,
-                            area,
+                            curso,
                             TipoFormacao.from(formacao.tipoFormacao()),
                             formacao.dataInicio(),
                             formacao.dataConclusao(),
