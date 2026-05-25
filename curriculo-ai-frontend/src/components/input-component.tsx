@@ -1,57 +1,123 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
+  Text,
   TextInputProps,
   TouchableOpacity,
-  View
+  View,
+  StyleSheet,
 } from "react-native";
 import MaskInput from "react-native-mask-input";
-import { GlobalStyles } from "../components/style";
+import { COLORS, RADIUS, SPACING, FONT, INPUT_WIDTH } from "./style";
 
-type inputProps = TextInputProps & {
+type InputProps = TextInputProps & {
   icone?: any;
   mask?: any;
+  label?: string;
+  erro?: string;
 };
 
-export function Input({ icone, secureTextEntry, mask, ...rest }: inputProps) {
+export function Input({ icone, secureTextEntry, mask, label, erro, ...rest }: InputProps) {
   const [isSecure, setIsSecure] = useState(secureTextEntry);
+  const [focused, setFocused] = useState(false);
+
+  const borderColor = erro
+    ? COLORS.borderError
+    : focused
+    ? COLORS.borderFocus
+    : COLORS.border;
 
   return (
-    <View style={GlobalStyles.inputTS}>
-      {icone && (
-        <View
-          style={{
-            backgroundColor: "#3498db",
-            borderRadius: 50,
-            padding: 8,
-            marginRight: 10,
-          }}
-        >
-          <MaterialCommunityIcons name={icone} size={20} color="white" />
-        </View>
-      )}
+    <View style={styles.wrapper}>
+      {label && <Text style={styles.label}>{label}</Text>}
 
-      <MaskInput
-        mask={mask}
-        style={[GlobalStyles.inputTextDentro, { flex: 1 }]}
-        secureTextEntry={isSecure}
-        {...rest}
-      />
+      <View
+        style={[
+          styles.container,
+          { borderColor },
+          focused && styles.containerFocused,
+        ]}
+      >
+        {icone && (
+          <View style={styles.iconeWrapper}>
+            <MaterialCommunityIcons name={icone} size={18} color={focused ? COLORS.accent : COLORS.textMuted} />
+          </View>
+        )}
 
-      {secureTextEntry !== undefined && (
-        <TouchableOpacity
-          onPress={() => setIsSecure(!isSecure)}
-          style={{ paddingHorizontal: 10, justifyContent: "center" }}
-        >
-          <MaterialCommunityIcons
-            name={isSecure ? "eye-off" : "eye"}
-            size={24}
-            color="#777" // Pode mudar a cor se preferir
-          />
-        </TouchableOpacity>
-      )}
+        <MaskInput
+          mask={mask}
+          style={styles.input}
+          secureTextEntry={isSecure}
+          placeholderTextColor={COLORS.textPlaceholder}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          {...rest}
+        />
+
+        {secureTextEntry !== undefined && (
+          <TouchableOpacity
+            onPress={() => setIsSecure(!isSecure)}
+            style={styles.eyeButton}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <MaterialCommunityIcons
+              name={isSecure ? "eye-off-outline" : "eye-outline"}
+              size={20}
+              color={COLORS.textMuted}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {erro ? <Text style={styles.erroTexto}>{erro}</Text> : null}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  wrapper: {
+    width: INPUT_WIDTH,
+    marginTop: SPACING.sm,
+  },
+  label: {
+    color: COLORS.textSecondary,
+    fontSize: FONT.xs,
+    fontWeight: "600",
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+    marginBottom: 6,
+  },
+  container: {
+    height: 54,
+    backgroundColor: COLORS.bgInput,
+    borderWidth: 1.5,
+    borderRadius: RADIUS.md,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: SPACING.md,
+  },
+  containerFocused: {
+    backgroundColor: COLORS.bgInputFocus,
+  },
+  iconeWrapper: {
+    marginRight: SPACING.sm,
+  },
+  input: {
+    flex: 1,
+    height: "100%",
+    color: COLORS.textPrimary,
+    fontSize: FONT.md,
+  },
+  eyeButton: {
+    paddingHorizontal: SPACING.sm,
+    justifyContent: "center",
+  },
+  erroTexto: {
+    color: COLORS.textError,
+    fontSize: FONT.xs,
+    marginTop: 4,
+    marginLeft: 2,
+  },
+});
 
 export default Input;

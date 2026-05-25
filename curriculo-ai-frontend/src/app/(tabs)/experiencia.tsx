@@ -1,327 +1,315 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import {
-  Alert,
   Modal,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { Input } from "../../components/input-component";
-import { GlobalStyles } from "../../components/style";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import ButtonConfirm from "../../components/button-confirm-compent";
+import Checkbox from "../../components/checkbox";
+import SelectModal from "../../components/select-modal";
+import StepHeader from "../../components/step-header";
+import { COLORS, FONT, INPUT_WIDTH, RADIUS, SPACING } from "../../components/style";
 
-// Tipos
-
+// ─── Tipos ────────────────────────────────────────────────────────────────────
 type Experiencia = {
   cargo: string;
   empresa: string;
-  inicio: string;
-  termino: string;
+  empresaOutra?: string; // Auxiliar para quando o usuário seleciona "Outra"
+  inicio: Date | null;
+  termino: Date | null;
   atual: boolean;
   area: string;
 };
 
-// Cargos
-
-const CARGOS = [
-  "Analista de Sistemas",
-  "Analista de Dados",
-  "Analista de Marketing",
-  "Analista Financeiro",
-  "Analista de RH",
-  "Assistente Administrativo",
-  "Assistente de TI",
-  "Auxiliar de Escritório",
-  "Desenvolvedor Front-end",
-  "Desenvolvedor Back-end",
-  "Desenvolvedor Full Stack",
-  "Desenvolvedor Mobile",
-  "Designer Gráfico",
-  "Designer UX/UI",
-  "Engenheiro de Software",
-  "Gerente de Projetos",
-  "Gerente Comercial",
-  "Gestor de TI",
-  "Product Manager",
-  "Scrum Master",
-  "Suporte Técnico",
-  "Técnico em Informática",
-  "Vendedor",
-  "Outro",
-];
-
 const estadoInicial: Experiencia = {
   cargo: "",
   empresa: "",
-  inicio: "",
-  termino: "",
+  empresaOutra: "",
+  inicio: null,
+  termino: null,
   atual: false,
   area: "",
 };
 
-// Condições de Datas
+// ─── Listas de Seleção ────────────────────────────────────────────────────────
+const CARGOS = [
+  { label: "Desenvolvedor Frontend", value: "Desenvolvedor Frontend" },
+  { label: "Desenvolvedor Backend", value: "Desenvolvedor Backend" },
+  { label: "Desenvolvedor Full Stack", value: "Desenvolvedor Full Stack" },
+  { label: "Desenvolvedor Mobile", value: "Desenvolvedor Mobile" },
+  { label: "Engenheiro de Software", value: "Engenheiro de Software" },
+  { label: "Arquiteto de Software", value: "Arquiteto de Software" },
+  { label: "Engenheiro DevOps", value: "Engenheiro DevOps" },
+  { label: "SRE (Site Reliability Engineer)", value: "SRE" },
+  { label: "Engenheiro de Dados", value: "Engenheiro de Dados" },
+  { label: "Cientista de Dados", value: "Cientista de Dados" },
+  { label: "Analista de QA", value: "Analista de QA" },
+  { label: "Product Manager", value: "Product Manager" },
+  { label: "Scrum Master / Agile Coach", value: "Scrum Master" },
+  { label: "Tech Lead", value: "Tech Lead" },
+  { label: "Designer UI/UX", value: "Designer UI/UX" },
+  { label: "Estágio em Desenvolvimento", value: "Estágio em Desenvolvimento" },
+  { label: "Outro", value: "Outro" },
+];
 
-function aplicarMascaraData(valor: string): string {
-  const numeros = valor.replace(/\D/g, "");
-  if (numeros.length <= 2) return numeros;
-  return `${numeros.slice(0, 2)}/${numeros.slice(2, 6)}`;
-}
+const AREAS = [
+  { label: "Backend", value: "Backend" },
+  { label: "Frontend", value: "Frontend" },
+  { label: "Full Stack", value: "Full Stack" },
+  { label: "Mobile", value: "Mobile" },
+  { label: "DevOps / SRE", value: "DevOps" },
+  { label: "Data Engineering", value: "Data Engineering" },
+  { label: "QA / Testes", value: "QA" },
+  { label: "UI/UX Engineering", value: "UI/UX Engineering" },
+  { label: "Software Engineering", value: "Software Engineering" },
+  { label: "Segurança / CyberSec", value: "Segurança" },
+  { label: "Machine Learning / IA", value: "Machine Learning" },
+];
 
-function dataValida(valor: string): boolean {
-  if (!/^\d{2}\/\d{4}$/.test(valor)) return false;
-  const [mes, ano] = valor.split("/").map(Number);
-  if (mes < 1 || mes > 12) return false;
-  if (ano < 1900 || ano > 2100) return false;
-  return true;
-}
+const EMPRESAS_TECH = [
+  { label: "Google", value: "Google" },
+  { label: "Microsoft", value: "Microsoft" },
+  { label: "Amazon / AWS", value: "Amazon / AWS" },
+  { label: "Meta", value: "Meta" },
+  { label: "Apple", value: "Apple" },
+  { label: "Netflix", value: "Netflix" },
+  { label: "Uber", value: "Uber" },
+  { label: "Nubank", value: "Nubank" },
+  { label: "Mercado Livre", value: "Mercado Livre" },
+  { label: "Itaú", value: "Itaú" },
+  { label: "iFood", value: "iFood" },
+  { label: "IBM", value: "IBM" },
+  { label: "Oracle", value: "Oracle" },
+  { label: "Outra", value: "Outra" },
+];
 
-// Indicadores de Progresso 1-4
+// ─── Componentes Auxiliares ───────────────────────────────────────────────────
 
-function ProgressIndicator({ etapaAtual }: { etapaAtual: number }) {
-  return (
-    <View style={styles.progressContainer}>
-      {[1, 2, 3, 4, 5].map((etapa) => {
-        const isAtual = etapa === etapaAtual;
-        return (
-          <View
-            key={etapa}
-            style={{ flexDirection: "row", alignItems: "center" }}
-          >
-            {etapa > 1 && (
-              <View
-                style={[
-                  styles.progressLine,
-                  {
-                    backgroundColor:
-                      etapa <= etapaAtual ? "#fff" : "rgba(255,255,255,0.3)",
-                  },
-                ]}
-              />
-            )}
-            <View
-              style={[
-                styles.progressCircle,
-                isAtual
-                  ? styles.progressCircleAtual
-                  : styles.progressCircleInativa,
-              ]}
-            >
-              <Text
-                style={[
-                  styles.progressText,
-                  { color: isAtual ? "#1a6dcc" : "rgba(255,255,255,0.7)" },
-                ]}
-              >
-                {etapa}
-              </Text>
-            </View>
-          </View>
-        );
-      })}
-    </View>
-  );
-}
-
-// Seletor de Cargo (Checkbox)
-
-type CargoSelectorProps = {
-  valorSelecionado: string;
-  onSelecionar: (cargo: string) => void;
+type TextInputInlineProps = {
+  placeholder: string;
+  value: string;
+  onChangeText: (text: string) => void;
 };
 
-function CargoSelector({ valorSelecionado, onSelecionar }: CargoSelectorProps) {
-  const [modalAberto, setModalAberto] = useState(false);
-
+function TextInputInline({ placeholder, value, onChangeText }: TextInputInlineProps) {
   return (
-    <>
-      <TouchableOpacity
-        style={styles.selectorBotao}
-        onPress={() => setModalAberto(true)}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.selectorIcone}>💼</Text>
-        <Text
-          style={[styles.selectorTexto, !valorSelecionado && { color: "#777" }]}
-        >
-          {valorSelecionado || "Selecione o cargo"}
-        </Text>
-        <Text style={styles.selectorSeta}>▼</Text>
-      </TouchableOpacity>
-
-      <Modal
-        visible={modalAberto}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setModalAberto(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitulo}>Selecione o Cargo</Text>
-              <TouchableOpacity onPress={() => setModalAberto(false)}>
-                <Text style={styles.modalFechar}>✕</Text>
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView
-              style={{ maxHeight: 380 }}
-              showsVerticalScrollIndicator={false}
-            >
-              {CARGOS.map((cargo) => {
-                const selecionado = cargo === valorSelecionado;
-                return (
-                  <TouchableOpacity
-                    key={cargo}
-                    style={[
-                      styles.modalOpcao,
-                      selecionado && styles.modalOpcaoSelecionada,
-                    ]}
-                    onPress={() => {
-                      onSelecionar(cargo);
-                      setModalAberto(false);
-                    }}
-                  >
-                    <Text
-                      style={[
-                        styles.modalOpcaoTexto,
-                        selecionado && styles.modalOpcaoTextoSelecionado,
-                      ]}
-                    >
-                      {cargo}
-                    </Text>
-                    {selecionado && <Text style={styles.modalCheck}>✓</Text>}
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
-    </>
+    <TextInput
+      style={{
+        flex: 1,
+        color: COLORS.textPrimary,
+        fontSize: FONT.md,
+        height: 54,
+        marginLeft: 0,
+      }}
+      placeholder={placeholder}
+      placeholderTextColor={COLORS.textPlaceholder}
+      value={value}
+      onChangeText={onChangeText}
+    />
   );
 }
 
-// Componente: Checkbox
-
-type CheckboxProps = {
-  marcado: boolean;
-  onToggle: () => void;
+function DateField({
+  label,
+  value,
+  onChange,
+  erro,
+}: {
   label: string;
-};
+  value: Date | null;
+  onChange: (d: Date) => void;
+  erro?: string;
+}) {
+  const [show, setShow] = useState(false);
+  const [tempDate, setTempDate] = useState(value || new Date());
 
-function Checkbox({ marcado, onToggle, label }: CheckboxProps) {
+  const formatted = value
+    ? value.toLocaleDateString("pt-BR", { month: "2-digit", year: "numeric" })
+    : null;
+
+  const handleConfirmIOS = () => {
+    onChange(tempDate);
+    setShow(false);
+  };
+
+  const handleCancelIOS = () => {
+    setTempDate(value || new Date());
+    setShow(false);
+  };
+
   return (
-    <TouchableOpacity
-      style={styles.checkboxContainer}
-      onPress={onToggle}
-      activeOpacity={0.7}
-    >
-      <View
-        style={[styles.checkboxCaixa, marcado && styles.checkboxCaixaMarcada]}
+    <View style={{ width: INPUT_WIDTH, marginTop: SPACING.sm }}>
+      <Text style={df.label}>{label}</Text>
+      
+      <TouchableOpacity
+        style={[df.dateField, erro && { borderColor: COLORS.borderError }]}
+        onPress={() => {
+          setTempDate(value || new Date());
+          setShow(true);
+        }}
+        activeOpacity={0.75}
       >
-        {marcado && <Text style={styles.checkboxMarca}>✓</Text>}
-      </View>
-      <Text style={styles.checkboxLabel}>{label}</Text>
-    </TouchableOpacity>
-  );
-}
+        <MaterialCommunityIcons
+          name="calendar-outline"
+          size={18}
+          color={value ? COLORS.accent : COLORS.textMuted}
+          style={{ marginRight: SPACING.sm }}
+        />
+        <Text style={[df.dateText, !value && df.datePlaceholder]}>
+          {formatted || "MM/AAAA"}
+        </Text>
+      </TouchableOpacity>
+      
+      {erro ? <Text style={df.erro}>{erro}</Text> : null}
 
-// Card de Experiência Salva
+      {show && Platform.OS === "android" && (
+        <DateTimePicker
+          value={value || new Date()}
+          mode="date"
+          display="default"
+          onChange={(event, selectedDate) => {
+            setShow(false);
+            if (event.type === "set" && selectedDate) {
+              onChange(selectedDate);
+            }
+          }}
+        />
+      )}
 
-function CardSalvo({ exp, numero }: { exp: Experiencia; numero: number }) {
-  return (
-    <View style={styles.cardSalvo}>
-      <View style={styles.cardSalvoHeader}>
-        <Text style={styles.cardSalvoNumero}>✅ Experiência {numero}</Text>
-      </View>
-      <Text style={styles.cardSalvoCargo}>{exp.cargo}</Text>
-      <Text style={styles.cardSalvoEmpresa}>
-        {exp.empresa} · {exp.area}
-      </Text>
-      <Text style={styles.cardSalvoPeriodo}>
-        {exp.inicio} → {exp.atual ? "Atualmente" : exp.termino}
-      </Text>
+      {show && Platform.OS === "ios" && (
+        <Modal transparent={true} animationType="slide" visible={show}>
+          <TouchableOpacity 
+            style={df.modalOverlay} 
+            activeOpacity={1} 
+            onPress={handleCancelIOS}
+          >
+            <View 
+              style={df.modalContent} 
+              onStartShouldSetResponder={() => true}
+            >
+              <View style={df.modalHeader}>
+                <TouchableOpacity onPress={handleCancelIOS} style={df.modalBtn}>
+                  <Text style={df.modalCancelText}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleConfirmIOS} style={df.modalBtn}>
+                  <Text style={df.modalConfirmText}>Confirmar</Text>
+                </TouchableOpacity>
+              </View>
+
+              <DateTimePicker
+                value={tempDate}
+                mode="date"
+                display="spinner"
+                textColor="#000000"
+                themeVariant="light"
+                onChange={(_, selectedDate) => {
+                  if (selectedDate) setTempDate(selectedDate);
+                }}
+                style={df.iosPicker}
+              />
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      )}
     </View>
   );
 }
 
-// Tela Principal: Tela de Experiência
+function CardSalvo({ exp, numero, onRemover }: { exp: Experiencia; numero: number; onRemover: () => void }) {
+  const inicio = exp.inicio?.toLocaleDateString("pt-BR", { month: "2-digit", year: "numeric" }) || "";
+  const termino = exp.atual
+    ? "Presente"
+    : exp.termino?.toLocaleDateString("pt-BR", { month: "2-digit", year: "numeric" }) || "";
 
-export default function Etapa3() {
-  const insets = useSafeAreaInsets();
+  return (
+    <View style={cs.card}>
+      <View style={cs.leftBar} />
+      <View style={cs.content}>
+        <View style={cs.headerRow}>
+          <Text style={cs.label}>✓ Experiência {numero}</Text>
+          <TouchableOpacity onPress={onRemover} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <MaterialCommunityIcons name="trash-can-outline" size={18} color={COLORS.borderError} />
+          </TouchableOpacity>
+        </View>
+        <Text style={cs.cargo}>{exp.cargo}</Text>
+        <Text style={cs.empresa}>{exp.empresa} · {exp.area}</Text>
+        <Text style={cs.periodo}>{inicio} → {termino}</Text>
+      </View>
+    </View>
+  );
+}
+
+// ─── Tela principal ───────────────────────────────────────────────────────────
+export default function Experiencia() {
   const [experiencias, setExperiencias] = useState<Experiencia[]>([]);
   const [card, setCard] = useState<Experiencia>(estadoInicial);
-  const [erros, setErros] = useState<
-    Partial<Record<keyof Experiencia, string>>
-  >({});
+  const [erros, setErros] = useState<Partial<Record<keyof Experiencia, string>>>({});
 
-  function atualizar<K extends keyof Experiencia>(
-    campo: K,
-    valor: Experiencia[K],
-  ) {
+  function atualizar<K extends keyof Experiencia>(campo: K, valor: Experiencia[K]) {
     setCard((prev) => ({ ...prev, [campo]: valor }));
     setErros((prev) => ({ ...prev, [campo]: undefined }));
   }
 
-  function handleData(campo: "inicio" | "termino", valor: string) {
-    const mascarado = aplicarMascaraData(valor);
-    atualizar(campo, mascarado);
+  function removerExperiencia(index: number) {
+    setExperiencias((prev) => prev.filter((_, i) => i !== index));
   }
 
-  function validarCard(): boolean {
-    const novosErros: Partial<Record<keyof Experiencia, string>> = {};
-
-    if (!card.cargo) novosErros.cargo = "Selecione um cargo.";
-    if (!card.empresa.trim()) novosErros.empresa = "Informe a empresa.";
-    if (!card.area.trim()) novosErros.area = "Informe a área de atuação.";
-
-    if (!card.inicio) {
-      novosErros.inicio = "Informe a data de início.";
-    } else if (!dataValida(card.inicio)) {
-      novosErros.inicio = "Use o formato MM/AAAA.";
+  function validar(): boolean {
+    const e: Partial<Record<keyof Experiencia, string>> = {};
+    if (!card.cargo) e.cargo = "Selecione um cargo.";
+    
+    if (!card.empresa) {
+      e.empresa = "Selecione a empresa.";
+    } else if (card.empresa === "Outra" && (!card.empresaOutra || !card.empresaOutra.trim())) {
+      e.empresa = "Especifique o nome da empresa.";
     }
 
+    if (!card.area) e.area = "Selecione a área de atuação.";
+    if (!card.inicio) e.inicio = "Informe a data de início.";
+    
     if (!card.atual) {
       if (!card.termino) {
-        novosErros.termino = "Informe a data de término.";
-      } else if (!dataValida(card.termino)) {
-        novosErros.termino = "Use o formato MM/AAAA.";
+        e.termino = "Informe a data de término.";
+      } else if (card.inicio && card.termino && card.inicio > card.termino) {
+        e.termino = "Término não pode ser antes do início.";
       }
     }
-
-    setErros(novosErros);
-    return Object.keys(novosErros).length === 0;
+    
+    setErros(e);
+    return Object.keys(e).length === 0;
   }
 
-  function handleAdicionarExperiencia() {
-    if (!validarCard()) return;
-    setExperiencias((prev) => [...prev, card]);
+  function handleAdicionar() {
+    if (!validar()) return;
+    if (experiencias.length >= 15) return; // Regra de limite
+
+    // Resolve a empresa "Outra" para o nome exato digitado antes de salvar
+    const expFinal: Experiencia = {
+      ...card,
+      empresa: card.empresa === "Outra" ? (card.empresaOutra || "") : card.empresa,
+    };
+
+    setExperiencias((prev) => [...prev, expFinal]);
     setCard(estadoInicial);
     setErros({});
   }
 
-  function handleConcluido() {
-    const cardSujo =
-      card.cargo || card.empresa || card.inicio || card.termino || card.area;
-
-    if (cardSujo && experiencias.length === 0) {
-      if (!validarCard()) return;
-      router.navigate("/certificacoes");
-      return;
-    }
-
-    if (experiencias.length === 0 && !cardSujo) {
-      Alert.alert(
-        "Sem experiências",
-        'Adicione pelo menos uma experiência ou clique em "Não tenho experiência".',
-      );
-      return;
-    }
-
+  function handleProximo() {
+    // Retira o campo 'empresaOutra' do payload, mandando a lista limpa para o Axios
+    const payload = {
+      experiencias: experiencias.map(({ empresaOutra, ...dados }) => dados)
+    };
+    console.log("Payload de Experiências para o Spring Boot:", payload);
+    
     router.navigate("/certificacoes");
   }
 
@@ -329,419 +317,212 @@ export default function Etapa3() {
     router.navigate("/certificacoes");
   }
 
-  const numeroAtual = experiencias.length + 1;
-  const temExperiencias = experiencias.length > 0;
+  const temExp = experiencias.length > 0;
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#000c26" }}>
-      <StatusBar style="light" backgroundColor="#000c26" />
+    <View style={{ flex: 1, backgroundColor: COLORS.bg }}>
+      <StatusBar style="light" />
       <ScrollView
-        contentContainerStyle={[
-          styles.scroll,
-          {
-            paddingTop: insets.top + 40,
-            paddingBottom: insets.bottom + 0,
-          },
-        ]}
+        contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
-        automaticallyAdjustContentInsets={false}
-        contentInsetAdjustmentBehavior="never"
       >
-        <Text style={GlobalStyles.titulo}>Experiências</Text>
+        <StepHeader
+          etapa={3}
+          titulo="Experiência"
+          descricao="Adicione sua experiência profissional em tecnologia."
+          etapaLabel="Etapa 3 de 5 · Experiência"
+        />
 
-        <ProgressIndicator etapaAtual={3} />
-
+        {/* Cards salvos */}
         {experiencias.map((exp, i) => (
-          <CardSalvo key={i} exp={exp} numero={i + 1} />
+          <CardSalvo key={i} exp={exp} numero={i + 1} onRemover={() => removerExperiencia(i)} />
         ))}
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitulo}>Experiência {numeroAtual}</Text>
+        <View style={styles.sectionDivider}>
+          <View style={styles.sectionLine} />
+          <Text style={styles.sectionLabel}>
+            {temExp ? `Adicionar Experiência ${experiencias.length + 1}` : "Adicionar Experiência 1"}
+          </Text>
+          <View style={styles.sectionLine} />
+        </View>
 
-          <Text style={styles.labelCampo}>Cargo *</Text>
-          <CargoSelector
-            valorSelecionado={card.cargo}
-            onSelecionar={(c) => atualizar("cargo", c)}
+        {/* Form de nova experiência (Sem box restritiva) */}
+        <View style={styles.formContainer}>
+
+          <SelectModal
+            label="Cargo"
+            options={CARGOS}
+            value={card.cargo}
+            onSelect={(v) => atualizar("cargo", v)}
+            placeholder="Selecione seu cargo"
+            icone="briefcase-outline"
+            erro={erros.cargo}
           />
-          {erros.cargo && <Text style={styles.erro}>{erros.cargo}</Text>}
 
-          <Text style={styles.labelCampo}>Empresa *</Text>
-          <Input
-            placeholder="Nome da empresa"
-            placeholderTextColor="#777"
-            keyboardType="default"
-            autoCapitalize="words"
+          <SelectModal
+            label="Empresa"
+            options={EMPRESAS_TECH}
             value={card.empresa}
-            onChangeText={(v: string) => atualizar("empresa", v)}
+            onSelect={(v) => {
+              atualizar("empresa", v);
+              if (v !== "Outra") atualizar("empresaOutra", "");
+            }}
+            placeholder="Selecione a empresa"
+            icone="office-building-outline"
+            erro={erros.empresa}
           />
-          {erros.empresa && <Text style={styles.erro}>{erros.empresa}</Text>}
 
-          <Text style={styles.labelCampo}>Área de atuação *</Text>
-          <Input
-            placeholder="Ex: Tecnologia, Saúde, Finanças..."
-            placeholderTextColor="#777"
-            keyboardType="default"
-            autoCapitalize="words"
-            value={card.area}
-            onChangeText={(v: string) => atualizar("area", v)}
-          />
-          {erros.area && <Text style={styles.erro}>{erros.area}</Text>}
-
-          <View style={styles.linha}>
-            <View style={styles.metade}>
-              <Text style={styles.labelCampo}>Início *</Text>
-              <Input
-                icone="calendar-today"
-                placeholder="MM/AAAA"
-                placeholderTextColor="#777"
-                keyboardType="numeric"
-                autoCapitalize="none"
-                maxLength={7}
-                value={card.inicio}
-                onChangeText={(v: string) => handleData("inicio", v)}
-              />
-              {erros.inicio && <Text style={styles.erro}>{erros.inicio}</Text>}
+          {card.empresa === "Outra" && (
+            <View style={{ width: INPUT_WIDTH, marginTop: SPACING.sm }}>
+              <TouchableOpacity style={[styles.inputBox, erros.empresa && { borderColor: COLORS.borderError }]} activeOpacity={1}>
+                <TextInputInline
+                  placeholder="Qual o nome da empresa?"
+                  value={card.empresaOutra || ""}
+                  onChangeText={(v) => atualizar("empresaOutra", v)}
+                />
+              </TouchableOpacity>
             </View>
+          )}
 
-            <View 
-  style={[styles.metade, card.atual && styles.inputDesabilitado]}
-  pointerEvents={card.atual ? "none" : "auto"}
->
-  <Text style={styles.labelCampo}>
-    Término {card.atual ? "" : "*"}
-  </Text>
-  <Input
-    icone="calendar-today"
-    placeholder="MM/AAAA"
-    placeholderTextColor="#777"
-    keyboardType="numeric"
-    autoCapitalize="none"
-    maxLength={7}
-    value={card.atual ? "" : card.termino}
-    onChangeText={(v: string) => handleData("termino", v)}
-  />
-  {erros.termino && !card.atual && (
-    <Text style={styles.erro}>{erros.termino}</Text>
-  )}
-</View>
-          </View>
+          <SelectModal
+            label="Área de Atuação"
+            options={AREAS}
+            value={card.area}
+            onSelect={(v) => atualizar("area", v)}
+            placeholder="Selecione sua área"
+            icone="code-tags"
+            erro={erros.area}
+          />
+
+          <DateField
+            label="Data de Início"
+            value={card.inicio}
+            onChange={(d) => atualizar("inicio", d)}
+            erro={erros.inicio}
+          />
+
+          {!card.atual && (
+            <DateField
+              label="Data de Término"
+              value={card.termino}
+              onChange={(d) => atualizar("termino", d)}
+              erro={erros.termino}
+            />
+          )}
 
           <Checkbox
-            marcado={card.atual}
-            onToggle={() => {
-              atualizar("atual", !card.atual);
-              if (!card.atual) {
-                atualizar("termino", "");
-                setErros((prev) => ({ ...prev, termino: undefined }));
-              }
-            }}
             label="Trabalho aqui atualmente"
+            checked={card.atual}
+            onToggle={() => {
+              const novoEstado = !card.atual;
+              atualizar("atual", novoEstado);
+              if (novoEstado) atualizar("termino", null);
+            }}
           />
         </View>
 
-        <TouchableOpacity
-          style={styles.botaoAdicionar}
-          onPress={handleAdicionarExperiencia}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.botaoAdicionarTexto}>
-            + Adicionar Experiência
-          </Text>
-        </TouchableOpacity>
-
-        {!temExperiencias && (
-          <TouchableOpacity
-            style={styles.botaoSemExp}
-            onPress={handleSemExperiencia}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.botaoSemExpTexto}>Não tenho experiência</Text>
+        {/* Regra de Ocultar Botão se limite de 15 for atingido */}
+        {experiencias.length < 15 && (
+          <TouchableOpacity onPress={handleAdicionar} style={styles.btnAdicionar}>
+            <Text style={styles.btnAdicionarTexto}>+ Adicionar Experiência</Text>
           </TouchableOpacity>
         )}
 
-        {temExperiencias && (
-          <TouchableOpacity
-            style={styles.botaoConcluido}
-            onPress={handleConcluido}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.botaoConcluidoTexto}>Concluído →</Text>
-          </TouchableOpacity>
+        {temExp ? (
+          <ButtonConfirm text="Próximo →" onPress={handleProximo} />
+        ) : (
+          <ButtonConfirm text="Não tenho experiência" variant="ghost" onPress={handleSemExperiencia} />
         )}
 
-        <View style={styles.espacoFinal} />
+        <View style={{ height: 60 }} />
       </ScrollView>
     </View>
   );
 }
 
-// Estilos
-
+// ─── Estilos ──────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   scroll: {
-    paddingHorizontal: 20,
+    alignItems: "center",
+    paddingHorizontal: SPACING.lg,
     paddingBottom: 80,
-    width: "100%",
   },
-  progressContainer: {
+  sectionDivider: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    marginVertical: 16,
-    gap: 8,
+    width: INPUT_WIDTH,
+    marginTop: SPACING.xl,
+    marginBottom: SPACING.sm,
+    gap: SPACING.sm,
   },
-  progressLine: {
-    width: 24,
-    height: 2,
-    marginRight: 8,
+  sectionLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: COLORS.border,
   },
-  progressCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  progressCircleAtual: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#fff",
-  },
-  progressCircleInativa: {
-    backgroundColor: "rgba(255,255,255,0.25)",
-    borderWidth: 1.5,
-    borderColor: "rgba(255,255,255,0.5)",
-  },
-  progressText: {
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  card: {
-    width: "100%",
-    backgroundColor: "rgba(255,255,255,0.1)",
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.2)",
-  },
-  cardTitulo: {
-    color: "#fff",
-    fontSize: 17,
-    fontWeight: "bold",
-    marginBottom: 14,
-    letterSpacing: 0.3,
-  },
-  labelCampo: {
-    color: "rgba(255,255,255,0.8)",
-    fontSize: 13,
-    marginBottom: 4,
-    marginTop: 10,
+  sectionLabel: {
+    color: COLORS.textMuted,
+    fontSize: FONT.xs,
     fontWeight: "600",
-  },
-  linha: {
-    flexDirection: "column",
-    alignItems: "flex-start",
-    gap: 8,
-  },
-  metade: {
-    width: "100%",
-  },
-  inputDesabilitado: {
-    opacity: 0.4,
-  },
-  erro: {
-    color: "#ffcdd2",
-    fontSize: 12,
-    marginTop: 3,
-    marginLeft: 4,
-  },
-  selectorBotao: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    marginVertical: 4,
-    width: "100%",
-  },
-  selectorIcone: {
-    fontSize: 16,
-    marginRight: 10,
-  },
-  selectorTexto: {
-    flex: 1,
-    color: "#333",
-    fontSize: 15,
-  },
-  selectorSeta: {
-    color: "#888",
-    fontSize: 11,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.55)",
-    justifyContent: "flex-end",
-  },
-  modalContainer: {
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 36,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  modalTitulo: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#1a1a2e",
-  },
-  modalFechar: {
-    fontSize: 18,
-    color: "#888",
-    padding: 4,
-  },
-  modalOpcao: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 13,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    marginBottom: 4,
-  },
-  modalOpcaoSelecionada: {
-    backgroundColor: "#e8f0fe",
-  },
-  modalOpcaoTexto: {
-    flex: 1,
-    fontSize: 15,
-    color: "#333",
-  },
-  modalOpcaoTextoSelecionado: {
-    color: "#1a6dcc",
-    fontWeight: "600",
-  },
-  modalCheck: {
-    color: "#1a6dcc",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 14,
-    marginBottom: 4,
-    gap: 10,
-  },
-  checkboxCaixa: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: "rgba(255,255,255,0.7)",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "transparent",
-  },
-  checkboxCaixaMarcada: {
-    backgroundColor: "#fff",
-    borderColor: "#fff",
-  },
-  checkboxMarca: {
-    color: "#1a6dcc",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  checkboxLabel: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  cardSalvo: {
-    width: "100%",
-    backgroundColor: "rgba(255,255,255,0.15)",
-    borderRadius: 14,
-    padding: 14,
-    marginBottom: 10,
-    borderLeftWidth: 4,
-    borderLeftColor: "#4caf50",
-  },
-  cardSalvoHeader: {
-    marginBottom: 6,
-  },
-  cardSalvoNumero: {
-    color: "#a5d6a7",
-    fontSize: 13,
-    fontWeight: "700",
+    letterSpacing: 1,
     textTransform: "uppercase",
-    letterSpacing: 0.5,
   },
-  cardSalvoCargo: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  cardSalvoEmpresa: {
-    color: "rgba(255,255,255,0.75)",
-    fontSize: 13,
-    marginTop: 2,
-  },
-  cardSalvoPeriodo: {
-    color: "rgba(255,255,255,0.6)",
-    fontSize: 12,
-    marginTop: 4,
-  },
-  botaoAdicionar: {
-    width: "100%",
-    backgroundColor: "rgba(255,255,255,0.15)",
-    borderRadius: 12,
-    paddingVertical: 16,
+  formContainer: {
+    width: INPUT_WIDTH,
     alignItems: "center",
-    marginBottom: 10,
+    marginTop: SPACING.sm,
+  },
+  inputBox: {
+    height: 54,
+    backgroundColor: COLORS.bgInput,
     borderWidth: 1.5,
-    borderColor: "rgba(255,255,255,0.5)",
-    borderStyle: "dashed",
-  },
-  botaoAdicionarTexto: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 15,
-    letterSpacing: 0.3,
-  },
-  botaoConcluido: {
-    width: "100%",
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    paddingVertical: 16,
+    borderColor: COLORS.border,
+    borderRadius: RADIUS.md,
+    flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    paddingHorizontal: SPACING.md,
   },
-  botaoConcluidoTexto: {
-    color: "#1a6dcc",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  botaoSemExp: {
-    width: "100%",
+  btnAdicionar: {
+    width: INPUT_WIDTH,
+    marginTop: SPACING.lg,
+    marginBottom: SPACING.lg,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    borderRadius: RADIUS.md,
+    borderStyle: "dashed",
     paddingVertical: 14,
     alignItems: "center",
-    marginBottom: 4,
   },
-  botaoSemExpTexto: {
-    color: "rgba(255,255,255,0.6)",
-    fontSize: 14,
-    textDecorationLine: "underline",
+  btnAdicionarTexto: {
+    color: COLORS.textSecondary,
+    fontSize: FONT.md,
+    fontWeight: "600",
   },
-  espacoFinal: {
-    height: 80,
-  },
+});
+
+const df = StyleSheet.create({
+  label: { color: COLORS.textSecondary, fontSize: FONT.xs, fontWeight: "600", letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 6 },
+  dateField: { height: 54, backgroundColor: COLORS.bgInput, borderWidth: 1.5, borderColor: COLORS.border, borderRadius: RADIUS.md, flexDirection: "row", alignItems: "center", paddingHorizontal: SPACING.md },
+  dateText: { color: COLORS.textPrimary, fontSize: FONT.md },
+  datePlaceholder: { color: COLORS.textPlaceholder },
+  erro: { color: COLORS.textError, fontSize: FONT.xs, marginTop: 4 },
+  modalOverlay: { flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0, 0, 0, 0.4)" },
+  modalContent: { backgroundColor: "#FFFFFF", borderTopLeftRadius: 16, borderTopRightRadius: 16, paddingBottom: 30 },
+  modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: "#E5E5E5" },
+  modalBtn: { paddingVertical: 8 },
+  modalCancelText: { color: "#EF4444", fontSize: 16 },
+  modalConfirmText: { color: "#3B82F6", fontSize: 16, fontWeight: "600" },
+  iosPicker: { width: "100%", height: 220, backgroundColor: "#FFFFFF" },
+});
+
+const cs = StyleSheet.create({
+  card: { width: INPUT_WIDTH, flexDirection: "row", backgroundColor: COLORS.bgCard, borderRadius: RADIUS.md, marginBottom: SPACING.sm, overflow: "hidden", borderWidth: 1, borderColor: COLORS.border },
+  leftBar: { width: 4, backgroundColor: COLORS.success },
+  content: { flex: 1, padding: SPACING.md },
+  headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 4 },
+  label: { color: COLORS.success, fontSize: FONT.xs, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5 },
+  cargo: { color: COLORS.textPrimary, fontSize: FONT.md, fontWeight: "700" },
+  empresa: { color: COLORS.textSecondary, fontSize: FONT.sm, marginTop: 2 },
+  periodo: { color: COLORS.textMuted, fontSize: FONT.xs, marginTop: 4 },
 });
