@@ -15,6 +15,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -113,15 +118,52 @@ public class UsuarioService {
          repository.delete(entity);
     }
 
-    public UsuarioFullContentDtoResponse me(){
+    public UsuarioFullContentDtoResponse me() {
 
-        UsuarioCad usuarioAutenticado = (UsuarioCad) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não autenticado");
+        }
+
+        Object principal = authentication.getPrincipal();
+        UsuarioCad usuarioAutenticado;
+
+        if (principal instanceof UsuarioCad) {
+            usuarioAutenticado = (UsuarioCad) principal;
+
+        } else if (principal instanceof UserDetails) {
+
+            String email = ((UserDetails) principal).getUsername();
+
+            usuarioAutenticado = repository.findByEmail(email)
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+
+        } else if (principal instanceof String) {
+
+            String p = (String) principal;
+
+            // anonymousUser é a principal padrão do Spring para auth anônima
+            if ("anonymousUser".equals(p)) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário anônimo");
+            }
+
+            // se for username/email, tenta buscar no banco
+            usuarioAutenticado = repository.findByEmail(p)
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+
+        } else {
+
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Tipo de principal inesperado: " +
+                            (principal == null ? "null" : principal.getClass().getName())
+            );
+        }
 
         UsuarioCad usuarioBuscado = repository.findById(usuarioAutenticado.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
-        UsuarioFullContentDtoResponse usuarioFullContentDtoResponse = mapper.toFullContentDto(usuarioBuscado);
-
-        return usuarioFullContentDtoResponse;
+        return mapper.toFullContentDto(usuarioBuscado);
     }
 }

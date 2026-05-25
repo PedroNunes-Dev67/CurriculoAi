@@ -1,21 +1,21 @@
 package br.com.CurriculoAi.enums;
 
-public enum ModeloDetrabalho {
+public enum ModeloDeTrabalho {
     PRESENCIAL("PRESENCIAL"),
     REMOTO("REMOTO"),
     HIBRIDO("HIBRIDO");
 
     private String tipo;
 
-    ModeloDetrabalho(String tipo) {
+    ModeloDeTrabalho(String tipo) {
         this.tipo = tipo;
     }
 
-    public static ModeloDetrabalho from(String tipoBuscado){
+    public static ModeloDeTrabalho from(String tipoBuscado){
 
-        ModeloDetrabalho modeloDetrabalho = null;
+        ModeloDeTrabalho modeloDetrabalho = null;
 
-        for (ModeloDetrabalho m : values()){
+        for (ModeloDeTrabalho m : values()){
             if (m.tipo.equalsIgnoreCase(tipoBuscado)){
                 modeloDetrabalho = m;
             }

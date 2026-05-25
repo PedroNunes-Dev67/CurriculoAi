@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.entities;
 
-import br.com.CurriculoAi.enums.ModeloDetrabalho;
+import br.com.CurriculoAi.enums.ModeloDeTrabalho;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +27,7 @@ public class DisponibilidadeUser {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "modelo_trabalho", nullable = false)
-    private ModeloDetrabalho modeloTrabalho;
+    private ModeloDeTrabalho modeloTrabalho;
 
     @OneToOne
     @JoinColumn(name = "id_user", nullable = false)
