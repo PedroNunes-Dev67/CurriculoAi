@@ -4,12 +4,14 @@ import br.com.CurriculoAi.entities.*;
 import br.com.CurriculoAi.enums.IdiomaEnum;
 import br.com.CurriculoAi.enums.RoleEnum;
 import br.com.CurriculoAi.repositories.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
 
 @Configuration
+@RequiredArgsConstructor
 public class InitialzrData implements CommandLineRunner {
 
     private final AreaUserRepository areaUserRepository;
@@ -18,14 +20,7 @@ public class InitialzrData implements CommandLineRunner {
     private final InstituicaoRepository instituicaoRepository;
     private final EmpresaRepository empresaRepository;
     private final IdiomaRepository idiomaRepository;
-
-    public InitialzrData(AreaUserRepository areaUserRepository, RoleRepository roleRepository, InstituicaoRepository instituicaoRepository, EmpresaRepository empresaRepository, IdiomaRepository idiomaRepository) {
-        this.areaUserRepository = areaUserRepository;
-        this.roleRepository = roleRepository;
-        this.instituicaoRepository = instituicaoRepository;
-        this.empresaRepository = empresaRepository;
-        this.idiomaRepository = idiomaRepository;
-    }
+    private final CursoRepository cursoRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -51,5 +46,11 @@ public class InitialzrData implements CommandLineRunner {
         Idioma idioma2 = new Idioma(null, IdiomaEnum.INGLES);
 
         idiomaRepository.saveAll(Arrays.asList(idioma1,idioma2));
+
+        Curso curso1 = Curso.builder().nomeCurso("Analise e desenvolvimento de sistemas").build();
+        Curso curso2 = Curso.builder().nomeCurso("Direito").build();
+        Curso curso3 = Curso.builder().nomeCurso("Psicologia").build();
+
+        cursoRepository.saveAll(Arrays.asList(curso1,curso2,curso3));
     }
 }

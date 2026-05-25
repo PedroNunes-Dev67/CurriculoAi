@@ -22,8 +22,8 @@ public class FormacaoUser {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "area", nullable = false)
-    private Area area;
+    @JoinColumn(name = "id_curso", nullable = false)
+    private Curso curso;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_formacao", nullable = false, length = 80)
