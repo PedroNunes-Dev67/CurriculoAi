@@ -9,24 +9,26 @@ import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.repositories.AreaUserRepository;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
 import br.com.CurriculoAi.repositories.UsuarioCadRepository;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class AreaUserService {
 
     private final AreaUserRepository areaUserRepository;
     private final TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository;
     private final UsuarioCadRepository usuarioCadRepository;
-
-    public AreaUserService(AreaUserRepository areaUserRepository, TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository, UsuarioCadRepository usuarioCadRepository, FormacaoService formacaoService) {
-        this.areaUserRepository = areaUserRepository;
-        this.tokenIdentificacaoUsurioRepository = tokenIdentificacaoUsurioRepository;
-        this.usuarioCadRepository = usuarioCadRepository;
-    }
+    private final static Logger logger = LoggerFactory.getLogger(AreaUserService.class);
 
     @Transactional
     public UsuarioTokenIdentResponseDto addAreaUser(AreaUserAddDtoRequest areaUserAddDtoRequest){
+
+        logger.info("Adicionando área com id: {} ao usuário com token de identificação: {}", areaUserAddDtoRequest.idArea(), areaUserAddDtoRequest.tokenIdentificacaoUsuario());
 
         //Pego o token do dto
         TokenIdentificacaoUsuario tokenIdentificacao = tokenIdentificacaoUsurioRepository.findByToken(areaUserAddDtoRequest.tokenIdentificacaoUsuario())
@@ -40,8 +42,9 @@ public class AreaUserService {
 
         usuario.setArea(areaBuscada);
 
-        //Altero a área do usuario e logo apos salvo
         UsuarioCad usuarioAtualizado = usuarioCadRepository.save(usuario);
+
+        logger.info("Areá: {} adicionada com sucesso ao usuário com id: {}", areaBuscada.getNomeArea(), usuario.getId());
 
         return new UsuarioTokenIdentResponseDto(tokenIdentificacao.getId(),usuario.getNome(), tokenIdentificacao.getToken());
     }
