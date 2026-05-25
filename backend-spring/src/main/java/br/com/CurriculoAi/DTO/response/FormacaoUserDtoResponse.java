@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public record FormacaoUserDtoResponse(
         Long id,
-        AreaDTOResponse area,
+        CursoDtoResponse curso,
         String tipoFormacao,
         LocalDate dataInicio,
         LocalDate dataConclusao,
