@@ -225,16 +225,24 @@ public class CerebrasService {
         StringBuilder sb = new StringBuilder();
 
         for (FormacaoUserDtoResponse f : formacoes) {
+            if (f == null) continue;
 
             String tipo  = safe(f.tipoFormacao());
-            String area  = (f.area() != null) ? safe(f.area().nomeArea()) : "Área não informada";
+
+            // A record FormacaoUserDtoResponse tem campo 'curso' (CursoDtoResponse)
+            // e CursoDtoResponse expõe o accessor 'nomeCurso()'
+            String cursoNome = "Curso não informado";
+            if (f.curso() != null && f.curso().nomeCurso() != null && !f.curso().nomeCurso().isBlank()) {
+                cursoNome = f.curso().nomeCurso();
+            }
+
             String inicio = (f.dataInicio() != null) ? f.dataInicio().format(FORMATTER) : "?";
-            String fim   = Boolean.TRUE.equals(f.emAndamento())
+            String fim = Boolean.TRUE.equals(f.emAndamento())
                     ? "Em andamento"
                     : (f.dataConclusao() != null ? f.dataConclusao().format(FORMATTER) : "?");
 
             sb.append("Type: ").append(tipo).append("\n");
-            sb.append("Field: ").append(area).append("\n");
+            sb.append("Field: ").append(cursoNome).append("\n");
             sb.append("Period: ").append(inicio).append(" – ").append(fim).append("\n");
             sb.append("\n");
         }
@@ -270,15 +278,16 @@ public class CerebrasService {
         StringBuilder sb = new StringBuilder();
 
         for (IdiomaUserDtoResponse i : idiomas) {
-            if (i.idioma() == null) continue;
+            if (i == null) continue;
 
-            String nomeIdioma = (i.idioma().getIdioma() != null && i.idioma().getIdioma().getIdioma() != null)
-                    ? i.idioma().getIdioma().getIdioma().toString()
-                    : "Idioma não informado";
+            // nome do idioma vem do record IdiomaDtoResponse.idiomaNome()
+            String nomeIdioma = "Idioma não informado";
+            if (i.idioma() != null && i.idioma().idiomaNome() != null && !i.idioma().idiomaNome().isBlank()) {
+                nomeIdioma = i.idioma().idiomaNome();
+            }
 
-            String nivel = (i.idioma().getNivel() != null)
-                    ? i.idioma().getNivel().toString()
-                    : "Nível não informado";
+            // nível vem do próprio IdiomaUserDtoResponse.nivel()
+            String nivel = (i.nivel() != null && !i.nivel().isBlank()) ? i.nivel() : "Nível não informado";
 
             sb.append("- ").append(nomeIdioma).append(": ").append(nivel).append("\n");
         }
