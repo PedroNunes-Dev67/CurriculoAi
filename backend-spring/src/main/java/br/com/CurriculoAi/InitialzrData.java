@@ -26,11 +26,12 @@ public class InitialzrData implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         Area area1 = new Area(null, "ADS");
+        Area area2 = new Area(null, "Saúde");
 
         Role role1 = new Role(null, RoleEnum.ROLE_CANDIDATO);
         Role role2 = new Role(null, RoleEnum.ROLE_RECRUTADOR);
 
-        areaUserRepository.save(area1);
+        areaUserRepository.saveAll(Arrays.asList(area1,area2));
         roleRepository.saveAll(Arrays.asList(role1,role2));
 
         Instituicao instituicao1 = new Instituicao(null,"DIO");
