@@ -11,6 +11,9 @@ import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.repositories.CertificacaoUserRepository;
 import br.com.CurriculoAi.repositories.InstituicaoRepository;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,22 +24,22 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class CertificacaoService {
 
     private final CertificacaoUserRepository certificacaoUserRepository;
     private final TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository;
     private final InstituicaoRepository instituicaoRepository;
 
-    public CertificacaoService(CertificacaoUserRepository certificacaoUserRepository, TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository, InstituicaoRepository instituicaoRepository) {
-        this.certificacaoUserRepository = certificacaoUserRepository;
-        this.tokenIdentificacaoUsurioRepository = tokenIdentificacaoUsurioRepository;
-        this.instituicaoRepository = instituicaoRepository;
-    }
+    private static final Logger logger = LoggerFactory.getLogger(CertificacaoService.class);
 
     @Transactional
     public UsuarioTokenIdentResponseDto cadastrarFormacoes(List<CertificacaoDtoRequest> certificacoes, String token){
 
-        if (certificacoes.isEmpty()) throw new ListIsEmptyException("Lista de formações não pode ser vazia");
+        logger.info("Iniando o cadastro de formações do usuário, quantidade de formações: {}", certificacoes.size());
+
+        if (certificacoes.isEmpty()) throw new ListIsEmptyException("Lista de certificações não pode ser vazia");
 
         TokenIdentificacaoUsuario tokenIdentificacaoUsuario = tokenIdentificacaoUsurioRepository.findByToken(token)
                 .orElseThrow(() -> new ResourceNotFoundException("Token não encontrado"));
@@ -49,6 +52,7 @@ public class CertificacaoService {
                 .distinct()
                 .toList();
 
+        // Armazena todas as instituições que estão vindo para cadastro em um cache local, para não ir no banco desnecessáriamente
         Map<Long, Instituicao> instituicoesPorId = instituicaoRepository.findAllById(idsInstituicoes)
                 .stream()
                 .collect(Collectors.toMap(Instituicao::getId, Function.identity()));
@@ -78,6 +82,8 @@ public class CertificacaoService {
                 .toList();
 
         certificacaoUserRepository.saveAll(certificacoesSalvas);
+
+        logger.info("Certificações salvas com sucesso!");
 
         return new UsuarioTokenIdentResponseDto(tokenIdentificacaoUsuario.getId(), usuario.getNome(), tokenIdentificacaoUsuario.getToken());
     }

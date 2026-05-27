@@ -11,6 +11,8 @@ import br.com.CurriculoAi.repositories.CursoRepository;
 import br.com.CurriculoAi.repositories.FormacaoUserRepository;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,15 +24,20 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class FormacaoService {
 
     private final FormacaoUserRepository formacaoUserRepository;
     private final TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository;
     private final CursoRepository cursoRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(FormacaoService.class);
+
     //Passo a lista contida no DTO do curso es o dados do método que está chamando
     @Transactional
     public UsuarioTokenIdentResponseDto addFormacaoUser(List<FormacaoDtoRequest> formacoes, String tokenIdentificacao){
+
+        logger.info("Iniciando cadastro de formações do usuário, com o total de: {}", formacoes.size());
 
         if (formacoes.isEmpty()) throw new ListIsEmptyException("Lista de forações está vazia");
 
@@ -74,6 +81,8 @@ public class FormacaoService {
                 .toList();
 
         formacaoUserRepository.saveAll(formacoesSalvas);
+
+        logger.info("Cadastro de formações realizada com sucesso!");
 
         return new UsuarioTokenIdentResponseDto(token.getId(), usuario.getNome(), token.getToken());
     }

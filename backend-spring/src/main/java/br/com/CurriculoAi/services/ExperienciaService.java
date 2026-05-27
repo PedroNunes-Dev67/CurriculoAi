@@ -9,6 +9,9 @@ import br.com.CurriculoAi.repositories.AreaUserRepository;
 import br.com.CurriculoAi.repositories.EmpresaRepository;
 import br.com.CurriculoAi.repositories.ExperienciaUserRepository;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +22,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ExperienciaService {
 
     private final ExperienciaUserRepository experienciaUserRepository;
@@ -26,15 +31,12 @@ public class ExperienciaService {
     private final AreaUserRepository areaUserRepository;
     private final EmpresaRepository empresaRepository;
 
-    public ExperienciaService(ExperienciaUserRepository experienciaUserRepository, TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository, AreaUserRepository areaUserRepository, EmpresaRepository empresaRepository) {
-        this.experienciaUserRepository = experienciaUserRepository;
-        this.tokenIdentificacaoUsurioRepository = tokenIdentificacaoUsurioRepository;
-        this.areaUserRepository = areaUserRepository;
-        this.empresaRepository = empresaRepository;
-    }
+    private static final Logger logger = LoggerFactory.getLogger(ExperienciaService.class);
 
     @Transactional
     public UsuarioTokenIdentResponseDto cadastrarExperiencias(List<ExperienciaDtoRequest> experiencias, String token){
+
+        logger.info("Iniciando cadastro de experiências do usuário, com um total de: {}", experiencias.size());
 
         TokenIdentificacaoUsuario tokenIdentificacaoUsuario = tokenIdentificacaoUsurioRepository.findByToken(token)
                 .orElseThrow(() -> new ResourceNotFoundException("Token não encotrado"));
@@ -86,6 +88,8 @@ public class ExperienciaService {
                 .toList();
 
         experienciaUserRepository.saveAll(experienciasSalvas);
+
+        logger.info("Cadastro de experiências realizado com sucesso!");
 
         return new UsuarioTokenIdentResponseDto(tokenIdentificacaoUsuario.getId(), usuario.getNome(), token);
     }

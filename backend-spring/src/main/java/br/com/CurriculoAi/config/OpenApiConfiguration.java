@@ -19,7 +19,7 @@ public class OpenApiConfiguration {
                                 .title("CurriculoAI Documentaion API")
                                 .description("Documetation from CurriculoAI for Developers")
                                 .version("v1.0")
-                                .contact(new Contact().name("CurriculoAI").email("suporte.curriculoai.gmail.com"))
+                                .contact(new Contact().name("CurriculoAI").email("suporte.curriculoai@gmail.com"))
                 )
                 .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
                 .components(new Components().addSecuritySchemes("Bearer Authentication", createApiKeyOpenApi()));

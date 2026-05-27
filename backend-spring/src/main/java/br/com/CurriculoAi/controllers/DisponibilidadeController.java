@@ -3,6 +3,7 @@ package br.com.CurriculoAi.controllers;
 import br.com.CurriculoAi.DTO.request.DisponibilidadeDtoRequest;
 import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.services.DisponibilidadeService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/disponibilidade")
+@Tag(name = "Disponibilidade Controller", description = "Responsável por  controlar as ações relionadas a disponibilidade do usuário")
 public class DisponibilidadeController {
 
     private final DisponibilidadeService disponibilidadeService;
