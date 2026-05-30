@@ -4,6 +4,7 @@ import br.com.CurriculoAi.DTO.response.UsuarioFullContentDtoResponse;
 import br.com.CurriculoAi.services.CerebrasService;
 import br.com.CurriculoAi.services.PdfService;
 import br.com.CurriculoAi.services.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +24,8 @@ public class CerebrasController {
     private final  PdfService pdfService;
     private final UsuarioService usuarioService;
 
+    @Operation(summary = "Gerar o `Curriculo` do usuário",
+            description = "OBS: o usuário precisa estar `AUTENTICADO` com JWT")
     @PostMapping("/pdf")
     public ResponseEntity<byte[]> gerarPdf() throws Exception {
 
