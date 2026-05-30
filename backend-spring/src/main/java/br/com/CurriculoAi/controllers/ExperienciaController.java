@@ -3,6 +3,7 @@ package br.com.CurriculoAi.controllers;
 import br.com.CurriculoAi.DTO.request.ExperienciaDtoRequest;
 import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.services.ExperienciaService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,8 @@ public class ExperienciaController {
         this.experienciaService = experienciaService;
     }
 
+    @Operation(summary = "Resgistrar as experiências do usuário",
+        description = "É passado um `Array (lista) de experiências` no body da requisição, atribuindo ao usuário pelo seu `TOKEN` passado na URL")
     @PostMapping("/register")
     public ResponseEntity<UsuarioTokenIdentResponseDto> registerExperiencias(@RequestBody List<ExperienciaDtoRequest> experiencias, @RequestParam String token){
 

@@ -3,6 +3,7 @@ package br.com.CurriculoAi.controllers;
 import br.com.CurriculoAi.DTO.request.DisponibilidadeDtoRequest;
 import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.services.DisponibilidadeService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,8 @@ public class DisponibilidadeController {
         this.disponibilidadeService = disponibilidadeService;
     }
 
+    @Operation(summary = "Resgistrar disponibilidade do usuário",
+            description = "É passado uma disponibilidade do usuário no body da requisição, atribuindo a ele, o identificando pelo `TOKEN` passado na URL da requisição")
     @PostMapping("/register")
     public ResponseEntity<UsuarioTokenIdentResponseDto> registerDisponibilidade(@RequestBody DisponibilidadeDtoRequest disponibilidade, @RequestParam String token){
 
