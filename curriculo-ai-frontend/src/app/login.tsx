@@ -47,7 +47,7 @@ export default function Login() {
     await new Promise((r) => setTimeout(r, 600));
     setLoading(false);
     if (usuario.email === email.trim() && usuario.senha === senha) {
-      router.push("/(tabs)/cadastro");
+      router.push("/(tabs)/home");
     } else {
       setErros({ senha: "E-mail ou senha incorretos." });
     }
