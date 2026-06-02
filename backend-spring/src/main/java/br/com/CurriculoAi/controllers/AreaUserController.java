@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/area")
 @Tag(name = "Area Controller", description = "Responsável por controlar as ações relacionadas as Áreas")
@@ -39,5 +41,14 @@ public class AreaUserController {
         AreaDTOResponse areaUserAtualizada = areaUserService.updateAreaUser(id);
 
         return ResponseEntity.ok(areaUserAtualizada);
+    }
+
+    @GetMapping
+    @Operation(summary = "Buscar todas as Áreas", description = "Busca todas as áreas cadastradas no sistem. `AUTENTICAÇÃO NECESSÁRIA`")
+    public ResponseEntity<List<AreaDTOResponse>> findAll(){
+
+        List<AreaDTOResponse> areas = areaUserService.findAll();
+
+        return ResponseEntity.ok(areas);
     }
 }

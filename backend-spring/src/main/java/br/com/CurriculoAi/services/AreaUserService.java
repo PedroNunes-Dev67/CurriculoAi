@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -74,5 +76,20 @@ public class AreaUserService {
         UsuarioCad usuarioAtualizado =  usuarioCadRepository.save(usuario);
 
         return new AreaDTOResponse(areaSearched.getId(),areaSearched.getNomeArea());
+    }
+
+    public List<AreaDTOResponse> findAll(){
+
+        logger.info("Buscando área...");
+
+        List<Area> areasBuscadas = areaUserRepository.findAll();
+
+        logger.info("Área buscadas, com um total de: {}", areasBuscadas.size());
+        return areasBuscadas
+                .stream()
+                .map(area -> {
+                    return new AreaDTOResponse(area.getId(), area.getNomeArea());
+                })
+                .toList();
     }
 }
