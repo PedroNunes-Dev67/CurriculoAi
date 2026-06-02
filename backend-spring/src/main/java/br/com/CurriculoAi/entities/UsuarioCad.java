@@ -69,6 +69,16 @@ public class UsuarioCad implements UserDetails {
     @OneToOne(mappedBy = "usuarioCad", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private DisponibilidadeUser disponibilidade;
 
+    @Builder.Default
+    @OneToMany(mappedBy = "usuarioCad", fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<CurriculoUsuario> curriculos = new ArrayList<>();
+
+    //Verifica a quantidade de curriculos do usuário, se for igual a 3 (ou maior por precaução) retorna true
+    //caso false, o usuário pode ter curriculos cadastrados
+    public boolean verificarLimitadorDeCurriculos(){
+        return curriculos.size() >= 3;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
