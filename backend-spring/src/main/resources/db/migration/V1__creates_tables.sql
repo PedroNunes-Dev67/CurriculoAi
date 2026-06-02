@@ -167,5 +167,5 @@ CREATE TABLE curriculo_usuario (
 
                                    CONSTRAINT fk_curriculo_usuario
                                        FOREIGN KEY (id_usuario)
-                                           REFERENCES usuario_cad(id_usuario)
+                                           REFERENCES usuario(id)
 );
