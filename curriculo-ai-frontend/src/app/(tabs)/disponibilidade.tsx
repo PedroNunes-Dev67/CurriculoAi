@@ -4,7 +4,6 @@ import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import {
-  Alert,
   Modal,
   Platform,
   ScrollView,
@@ -17,6 +16,7 @@ import ButtonConfirm from "../../components/button-confirm-compent";
 import Checkbox from "../../components/checkbox";
 import StepHeader from "../../components/step-header";
 import { COLORS, FONT, INPUT_WIDTH, RADIUS, SPACING } from "../../components/style";
+import { useCurriculoData } from "../../context/curriculo-data-context";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 type Modalidade = "Presencial" | "Híbrido" | "Home Office" | "";
@@ -249,6 +249,7 @@ const ii = StyleSheet.create({
 const MODALIDADES: Modalidade[] = ["Presencial", "Híbrido", "Home Office"];
 
 export default function Disponibilidade() {
+  const { updateDisponibilidade } = useCurriculoData();
   const [dataDisponibilidade, setDataDisponibilidade] = useState<Date | null>(null);
   const [imediato, setImediato] = useState(false);
   const [modalidade, setModalidade] = useState<Modalidade>("");
@@ -307,19 +308,16 @@ export default function Disponibilidade() {
   function handleFinalizar() {
     if (!validar()) return;
 
-    // Payload final pronto para o Axios
-    const payload = {
+    updateDisponibilidade({
       inicioImediato: imediato,
-      dataDisponibilidade: imediato ? null : dataDisponibilidade,
+      dataDisponibilidade: imediato
+        ? null
+        : dataDisponibilidade?.toLocaleDateString("pt-BR") || null,
       modalidade,
-      idiomas,
-    };
+      idiomas: idiomas.map((i) => ({ nome: i.nome, nivel: i.nivel })),
+    });
 
-    console.log("Payload de Disponibilidade para o Spring Boot:", payload);
-
-    Alert.alert("Perfil criado!", "Seu perfil foi estruturado com sucesso para desenvolvedores. Em breve você será redirecionado.", [
-      { text: "OK" }
-    ]);
+    router.push("/curriculo_novo" as import("expo-router").Href);
   }
 
   return (

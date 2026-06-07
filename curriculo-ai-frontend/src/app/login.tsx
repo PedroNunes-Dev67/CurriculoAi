@@ -16,6 +16,7 @@ import ButtonConfirm from "../components/button-confirm-compent";
 import Divisao from "../components/divisao-component";
 import { Input } from "../components/input-component";
 import { COLORS, FONT, INPUT_WIDTH, SPACING, RADIUS } from "../components/style";
+import { useUserProfile } from "../context/user-profile-context";
 
 // ─── Validação ────────────────────────────────────────────────────────────────
 function emailValido(email: string) {
@@ -24,7 +25,8 @@ function emailValido(email: string) {
 
 // ─── Tela ─────────────────────────────────────────────────────────────────────
 export default function Login() {
-  const usuario = { email: "pedro@gmail.com", senha: "1234" };
+  const usuario = { nome: "Pedro Silva", email: "pedro@gmail.com", senha: "1234" };
+  const { updateProfile } = useUserProfile();
 
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -47,6 +49,7 @@ export default function Login() {
     await new Promise((r) => setTimeout(r, 600));
     setLoading(false);
     if (usuario.email === email.trim() && usuario.senha === senha) {
+      updateProfile({ nome: usuario.nome, email: usuario.email });
       router.push("/(tabs)/home");
     } else {
       setErros({ senha: "E-mail ou senha incorretos." });

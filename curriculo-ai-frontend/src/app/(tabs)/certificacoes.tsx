@@ -17,6 +17,7 @@ import { Input } from "../../components/input-component";
 import SelectModal from "../../components/select-modal";
 import StepHeader from "../../components/step-header";
 import { COLORS, FONT, INPUT_WIDTH, RADIUS, SPACING } from "../../components/style";
+import { useCurriculoData } from "../../context/curriculo-data-context";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 type Certificacao = {
@@ -184,6 +185,7 @@ function CardSalvo({ cert, numero, onRemover }: { cert: Certificacao; numero: nu
 
 // ─── Tela Principal ───────────────────────────────────────────────────────────
 export default function Certificacoes() {
+  const { updateCertificacoes } = useCurriculoData();
   const [salvas, setSalvas] = useState<Certificacao[]>([]);
   const [atual, setAtual] = useState<Certificacao>(nova());
   const [erros, setErros] = useState<Partial<Record<keyof Certificacao, string>>>({});
@@ -227,16 +229,23 @@ export default function Certificacoes() {
     setErros({});
   }
 
-  function handleProximo() {
-    const payload = {
-      certificacoes: salvas.map(({ instituicaoOutra, ...dados }) => dados)
-    };
-    console.log("Payload de Certificações:", payload);
+  function salvarCertificacoesNoContexto(lista: Certificacao[]) {
+    updateCertificacoes(
+      lista.map(({ instituicaoOutra, arquivo, ...dados }) => ({
+        nome: dados.nome,
+        instituicao: dados.instituicao === "Outra" ? (instituicaoOutra || "") : dados.instituicao,
+        anoConclusao: dados.anoConclusao,
+      }))
+    );
+  }
 
+  function handleProximo() {
+    salvarCertificacoesNoContexto(salvas);
     router.push("/disponibilidade");
   }
 
   function handleSemCert() {
+    updateCertificacoes([]);
     router.push("/disponibilidade");
   }
 

@@ -12,6 +12,8 @@ import ButtonConfirm from "../../components/button-confirm-compent";
 import { Input } from "../../components/input-component";
 import StepHeader from "../../components/step-header";
 import { COLORS, FONT, INPUT_WIDTH, SPACING } from "../../components/style";
+import { useCurriculoData } from "../../context/curriculo-data-context";
+import { useUserProfile } from "../../context/user-profile-context";
 
 // ─── Validação ────────────────────────────────────────────────────────────────
 const nomeValido = (v: string) => /^[a-zA-ZÀ-ÿ\s'-]{2,}$/.test(v.trim());
@@ -78,6 +80,8 @@ const pw = StyleSheet.create({
 
 // ─── Tela ─────────────────────────────────────────────────────────────────────
 export default function Cadastro() {
+  const { updateDadosPessoais } = useCurriculoData();
+  const { updateProfile } = useUserProfile();
   const [nome, setNome] = useState("");
   const [sobrenome, setSobrenome] = useState("");
   const [email, setEmail] = useState("");
@@ -104,7 +108,20 @@ export default function Cadastro() {
 
   function handleProximo() {
     setTentou(true);
-    if (validar()) router.push("/formacao");
+    if (!validar()) return;
+
+    const dados = {
+      nome: nome.trim(),
+      sobrenome: sobrenome.trim(),
+      email: email.trim(),
+    };
+
+    updateDadosPessoais(dados);
+    updateProfile({
+      nome: `${dados.nome} ${dados.sobrenome}`.trim(),
+      email: dados.email,
+    });
+    router.push("/formacao");
   }
 
   function limpar(campo: string) {

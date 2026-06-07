@@ -1,32 +1,21 @@
-import { router } from "expo-router";
+import { Href, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useCallback } from "react";
 import {
-  ScrollView, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
+  ActivityIndicator,
+  FlatList,
+  Image,
+  ListRenderItem,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { COLORS, FONT, RADIUS, SPACING } from "../../components/style";
-
-
-const CURRICULOS = [
-  {
-    id: "1",
-    titulo: "Desenvolvedor Frontend",
-    subtitulo: "Atualizado há 2 dias",
-    status: "Completo" as const,
-  },
-  {
-    id: "2",
-    titulo: "Analista de Dados",
-    subtitulo: "Atualizado há 4 dias",
-    status: "Completo" as const,
-  },
-  {
-    id: "3",
-    titulo: "Product Designer",
-    subtitulo: "Em edição",
-    status: "Rascunho" as const,
-  },
-];
+import { useUserProfile } from "../../context/user-profile-context";
+import { useCurriculos } from "../../hooks/use-curriculos";
+import { Curriculo } from "../../types/curriculo";
 
 const RECURSOS = [
   { id: "1", icone: "auto-fix", label: "IA\ninteligente" },
@@ -35,126 +24,166 @@ const RECURSOS = [
   { id: "4", icone: "shield-check-outline", label: "ATS Score" },
 ] as const;
 
-// telinha que deu dor de cabeça
+function CurriculoCard({ item }: { item: Curriculo }) {
+  return (
+    <TouchableOpacity style={styles.curriculoCard} activeOpacity={0.75}>
+      <View style={styles.curriculoInfo}>
+        <Text style={styles.curriculoTitulo}>{item.titulo}</Text>
+        <Text style={styles.curriculoSub}>{item.subtitulo}</Text>
+      </View>
+      <View
+        style={[
+          styles.badge,
+          item.status === "Completo" ? styles.badgeCompleto : styles.badgeRascunho,
+        ]}
+      >
+        <Text
+          style={[
+            styles.badgeText,
+            item.status === "Completo" ? styles.badgeTextCompleto : styles.badgeTextRascunho,
+          ]}
+        >
+          {item.status}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+}
 
 export default function Home() {
+  const { profile, getInitials } = useUserProfile();
+  const { curriculos, loading, error, refreshing, refresh } = useCurriculos({
+    userId: profile.email || undefined,
+  });
+
+  const renderCurriculo: ListRenderItem<Curriculo> = useCallback(
+    ({ item }) => <CurriculoCard item={item} />,
+    []
+  );
+
+  const ListHeader = (
+    <>
+      <View style={styles.heroCard}>
+        <Text style={styles.heroTitle}>
+          O currículo perfeito{"\n"}começa com{" "}
+          <Text style={styles.heroTitleAccent}>IA</Text>
+        </Text>
+        <Text style={styles.heroDesc}>
+          Gere, melhore e otimize seu currículo para passar em qualquer processo seletivo.
+        </Text>
+
+        <TouchableOpacity
+          style={styles.heroCTA}
+          activeOpacity={0.8}
+          onPress={() => router.push("/curriculo_novo" as Href)}
+        >
+          <View style={styles.heroCTALeft}>
+            <Text style={styles.heroCTAPlus}>+</Text>
+            <Text style={styles.heroCTAText}>Criar novo currículo</Text>
+          </View>
+          <MaterialCommunityIcons name="chevron-right" size={22} color={COLORS.white} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.heroCTASecondary}
+          activeOpacity={0.8}
+          onPress={() => router.push("/analise_curriculo" as Href)}
+        >
+          <View style={styles.heroCTALeft}>
+            <MaterialCommunityIcons name="file-search-outline" size={20} color={COLORS.primary} />
+            <Text style={styles.heroCTASecondaryText}>Analisar o seu currículo atual</Text>
+          </View>
+          <MaterialCommunityIcons name="chevron-right" size={22} color={COLORS.primary} />
+        </TouchableOpacity>
+      </View>
+
+      <Text style={styles.sectionTitle}>Seus currículos</Text>
+    </>
+  );
+
+  const ListFooter = (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>Recursos rápidos</Text>
+      <View style={styles.recursosGrid}>
+        {RECURSOS.map((item) => (
+          <TouchableOpacity key={item.id} style={styles.recursoCard} activeOpacity={0.75}>
+            <MaterialCommunityIcons name={item.icone} size={26} color={COLORS.primary} />
+            <Text style={styles.recursoLabel}>{item.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
+
+  const ListEmpty = (
+    <View style={styles.emptyState}>
+      {loading ? (
+        <>
+          <ActivityIndicator color={COLORS.primary} />
+          <Text style={styles.emptyText}>Carregando currículos...</Text>
+        </>
+      ) : error ? (
+        <>
+          <MaterialCommunityIcons name="alert-circle-outline" size={28} color={COLORS.error} />
+          <Text style={styles.emptyText}>{error}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={refresh}>
+            <Text style={styles.retryButtonText}>Tentar novamente</Text>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <>
+          <MaterialCommunityIcons name="file-document-outline" size={28} color={COLORS.textMuted} />
+          <Text style={styles.emptyText}>Nenhum currículo encontrado.</Text>
+        </>
+      )}
+    </View>
+  );
+
   return (
     <View style={styles.root}>
       <StatusBar style="light" />
 
-      {/* bar de cima */}
       <View style={styles.topBar}>
         <View>
           <Text style={styles.brandName}>CURRICULO AI</Text>
           <Text style={styles.brandSub}>Crie, evolua e conquiste vagas</Text>
         </View>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>U</Text>
-        </View>
+        <TouchableOpacity
+          style={styles.avatar}
+          onPress={() => router.push("/perfil" as Href)}
+          activeOpacity={0.75}
+          accessibilityRole="button"
+          accessibilityLabel="Abrir perfil do usuário"
+        >
+          {profile.fotoUri ? (
+            <Image source={{ uri: profile.fotoUri }} style={styles.avatarImage} />
+          ) : (
+            <Text style={styles.avatarText}>{getInitials()}</Text>
+          )}
+        </TouchableOpacity>
       </View>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
+      <FlatList
+        data={curriculos}
+        keyExtractor={(item) => item.id}
+        renderItem={renderCurriculo}
+        ListHeaderComponent={ListHeader}
+        ListFooterComponent={ListFooter}
+        ListEmptyComponent={ListEmpty}
         contentContainerStyle={styles.scroll}
-      >
-        {/* cardizinhos */}
-        <View style={styles.heroCard}>
-          <Text style={styles.heroTitle}>
-            O currículo perfeito{"\n"}começa com{" "}
-            <Text style={styles.heroTitleAccent}>IA</Text>
-          </Text>
-          <Text style={styles.heroDesc}>
-            Gere, melhore e otimize seu currículo para passar em qualquer
-            processo seletivo.
-          </Text>
-          <TouchableOpacity
-            style={styles.heroCTA}
-            activeOpacity={0.8}
-            onPress={() => router.push("/(tabs)/cadastro")}
-          >
-            <View style={styles.heroCTALeft}>
-              <Text style={styles.heroCTAPlus}>+</Text>
-              <Text style={styles.heroCTAText}>Criar novo currículo</Text>
-            </View>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={22}
-              color={COLORS.white}
-            />
-          </TouchableOpacity>
-        </View>
-
-        {/* onde fica os curriculos */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Seus currículos</Text>
-
-          {CURRICULOS.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.curriculoCard}
-              activeOpacity={0.75}
-            >
-              <View style={styles.curriculoInfo}>
-                <Text style={styles.curriculoTitulo}>{item.titulo}</Text>
-                <Text style={styles.curriculoSub}>{item.subtitulo}</Text>
-              </View>
-              <View
-                style={[
-                  styles.badge,
-                  item.status === "Completo"
-                    ? styles.badgeCompleto
-                    : styles.badgeRascunho,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.badgeText,
-                    item.status === "Completo"
-                      ? styles.badgeTextCompleto
-                      : styles.badgeTextRascunho,
-                  ]}
-                >
-                  {item.status}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* recursos rapidos *IA que fez* */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Recursos rápidos</Text>
-          <View style={styles.recursosGrid}>
-            {RECURSOS.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                style={styles.recursoCard}
-                activeOpacity={0.75}
-              >
-                <MaterialCommunityIcons
-                  name={item.icone}
-                  size={26}
-                  color={COLORS.primary}
-                />
-                <Text style={styles.recursoLabel}>{item.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-      </ScrollView>
+        showsVerticalScrollIndicator={false}
+        refreshing={refreshing}
+        onRefresh={refresh}
+      />
     </View>
   );
 }
-
-// estilos
 
 const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: COLORS.bg,
   },
-
-  // bar de cima
   topBar: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -182,20 +211,24 @@ const styles = StyleSheet.create({
     backgroundColor: "#1f4e8c",
     justifyContent: "center",
     alignItems: "center",
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "rgba(59,130,246,0.3)",
+  },
+  avatarImage: {
+    width: "100%",
+    height: "100%",
   },
   avatarText: {
     color: COLORS.primary,
     fontSize: FONT.sm,
     fontWeight: "700",
   },
-
-  // scroll
   scroll: {
     paddingHorizontal: SPACING.md,
     paddingBottom: 48,
+    flexGrow: 1,
   },
-
-  // card
   heroCard: {
     backgroundColor: COLORS.bgCard,
     borderRadius: RADIUS.lg,
@@ -234,6 +267,18 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
+  heroCTASecondary: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "rgba(59,130,246,0.08)",
+    borderRadius: RADIUS.md,
+    paddingVertical: 14,
+    paddingHorizontal: SPACING.md,
+    marginTop: SPACING.sm,
+    borderWidth: 1,
+    borderColor: "rgba(59,130,246,0.3)",
+  },
   heroCTALeft: {
     flexDirection: "row",
     alignItems: "center",
@@ -251,9 +296,14 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     letterSpacing: 0.2,
   },
-
-  // ─── Section ──────────────────────────────────────────────────────────────
+  heroCTASecondaryText: {
+    color: COLORS.primary,
+    fontSize: FONT.md,
+    fontWeight: "700",
+    letterSpacing: 0.2,
+  },
   section: {
+    marginTop: SPACING.lg,
     marginBottom: SPACING.lg,
   },
   sectionTitle: {
@@ -262,8 +312,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: SPACING.sm,
   },
-
-  // ─── Currículo Card ───────────────────────────────────────────────────────
   curriculoCard: {
     backgroundColor: COLORS.bgCard,
     borderRadius: RADIUS.md,
@@ -313,8 +361,30 @@ const styles = StyleSheet.create({
   badgeTextRascunho: {
     color: COLORS.textSecondary,
   },
-
-  // ─── Recursos Grid ────────────────────────────────────────────────────────
+  emptyState: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: SPACING.lg,
+    gap: SPACING.sm,
+  },
+  emptyText: {
+    color: COLORS.textSecondary,
+    fontSize: FONT.sm,
+    textAlign: "center",
+  },
+  retryButton: {
+    marginTop: SPACING.xs,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: "rgba(59,130,246,0.3)",
+  },
+  retryButtonText: {
+    color: COLORS.primary,
+    fontSize: FONT.sm,
+    fontWeight: "700",
+  },
   recursosGrid: {
     flexDirection: "row",
     gap: SPACING.sm,

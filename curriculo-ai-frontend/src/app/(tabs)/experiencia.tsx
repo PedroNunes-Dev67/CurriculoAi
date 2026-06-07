@@ -18,6 +18,8 @@ import Checkbox from "../../components/checkbox";
 import SelectModal from "../../components/select-modal";
 import StepHeader from "../../components/step-header";
 import { COLORS, FONT, INPUT_WIDTH, RADIUS, SPACING } from "../../components/style";
+import { useCurriculoData } from "../../context/curriculo-data-context";
+import { dateToIso } from "../../utils/date-format";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 type Experiencia = {
@@ -250,6 +252,7 @@ function CardSalvo({ exp, numero, onRemover }: { exp: Experiencia; numero: numbe
 
 // ─── Tela principal ───────────────────────────────────────────────────────────
 export default function Experiencia() {
+  const { updateExperiencias } = useCurriculoData();
   const [experiencias, setExperiencias] = useState<Experiencia[]>([]);
   const [card, setCard] = useState<Experiencia>(estadoInicial);
   const [erros, setErros] = useState<Partial<Record<keyof Experiencia, string>>>({});
@@ -303,17 +306,26 @@ export default function Experiencia() {
     setErros({});
   }
 
+  function salvarExperienciasNoContexto(lista: Experiencia[]) {
+    updateExperiencias(
+      lista.map(({ empresaOutra, ...dados }) => ({
+        cargo: dados.cargo,
+        empresa: dados.empresa === "Outra" ? (empresaOutra || "") : dados.empresa,
+        inicio: dateToIso(dados.inicio),
+        termino: dateToIso(dados.termino),
+        atual: dados.atual,
+        area: dados.area,
+      }))
+    );
+  }
+
   function handleProximo() {
-    // Retira o campo 'empresaOutra' do payload, mandando a lista limpa para o Axios
-    const payload = {
-      experiencias: experiencias.map(({ empresaOutra, ...dados }) => dados)
-    };
-    console.log("Payload de Experiências para o Spring Boot:", payload);
-    
+    salvarExperienciasNoContexto(experiencias);
     router.navigate("/certificacoes");
   }
 
   function handleSemExperiencia() {
+    updateExperiencias([]);
     router.navigate("/certificacoes");
   }
 

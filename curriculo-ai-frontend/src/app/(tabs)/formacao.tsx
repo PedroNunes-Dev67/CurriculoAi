@@ -3,6 +3,8 @@ import FormacaoComponent from "@/src/components/formacao-component";
 import SelectModal from "@/src/components/select-modal";
 import StepHeader from "@/src/components/step-header";
 import { COLORS, FONT, INPUT_WIDTH, RADIUS, SPACING } from "@/src/components/style";
+import { useCurriculoData } from "@/src/context/curriculo-data-context";
+import { dateToIso } from "@/src/utils/date-format";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
@@ -34,6 +36,7 @@ const AREAS = [
 ];
 
 export default function Formacao() {
+  const { updateFormacao } = useCurriculoData();
   const [formacoes, setFormacoes] = useState<FormacaoData[]>([]);
   const [area, setArea] = useState("");
   const [areaErro, setAreaErro] = useState("");
@@ -124,23 +127,28 @@ export default function Formacao() {
     return valido;
   }
 
+  function salvarFormacaoNoContexto() {
+    updateFormacao(
+      area,
+      formacoes.map(({ nomeCursoOutro, curso, ...dados }) => ({
+        curso: curso === "Outro" ? (nomeCursoOutro || "") : curso,
+        tipoFormacao: dados.tipoFormacao,
+        dataInicio: dateToIso(dados.dataInicio),
+        dataTermino: dateToIso(dados.dataTermino),
+        cursando: dados.cursando,
+      }))
+    );
+  }
+
   function handleProximo() {
     if (!validarCampos()) return;
 
-    const payload = {
-      areaAtuacao: area,
-      // Desestrutura nomeCursoOutro para não enviar ao banco, substituindo 'curso' se necessário
-      formacoes: formacoes.map(({ id, nomeCursoOutro, curso, ...dados }) => ({
-        ...dados,
-        curso: curso === "Outro" ? (nomeCursoOutro || "") : curso
-      })),
-    };
-
-    console.log("Payload para o Spring Boot:", payload);
+    salvarFormacaoNoContexto();
     router.push("/experiencia");
   }
 
   function handleSemFormacao() {
+    updateFormacao(area, []);
     router.push("/experiencia");
   }
 
