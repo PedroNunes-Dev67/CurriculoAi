@@ -14,9 +14,9 @@ import {
   View,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { useCurriculoData } from "../context/curriculo-data-context";
-import { useUserProfile } from "../context/user-profile-context";
-import { COLORS, FONT, RADIUS, SPACING } from "../components/style";
+import { useCurriculoData } from "../../context/curriculo-data-context";
+import { useUserProfile } from "../../context/user-profile-context";
+import { COLORS, FONT, RADIUS, SPACING } from "../../components/style";
 
 const REDES_SUGERIDAS = ["LinkedIn", "GitHub", "Instagram", "Portfolio", "Outro"];
 
