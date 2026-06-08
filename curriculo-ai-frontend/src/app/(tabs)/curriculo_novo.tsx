@@ -9,11 +9,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { COLORS, FONT, RADIUS, SPACING } from "../components/style";
-import { useCurriculoData } from "../context/curriculo-data-context";
-import { useUserProfile } from "../context/user-profile-context";
-import { CurriculoCompletoData } from "../types/curriculo-completo";
-import { formatPeriodo } from "../utils/date-format";
+import { COLORS, FONT, RADIUS, SPACING } from "../../components/style";
+import { useCurriculoData } from "../../context/curriculo-data-context";
+import { useUserProfile } from "../../context/user-profile-context";
+import { CurriculoCompletoData } from "../../types/curriculo-completo";
+import { formatPeriodo } from "../../utils/date-format";
 
 const NIVEL_LABEL: Record<number, string> = {
   1: "Básico",

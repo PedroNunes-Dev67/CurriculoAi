@@ -75,7 +75,7 @@ export default function Home() {
         <TouchableOpacity
           style={styles.heroCTA}
           activeOpacity={0.8}
-          onPress={() => router.push("/curriculo_novo" as Href)}
+          onPress={() => router.push("/(tabs)/curriculo_novo" as Href)}
         >
           <View style={styles.heroCTALeft}>
             <Text style={styles.heroCTAPlus}>+</Text>
@@ -87,7 +87,7 @@ export default function Home() {
         <TouchableOpacity
           style={styles.heroCTASecondary}
           activeOpacity={0.8}
-          onPress={() => router.push("/analise_curriculo" as Href)}
+          onPress={() => router.push("/(tabs)/analise_curriculo" as Href)}
         >
           <View style={styles.heroCTALeft}>
             <MaterialCommunityIcons name="file-search-outline" size={20} color={COLORS.primary} />
@@ -150,7 +150,7 @@ export default function Home() {
         </View>
         <TouchableOpacity
           style={styles.avatar}
-          onPress={() => router.push("/perfil" as Href)}
+          onPress={() => router.push("/(tabs)/perfil" as Href)}
           activeOpacity={0.75}
           accessibilityRole="button"
           accessibilityLabel="Abrir perfil do usuário"

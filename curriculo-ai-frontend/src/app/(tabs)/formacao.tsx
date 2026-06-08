@@ -1,10 +1,10 @@
-import ButtonConfirm from "@/src/components/button-confirm-compent";
-import FormacaoComponent from "@/src/components/formacao-component";
-import SelectModal from "@/src/components/select-modal";
-import StepHeader from "@/src/components/step-header";
-import { COLORS, FONT, INPUT_WIDTH, RADIUS, SPACING } from "@/src/components/style";
-import { useCurriculoData } from "@/src/context/curriculo-data-context";
-import { dateToIso } from "@/src/utils/date-format";
+import ButtonConfirm from "../../components/button-confirm-compent";
+import FormacaoComponent from "../../components/formacao-component";
+import SelectModal from "../../components/select-modal";
+import StepHeader from "../../components/step-header";
+import { COLORS, FONT, INPUT_WIDTH, RADIUS, SPACING } from "../../components/style";
+import { useCurriculoData } from "../../context/curriculo-data-context";
+import { dateToIso } from "../../utils/date-format";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
@@ -174,7 +174,7 @@ export default function Formacao() {
           label="Área de Atuação"
           options={AREAS}
           value={area}
-          onSelect={(v) => { setArea(v); setAreaErro(""); }}
+          onSelect={(v: string) => { setArea(v); setAreaErro(""); }}
           placeholder="Selecione sua área"
           icone="code-tags"
           erro={areaErro}
@@ -192,7 +192,7 @@ export default function Formacao() {
             numero={index + 1}
             data={f}
             erros={errosGlobais[f.id] || {}}
-            onUpdate={(campo, valor) => atualizarFormacao(f.id, campo, valor)}
+            onUpdate={(campo: keyof FormacaoData, valor: any) => atualizarFormacao(f.id, campo, valor)}
             onRemover={() => removerFormacao(f.id)}
             podeRemover={true}
           />

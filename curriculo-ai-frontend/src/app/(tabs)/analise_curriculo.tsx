@@ -12,9 +12,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { COLORS, FONT, RADIUS, SPACING } from "../components/style";
-import { analisarCurriculoPdf } from "../services/analise-curriculo-service";
-import { AnaliseCurriculoResult } from "../types/curriculo-completo";
+import { COLORS, FONT, RADIUS, SPACING } from "../../components/style";
+import { analisarCurriculoPdf } from "../../services/analise-curriculo-service";
+import { AnaliseCurriculoResult } from "../../types/curriculo-completo";
 
 type ArquivoPdf = {
   name: string;

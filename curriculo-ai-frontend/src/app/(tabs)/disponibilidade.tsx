@@ -317,7 +317,7 @@ export default function Disponibilidade() {
       idiomas: idiomas.map((i) => ({ nome: i.nome, nivel: i.nivel })),
     });
 
-    router.push("/curriculo_novo" as import("expo-router").Href);
+    router.push("/(tabs)/curriculo_novo" as import("expo-router").Href);
   }
 
   return (
