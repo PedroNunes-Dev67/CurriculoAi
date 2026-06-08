@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 
 @Entity
-@Table(name = "experiencia_user")
+@Table(name = "experiencia")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -40,13 +40,16 @@ public class ExperienciaUser {
     private LocalDate dataFim;
 
     @Column(nullable = false)
+    private String titulo;
+
+    @Column(nullable = false)
     private String descricao;
 
     @Column(name = "trabalho_atual")
     private Boolean trabalhoAtual;
 
     @ManyToOne
-    @JoinColumn(name = "id_user", nullable = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
     private UsuarioCad usuarioCad;
 
 

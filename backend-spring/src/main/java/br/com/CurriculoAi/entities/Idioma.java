@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table
+@Table(name = "idioma")
 @Getter
 @Setter
 @AllArgsConstructor

@@ -8,6 +8,7 @@ public record ExperienciaDtoRequest(
         LocalDate dataInicio,
         String cargo,
         LocalDate dataFim,
+        String titulo,
         String descriacao,
         Boolean trabalhoAtual
 ) {

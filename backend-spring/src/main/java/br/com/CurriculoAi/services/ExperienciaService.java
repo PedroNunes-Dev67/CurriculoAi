@@ -80,6 +80,7 @@ public class ExperienciaService {
                             experiencia.dataInicio(),
                             experiencia.cargo(),
                             experiencia.dataFim(),
+                            experiencia.titulo(),
                             experiencia.descriacao(),
                             experiencia.trabalhoAtual(),
                             usuario

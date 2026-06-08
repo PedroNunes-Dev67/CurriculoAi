@@ -12,7 +12,8 @@ import org.mapstruct.Mapping;
         CertificacaoMapper.class,
         DisponibilidadeMapper.class,
         IdiomaUserMapper.class,
-        AreaUserMapper.class
+        AreaUserMapper.class,
+        ProjetoMapper.class
 })
 public interface UsuarioMapper{
 
@@ -28,5 +29,6 @@ public interface UsuarioMapper{
     @Mapping(target = "certificoes", source = "certificacoes")
     @Mapping(target = "disponibilidade", source = "disponibilidade")
     @Mapping(target = "idiomas", source = "idiomas")
+    @Mapping(target = "projetos", source = "projetos")
     UsuarioFullContentDtoResponse toFullContentDto(UsuarioCad usuarioCad);
 }
