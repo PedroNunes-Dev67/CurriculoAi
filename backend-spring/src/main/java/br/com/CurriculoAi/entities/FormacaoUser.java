@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "formacao_user")
+@Table(name = "formacao")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -39,7 +39,7 @@ public class FormacaoUser {
     private Boolean emAndamento;
 
     @ManyToOne
-    @JoinColumn(name = "id_user", nullable = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
     private UsuarioCad usuarioCad;
 }
 

@@ -9,6 +9,7 @@ public record UsuarioFullContentDtoResponse(
         List<ExperienciaUserDtoResponse> experiencias,
         List<CertificacaoUserDtoResponse> certificoes,
         DisponibilidadeUserDtoResponse disponibilidade,
-        List<IdiomaUserDtoResponse> idiomas
+        List<IdiomaUserDtoResponse> idiomas,
+        List<ProjetoDtoResponse> projetos
 ) {
 }

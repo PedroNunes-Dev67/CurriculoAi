@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table
+@Table(name = "habilidade")
 @Entity
 @Getter
 @Setter
@@ -19,6 +19,6 @@ public class Habilidade {
     @Column(name = "id_habilidade")
     private Long id;
 
-    @Column(name = "nome_habilidade", nullable = false)
+    @Column(name = "nome", nullable = false)
     private String nome;
 }

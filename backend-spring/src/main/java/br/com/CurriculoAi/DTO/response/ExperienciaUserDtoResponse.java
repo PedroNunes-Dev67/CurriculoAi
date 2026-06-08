@@ -9,6 +9,7 @@ public record ExperienciaUserDtoResponse(
         LocalDate dataInicio,
         String cargo,
         LocalDate dataFim,
+        String titulo,
         String descricao,
         Boolean trabalhoAtual
 ) {

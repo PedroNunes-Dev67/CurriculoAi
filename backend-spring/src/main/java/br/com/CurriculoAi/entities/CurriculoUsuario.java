@@ -34,6 +34,7 @@ public class CurriculoUsuario {
     private LocalDateTime ultimaAtualizacao;
 
     @Lob
+    @Column(columnDefinition = "OID")
     private byte[] curriculo;
 
     @ManyToOne

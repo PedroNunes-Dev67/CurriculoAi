@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @Entity
-@Table
+@Table(name = "certificacao")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,7 +28,7 @@ public class CertificacaoUser {
     @JoinColumn(name = "id_instituicao")
     private Instituicao instituicao;
 
-    @Column(name = "data_de_conclusao")
+    @Column(name = "data_conclusao")
     private LocalDate dataConclusao;
 
     @Column(name = "certificado", nullable = false, columnDefinition = "bytea")
@@ -38,7 +38,7 @@ public class CertificacaoUser {
     private Boolean emAndamento;
 
     @ManyToOne
-    @JoinColumn(name = "id_user", nullable = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
     private UsuarioCad usuarioCad;
 
     public void estaEmAndamento(){

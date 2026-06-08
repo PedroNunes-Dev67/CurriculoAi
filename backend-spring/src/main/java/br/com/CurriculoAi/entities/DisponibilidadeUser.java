@@ -22,14 +22,14 @@ public class DisponibilidadeUser {
     @Column(name = "id_disponibilidade")
     private Long id;
 
-    @Column(name = "disponibilidade_init", nullable = false)
+    @Column(name = "disponibilidade_inicio", nullable = false)
     private LocalDate disponibilidadeInicio;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "modelo_trabalho", nullable = false)
+    @Column(name = "modelo_de_trabalho", nullable = false)
     private ModeloDeTrabalho modeloTrabalho;
 
     @OneToOne
-    @JoinColumn(name = "id_user", nullable = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
     private UsuarioCad usuarioCad;
 }
