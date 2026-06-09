@@ -12,7 +12,9 @@ import br.com.CurriculoAi.mapper.UsuarioMapper;
 import br.com.CurriculoAi.repositories.IdiomaRepository;
 import br.com.CurriculoAi.repositories.IdiomasUserRepository;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
-import org.apache.el.lang.FunctionMapperImpl;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class IdiomaUserService {
 
     private final IdiomasUserRepository idiomasUserRepository;
@@ -30,15 +34,12 @@ public class IdiomaUserService {
     private final TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository;
     private final UsuarioMapper usuarioMapper;
 
-    public IdiomaUserService(IdiomasUserRepository idiomasUserRepository, IdiomaRepository idiomaRepository, TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository, UsuarioMapper usuarioMapper) {
-        this.idiomasUserRepository = idiomasUserRepository;
-        this.idiomaRepository = idiomaRepository;
-        this.tokenIdentificacaoUsurioRepository = tokenIdentificacaoUsurioRepository;
-        this.usuarioMapper = usuarioMapper;
-    }
+    private static final Logger logger = LoggerFactory.getLogger(IdiomaUserService.class);
 
     @Transactional
     public UsuarioFullContentDtoResponse registerIdiomasUser(List<IdiomaUserDtoRequest> idiomas, String token){
+
+        logger.info("Iniando cadastro de idiomas do usuário, com um total de: {}",idiomas.size());
 
         TokenIdentificacaoUsuario tokenIdentificacaoUsuario = tokenIdentificacaoUsurioRepository.findByToken(token)
                 .orElseThrow(() -> new ResourceNotFoundException("Token não encontrado"));
@@ -65,6 +66,8 @@ public class IdiomaUserService {
                 }).toList();
 
         idiomasUserRepository.saveAll(registerIdiomas);
+
+        logger.info("Cadastro de idiomas realizado com sucesso!");
 
         return usuarioMapper.toFullContentDto(usuarioCad);
     }

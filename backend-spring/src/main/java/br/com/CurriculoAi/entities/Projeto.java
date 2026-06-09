@@ -29,9 +29,6 @@ public class Projeto {
     @Column(name = "link_repositorio", nullable = false)
     private String link;
 
-    @OneToMany(mappedBy = "projeto")
-    private List<ProjetoHabilidade> habilidades = new ArrayList<>();
-
     @ManyToOne
     @JoinColumn(name = "id_usuario")
     private UsuarioCad usuario;

@@ -9,22 +9,26 @@ import br.com.CurriculoAi.enums.ModeloDeTrabalho;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.repositories.DisponibilidadeUserRepository;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class DisponibilidadeService {
 
     private final DisponibilidadeUserRepository disponibilidadeUserRepository;
     private final TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository;
 
-    public DisponibilidadeService(DisponibilidadeUserRepository disponibilidadeUserRepository, TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository) {
-        this.disponibilidadeUserRepository = disponibilidadeUserRepository;
-        this.tokenIdentificacaoUsurioRepository = tokenIdentificacaoUsurioRepository;
-    }
+    private static final Logger logger = LoggerFactory.getLogger(DisponibilidadeService.class);
 
     @Transactional
     public UsuarioTokenIdentResponseDto cadastrarDisponibilidade(DisponibilidadeDtoRequest disponibilidadeDtoRequest, String token){
+
+        logger.info("Iniciando o cadastro de disponibilidade do usuário...");
 
         TokenIdentificacaoUsuario tokenIdentificacaoUsuario = tokenIdentificacaoUsurioRepository.findByToken(token)
                 .orElseThrow(() -> new ResourceNotFoundException("Token não encontrado"));
@@ -38,6 +42,8 @@ public class DisponibilidadeService {
                 usuario);
 
         DisponibilidadeUser disponibilidadeUserSalva = disponibilidadeUserRepository.save(novaDisponibilidade);
+
+        logger.info("Disponibilidade salva com sucesso! Com id: {}", disponibilidadeUserSalva.getId());
 
         return new UsuarioTokenIdentResponseDto(tokenIdentificacaoUsuario.getId(), usuario.getNome(), tokenIdentificacaoUsuario.getToken());
     }

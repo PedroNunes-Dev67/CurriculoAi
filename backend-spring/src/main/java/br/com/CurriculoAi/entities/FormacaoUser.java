@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "formacao_user")
+@Table(name = "formacao")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -22,8 +22,8 @@ public class FormacaoUser {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "area", nullable = false)
-    private Area area;
+    @JoinColumn(name = "id_curso", nullable = false)
+    private Curso curso;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_formacao", nullable = false, length = 80)
@@ -39,7 +39,7 @@ public class FormacaoUser {
     private Boolean emAndamento;
 
     @ManyToOne
-    @JoinColumn(name = "id_user", nullable = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
     private UsuarioCad usuarioCad;
 }
 

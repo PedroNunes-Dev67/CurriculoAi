@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table
+@Table(name = "idioma")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -22,5 +22,5 @@ public class Idioma {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private IdiomaEnum idioma;
+    private IdiomaEnum idiomaNome;
 }

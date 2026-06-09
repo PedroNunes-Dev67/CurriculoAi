@@ -1,11 +1,11 @@
 package br.com.CurriculoAi.mapper;
 
-import br.com.CurriculoAi.DTO.response.IdiomaUserDtoResponse;
-import br.com.CurriculoAi.entities.IdiomasUser;
+import br.com.CurriculoAi.DTO.response.IdiomaDtoResponse;
+import br.com.CurriculoAi.entities.Idioma;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface IdiomaMapper {
 
-    IdiomaUserDtoResponse toDto(IdiomasUser idiomasUser);
+    IdiomaDtoResponse toDto(Idioma idioma);
 }

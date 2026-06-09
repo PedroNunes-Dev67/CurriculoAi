@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table
+@Table(name = "usuario_rede_social")
 @Entity
 @Getter
 @Setter
@@ -17,6 +17,8 @@ public class UsuarioRedeSocial {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String link;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")

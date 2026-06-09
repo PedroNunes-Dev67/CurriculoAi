@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenApiConfiguration {
 
+    private String securityFormat = "Bearer Authentication";
+
     @Bean
     public OpenAPI openAPI(){
         return new OpenAPI()
@@ -19,10 +21,10 @@ public class OpenApiConfiguration {
                                 .title("CurriculoAI Documentaion API")
                                 .description("Documetation from CurriculoAI for Developers")
                                 .version("v1.0")
-                                .contact(new Contact().name("CurriculoAI").email("suporte.curriculoai.gmail.com"))
+                                .contact(new Contact().name("CurriculoAI Suporte").email("suporte.curriculoai@gmail.com"))
                 )
-                .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
-                .components(new Components().addSecuritySchemes("Bearer Authentication", createApiKeyOpenApi()));
+                .addSecurityItem(new SecurityRequirement().addList(securityFormat))
+                .components(new Components().addSecuritySchemes(securityFormat, createApiKeyOpenApi()));
     }
 
     private SecurityScheme createApiKeyOpenApi(){

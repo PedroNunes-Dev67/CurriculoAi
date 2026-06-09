@@ -11,7 +11,7 @@ import java.util.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "usuario_cad")
+@Table(name = "usuario")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -52,7 +52,7 @@ public class UsuarioCad implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "role_user",
-            joinColumns = @JoinColumn(name = "id_user"),
+            joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_role")
     )
     @Builder.Default
@@ -68,6 +68,19 @@ public class UsuarioCad implements UserDetails {
 
     @OneToOne(mappedBy = "usuarioCad", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private DisponibilidadeUser disponibilidade;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "usuarioCad", fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<CurriculoUsuario> curriculos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "usuario", fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Projeto> projetos = new ArrayList<>();
+
+    //Verifica a quantidade de curriculos do usuário, se for igual a 3 (ou maior por precaução) retorna true
+    //caso false, o usuário pode ter curriculos cadastrados
+    public boolean verificarLimitadorDeCurriculos(){
+        return curriculos.size() >= 3;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

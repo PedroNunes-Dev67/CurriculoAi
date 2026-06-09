@@ -1,139 +1,264 @@
-import ButtonConfirm from "@/src/components/button-confirm-compent";
-import FormacaoComponent from "@/src/components/formacao-component";
-import Input from "@/src/components/input-component";
-import { GlobalStyles } from "@/src/components/style";
+import ButtonConfirm from "../../components/button-confirm-compent";
+import FormacaoComponent from "../../components/formacao-component";
+import SelectModal from "../../components/select-modal";
+import StepHeader from "../../components/step-header";
+import { COLORS, FONT, INPUT_WIDTH, RADIUS, SPACING } from "../../components/style";
+import { useCurriculoData } from "../../context/curriculo-data-context";
+import { dateToIso } from "../../utils/date-format";
 import { router } from "expo-router";
-import { useState } from "react";
-import { View, Image, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import React, { useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-// Indicador de progresso (As 4 etapas)
-function ProgressIndicator({ etapaAtual }: { etapaAtual: number }) {
-  return (
-    <View style={{
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginVertical: 20,
-      gap: 8,
-    }}>
-      {[1, 2, 3, 4, 5].map((etapa) => {
-        const isAtual = etapa === etapaAtual;
-        return (
-          <View key={etapa} style={{ flexDirection: 'row', alignItems: 'center' }}>
-            {/* Linha entre as etapas */}
-            {etapa > 1 && (
-              <View style={{
-                width: 24,
-                height: 2,
-                backgroundColor: etapa <= etapaAtual ? '#fff' : 'rgba(255,255,255,0.3)',
-                marginRight: 8,
-              }} />
-            )}
-            {/* Círculo da etapa */}
-            <View style={{
-              width: isAtual ? 36 : 28,
-              height: isAtual ? 36 : 28,
-              borderRadius: 18,
-              backgroundColor: isAtual ? '#fff' : 'rgba(255,255,255,0.25)',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderWidth: isAtual ? 0 : 1.5,
-              borderColor: 'rgba(255,255,255,0.5)',
-            }}>
-              <Text style={{
-                color: isAtual ? '#1a6dcc' : 'rgba(255,255,255,0.7)',
-                fontWeight: isAtual ? 'bold' : '500',
-                fontSize: isAtual ? 16 : 13,
-              }}>
-                {etapa}
-              </Text>
-            </View>
-          </View>
-        );
-      })}
-    </View>
-  )
-}
+export type FormacaoData = {
+  id: string;
+  curso: string;
+  nomeCursoOutro?: string; // Campo auxiliar temporário
+  tipoFormacao: string;
+  dataInicio: Date | null;
+  dataTermino: Date | null;
+  cursando: boolean;
+};
 
-function handleProximo(){
-  router.push("/experiencia")
-}
+const AREAS = [
+  { label: "Backend", value: "Backend" },
+  { label: "Frontend", value: "Frontend" },
+  { label: "Full Stack", value: "Full Stack" },
+  { label: "Mobile", value: "Mobile" },
+  { label: "DevOps / SRE", value: "DevOps" },
+  { label: "Data Engineering", value: "Data Engineering" },
+  { label: "QA / Testes", value: "QA" },
+  { label: "UI/UX Engineering", value: "UI/UX Engineering" },
+  { label: "Software Engineering", value: "Software Engineering" },
+  { label: "Segurança / CyberSec", value: "Segurança" },
+  { label: "Machine Learning / IA", value: "Machine Learning" },
+];
 
 export default function Formacao() {
-  const [formacoes, setFormacoes] = useState([{ id: 1 }]);
-  const [area, setArea] = useState('');
+  const { updateFormacao } = useCurriculoData();
+  const [formacoes, setFormacoes] = useState<FormacaoData[]>([]);
+  const [area, setArea] = useState("");
+  const [areaErro, setAreaErro] = useState("");
+  const [errosGlobais, setErrosGlobais] = useState<Record<string, Partial<Record<keyof FormacaoData, string>>>>({});
 
   function adicionarFormacao() {
-    setFormacoes([...formacoes, { id: formacoes.length + 1 }]);
+    if (!validarCampos()) return;
+    if (formacoes.length >= 10) return;
+
+    const novaFormacao: FormacaoData = {
+      id: Math.random().toString(36).substring(2, 9),
+      curso: "",
+      nomeCursoOutro: "", // Inicializado
+      tipoFormacao: "",
+      dataInicio: null,
+      dataTermino: null,
+      cursando: false,
+    };
+
+    setFormacoes((prev) => [...prev, novaFormacao]);
   }
 
-  function removerFormacao(id: number) {
-    if (formacoes.length === 1) return; // mínimo 1
-    setFormacoes(formacoes.filter(f => f.id !== id));
+  function removerFormacao(id: string) {
+    setFormacoes((prev) => prev.filter((f) => f.id !== id));
+    setErrosGlobais((prev) => {
+      const novosErros = { ...prev };
+      delete novosErros[id];
+      return novosErros;
+    });
   }
+
+  function atualizarFormacao(id: string, campo: keyof FormacaoData, valor: any) {
+    setFormacoes((prev) =>
+      prev.map((f) => (f.id === id ? { ...f, [campo]: valor } : f))
+    );
+    setErrosGlobais((prev) => ({
+      ...prev,
+      [id]: { ...prev[id], [campo]: undefined },
+    }));
+  }
+
+  function validarCampos(): boolean {
+    let valido = true;
+    const novosErros: Record<string, Partial<Record<keyof FormacaoData, string>>> = {};
+
+    if (!area) {
+      setAreaErro("Selecione sua área de atuação.");
+      valido = false;
+    }
+
+    formacoes.forEach((f) => {
+      const erroCard: Partial<Record<keyof FormacaoData, string>> = {};
+      
+      if (!f.curso) {
+        erroCard.curso = "Selecione o curso.";
+        valido = false;
+      } else if (f.curso === "Outro" && (!f.nomeCursoOutro || !f.nomeCursoOutro.trim())) {
+        erroCard.curso = "Especifique o nome do curso.";
+        valido = false;
+      }
+
+      if (!f.tipoFormacao) {
+        erroCard.tipoFormacao = "Selecione o tipo de formação.";
+        valido = false;
+      }
+      
+      if (!f.dataInicio) {
+        erroCard.dataInicio = "Data de início obrigatória.";
+        valido = false;
+      }
+
+      if (!f.cursando) {
+        if (!f.dataTermino) {
+          erroCard.dataTermino = "Data de término obrigatória.";
+          valido = false;
+        }
+        if (f.dataInicio && f.dataTermino && f.dataInicio > f.dataTermino) {
+          erroCard.dataTermino = "A data de término não pode ser anterior ao início.";
+          valido = false;
+        }
+      }
+      if (Object.keys(erroCard).length > 0) {
+        novosErros[f.id] = erroCard;
+      }
+    });
+
+    setErrosGlobais(novosErros);
+    return valido;
+  }
+
+  function salvarFormacaoNoContexto() {
+    updateFormacao(
+      area,
+      formacoes.map(({ nomeCursoOutro, curso, ...dados }) => ({
+        curso: curso === "Outro" ? (nomeCursoOutro || "") : curso,
+        tipoFormacao: dados.tipoFormacao,
+        dataInicio: dateToIso(dados.dataInicio),
+        dataTermino: dateToIso(dados.dataTermino),
+        cursando: dados.cursando,
+      }))
+    );
+  }
+
+  function handleProximo() {
+    if (!validarCampos()) return;
+
+    salvarFormacaoNoContexto();
+    router.push("/experiencia");
+  }
+
+  function handleSemFormacao() {
+    updateFormacao(area, []);
+    router.push("/experiencia");
+  }
+
+  const temFormacao = formacoes.length > 0;
 
   return (
-    <View style={[GlobalStyles.fundoazullogin, { paddingTop: 20 }]}>
+    <View style={{ flex: 1, backgroundColor: COLORS.bg }}>
+      <StatusBar style="light" />
       <KeyboardAwareScrollView
-        contentContainerStyle={{ alignItems: 'center', paddingBottom: 40 }}
-        showsVerticalScrollIndicator={false}>
+        contentContainerStyle={styles.scroll}
+        showsVerticalScrollIndicator={false}
+        enableOnAndroid
+        extraScrollHeight={20}
+      >
+        <StepHeader
+          etapa={2}
+          titulo="Sua Formação"
+          descricao="Informe sua área de atuação e formação acadêmica."
+          etapaLabel="Etapa 2 de 5 · Formação"
+        />
 
-        <Image
-                  source={require("../../assets/images/robofdpnopc.png")}
-                  style={{
-                    width: 200,
-                    height: 150,
-                    resizeMode: "contain",
-                    marginTop: 20,
-                  }}
-                />
-        
-                <Text style={GlobalStyles.titulo}>Me conte mais sobre você</Text>
-                <Text style={[GlobalStyles.subtitulo]}>
-                  Etapa 2 de 5 — Formação
-                </Text>
-        
-                <ProgressIndicator etapaAtual={2} />
-
-        <Text style={[GlobalStyles.subtitulo, {marginTop:0}]}>Área</Text>
-        <Input 
-          placeholder="Área" 
-          placeholderTextColor={"#777"}
+        <SelectModal
+          label="Área de Atuação"
+          options={AREAS}
           value={area}
-          onChangeText={setArea}>
-        </Input>
+          onSelect={(v: string) => { setArea(v); setAreaErro(""); }}
+          placeholder="Selecione sua área"
+          icone="code-tags"
+          erro={areaErro}
+        />
+
+        <View style={styles.sectionDivider}>
+          <View style={styles.sectionLine} />
+          <Text style={styles.sectionLabel}>Formações acadêmicas</Text>
+          <View style={styles.sectionLine} />
+        </View>
 
         {formacoes.map((f, index) => (
           <FormacaoComponent
             key={f.id}
             numero={index + 1}
+            data={f}
+            erros={errosGlobais[f.id] || {}}
+            onUpdate={(campo: keyof FormacaoData, valor: any) => atualizarFormacao(f.id, campo, valor)}
             onRemover={() => removerFormacao(f.id)}
-            podeRemover={formacoes.length > 1}
+            podeRemover={true}
           />
         ))}
 
-        {/* Botão para adicionar nova formação */}
-        <TouchableOpacity onPress={adicionarFormacao} style={styles.botaoAdicionar}>
-          <Text style={styles.botaoTexto}>+ Adicionar formação</Text>
-        </TouchableOpacity>
+        {/* REGRA 3: Esconde o botão se atingir o máximo de 10 */}
+        {formacoes.length < 10 && (
+          <TouchableOpacity onPress={adicionarFormacao} style={styles.btnAdicionar}>
+            <Text style={styles.btnAdicionarTexto}>+ Adicionar formação</Text>
+          </TouchableOpacity>
+        )}
 
-          {/* Botão Próximo */}
-          <ButtonConfirm text="Próximo" onPress={handleProximo} />
+        {temFormacao && <ButtonConfirm text="Próximo →" onPress={handleProximo} />}
+
+        {!temFormacao && (
+          <ButtonConfirm
+            text="Não tenho formação"
+            variant="ghost"
+            onPress={handleSemFormacao}
+          />
+        )}
       </KeyboardAwareScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  botaoAdicionar: {
-    marginTop: 16,
-    borderWidth: 1.5,
-    borderColor: '#fff',
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 24,
-    borderStyle: 'dashed',
+  scroll: {
+    alignItems: "center",
+    paddingHorizontal: SPACING.lg,
+    paddingBottom: 80,
   },
-  botaoTexto: { color: '#fff', fontSize: 16 }
+  sectionDivider: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: INPUT_WIDTH,
+    marginTop: SPACING.xl,
+    marginBottom: SPACING.sm,
+    gap: SPACING.sm,
+  },
+  sectionLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: COLORS.border,
+  },
+  sectionLabel: {
+    color: COLORS.textMuted,
+    fontSize: FONT.xs,
+    fontWeight: "600",
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  btnAdicionar: {
+    width: INPUT_WIDTH,
+    marginTop: SPACING.lg,
+    marginBottom: SPACING.lg,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    borderRadius: RADIUS.md,
+    borderStyle: "dashed",
+    paddingVertical: 14,
+    alignItems: "center",
+  },
+  btnAdicionarTexto: {
+    color: COLORS.textSecondary,
+    fontSize: FONT.md,
+    fontWeight: "600",
+  },
 });

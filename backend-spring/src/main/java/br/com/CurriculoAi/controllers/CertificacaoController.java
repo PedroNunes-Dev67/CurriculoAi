@@ -3,6 +3,7 @@ package br.com.CurriculoAi.controllers;
 import br.com.CurriculoAi.DTO.request.CertificacaoDtoRequest;
 import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.services.CertificacaoService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,8 @@ public class CertificacaoController {
         this.certificacaoService = certificacaoService;
     }
 
+    @Operation(summary = "Resgistrar certificações do usuário",
+            description = "No body da requisição é passado um `Array (lista) de certificações` para serem atribuidas ao usuário, pelo `TOKEN` passado como parametro na URL")
     @PostMapping("/register")
     public ResponseEntity<UsuarioTokenIdentResponseDto> registerCertificacoes(@RequestBody List<CertificacaoDtoRequest> certificacoes, @RequestParam String token){
 
