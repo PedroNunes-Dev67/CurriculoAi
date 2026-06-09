@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.services;
 
-import br.com.CurriculoAi.DTO.CerebrasRequestDTO;
+import br.com.CurriculoAi.DTO.request.CerebrasRequestDTO;
 import br.com.CurriculoAi.DTO.response.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
