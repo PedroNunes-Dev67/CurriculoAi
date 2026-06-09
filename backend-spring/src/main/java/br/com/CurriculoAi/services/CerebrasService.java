@@ -18,10 +18,10 @@ public class CerebrasService {
 
     private final Logger logger = Logger.getLogger(CerebrasService.class.getName());
 
-    //@Value("${cerebras.api.key}")
+    @Value("${cerebras.api.key}")
     private String apiKey;
 
-    //@Value("${cerebras.api.url}")
+    @Value("${cerebras.api.url}")
     private String apiUrl;
 
     private final RestTemplate restTemplate = new RestTemplate();
