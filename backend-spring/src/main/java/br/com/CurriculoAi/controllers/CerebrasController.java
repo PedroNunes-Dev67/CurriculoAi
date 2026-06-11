@@ -3,7 +3,7 @@ package br.com.CurriculoAi.controllers;
 import br.com.CurriculoAi.DTO.response.UsuarioFullContentDtoResponse;
 import br.com.CurriculoAi.entities.UsuarioCad;
 import br.com.CurriculoAi.services.CerebrasService;
-import br.com.CurriculoAi.services.CurriculoGeradoService;
+import br.com.CurriculoAi.services.CurriculoUsuarioService;
 import br.com.CurriculoAi.services.PdfService;
 import br.com.CurriculoAi.services.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,7 +14,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,7 +29,7 @@ public class CerebrasController {
     private final UsuarioService usuarioService;
 
     @Autowired
-    private CurriculoGeradoService curriculoGeradoService;
+    private CurriculoUsuarioService curriculoUsuarioService;
 
     @Operation(summary = "Gerar o `Curriculo` do usuário",
             description = "OBS: o usuário precisa estar `AUTENTICADO` com JWT")
@@ -47,7 +46,7 @@ public class CerebrasController {
         UsuarioCad usuarioAutenticado = (UsuarioCad) SecurityContextHolder
                 .getContext().getAuthentication().getPrincipal();
 
-        curriculoGeradoService.salvar(pdf, usuarioAutenticado);
+        curriculoUsuarioService.salvar(pdf, usuarioAutenticado);
 
         return ResponseEntity.ok()
                 .header(
