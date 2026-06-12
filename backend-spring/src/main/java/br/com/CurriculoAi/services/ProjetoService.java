@@ -5,6 +5,7 @@ import br.com.CurriculoAi.DTO.response.ProjetoDtoResponse;
 import br.com.CurriculoAi.entities.Projeto;
 import br.com.CurriculoAi.entities.UsuarioCad;
 import br.com.CurriculoAi.repositories.ProjetoRepository;
+import br.com.CurriculoAi.utils.services.UsuarioUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import java.util.List;
 public class ProjetoService {
 
     private final ProjetoRepository projetoRepository;
+    private final UsuarioUtils usuarioUtils;
 
     private static final Logger logger = LoggerFactory.getLogger(ProjetoService.class);
 
@@ -30,7 +32,7 @@ public class ProjetoService {
 
         logger.info("Inicinado cadastro de projetos do usuário");
 
-        UsuarioCad usuarioCad = (UsuarioCad) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UsuarioCad usuarioCad = usuarioUtils.me();
 
         List<Projeto> projetosParaSalvamento = projetosParaCadastro
                 .stream()
