@@ -1,10 +1,7 @@
 package br.com.CurriculoAi.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,28 +13,29 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class CurriculoUsuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_curriculo")
     private Long id;
 
+    @Column(nullable = false)
     private String titulo;
 
-    @Column(name = "data_criacao")
-    @CreationTimestamp
-    private LocalDateTime dataCriacao;
-
-    @Column(name = "ultima_atualizacao")
-    @UpdateTimestamp
-    private LocalDateTime ultimaAtualizacao;
-
     @Lob
-    @Column(columnDefinition = "OID")
+    @Column(name = "curriculo", nullable = false, columnDefinition = "OID")
     private byte[] curriculo;
 
-    @ManyToOne
-    @JoinColumn(name = "id_usuario")
-    private UsuarioCad usuarioCad;
+    @Column(name = "ultima_geracao", nullable = false)
+    @CreationTimestamp
+    private LocalDateTime dataGeracao;
+
+    @UpdateTimestamp
+    @Column(name = "data_atualizacao", nullable = false)
+    private LocalDateTime dataAtualizacao;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private UsuarioCad usuario;
 }

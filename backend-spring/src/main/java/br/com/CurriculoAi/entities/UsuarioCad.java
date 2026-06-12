@@ -70,7 +70,7 @@ public class UsuarioCad implements UserDetails {
     private DisponibilidadeUser disponibilidade;
 
     @Builder.Default
-    @OneToMany(mappedBy = "usuarioCad", fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "usuario", fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CurriculoUsuario> curriculos = new ArrayList<>();
 
     @OneToMany(mappedBy = "usuario", fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
