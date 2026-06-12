@@ -18,6 +18,6 @@ public class RedeSocial {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nome_rede_social", nullable = false)
+    @Column(name = "nome", nullable = false)
     private String nome;
 }
