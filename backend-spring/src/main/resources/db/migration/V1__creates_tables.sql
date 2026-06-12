@@ -168,7 +168,7 @@ CREATE TABLE curriculo_usuario (
                                    titulo             VARCHAR(255),
                                    data_criacao       TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
                                    ultima_atualizacao TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-                                   curriculo          OID NOT NULL,
+                                   curriculo          BINARY VARYING NOT NULL,
                                    id_usuario         INTEGER NOT NULL,
 
                                    CONSTRAINT fk_curriculo_usuario

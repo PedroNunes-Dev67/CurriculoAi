@@ -35,7 +35,7 @@ public class CurriculoUsuarioService {
                     .min(Comparator.comparing(CurriculoUsuario::getDataGeracao))
                     .orElseThrow();
 
-            logger.info("Limite atingido. Removendo currículo mais antigo: id=" + maisAntigo.getId());
+            logger.info("Limite atingido. Removendo currículo mais antigo: id=" + maisAntigo.getId_curriculo());
 
             curriculoUsuarioRepository.delete(maisAntigo);
         }
