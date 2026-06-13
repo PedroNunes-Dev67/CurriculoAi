@@ -1,23 +1,21 @@
+import { salvarTokenIdent } from "@/src/services/AuthService";
+import { cadastrarUsuario } from "@/src/services/UsuarioService";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useMemo, useState } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import ButtonConfirm from "../../components/button-confirm-compent";
 import { Input } from "../../components/input-component";
 import StepHeader from "../../components/step-header";
-import { COLORS, FONT, INPUT_WIDTH, SPACING } from "../../components/style";
+import { COLORS, INPUT_WIDTH, SPACING } from "../../components/style";
 import { useCurriculoData } from "../../context/curriculo-data-context";
 import { useUserProfile } from "../../context/user-profile-context";
 
 // ─── Validação ────────────────────────────────────────────────────────────────
 const nomeValido = (v: string) => /^[a-zA-ZÀ-ÿ\s'-]{2,}$/.test(v.trim());
-const emailValido = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+const emailValido = (v: string) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
 const senhaForte = (v: string) =>
   v.length >= 8 && /[A-Z]/.test(v) && /[0-9]/.test(v);
 
@@ -32,7 +30,13 @@ function PasswordStrength({ senha }: { senha: string }) {
   if (!senha) return null;
   const score = checks.filter((c) => c.ok).length;
   const barColor =
-    score <= 1 ? COLORS.error : score === 2 ? "#f59e0b" : score === 3 ? "#60a5fa" : COLORS.success;
+    score <= 1
+      ? COLORS.error
+      : score === 2
+        ? "#f59e0b"
+        : score === 3
+          ? "#60a5fa"
+          : COLORS.success;
 
   return (
     <View style={pw.container}>
@@ -51,10 +55,17 @@ function PasswordStrength({ senha }: { senha: string }) {
         {checks.map((c) => (
           <View
             key={c.label}
-            style={[pw.tag, c.ok && { backgroundColor: "rgba(52,211,153,0.12)", borderColor: COLORS.success }]}
+            style={[
+              pw.tag,
+              c.ok && {
+                backgroundColor: "rgba(52,211,153,0.12)",
+                borderColor: COLORS.success,
+              },
+            ]}
           >
             <Text style={[pw.tagText, c.ok && { color: COLORS.success }]}>
-              {c.ok ? "✓ " : ""}{c.label}
+              {c.ok ? "✓ " : ""}
+              {c.label}
             </Text>
           </View>
         ))}
@@ -92,36 +103,54 @@ export default function Cadastro() {
 
   const camposPreenchidos = useMemo(
     () => nome && sobrenome && email && senha && confirmarSenha,
-    [nome, sobrenome, email, senha, confirmarSenha]
+    [nome, sobrenome, email, senha, confirmarSenha],
   );
 
   function validar() {
     const e: Record<string, string> = {};
-    if (!nomeValido(nome)) e.nome = "Nome inválido (mínimo 2 letras, sem números).";
+    if (!nomeValido(nome))
+      e.nome = "Nome inválido (mínimo 2 letras, sem números).";
     if (!nomeValido(sobrenome)) e.sobrenome = "Sobrenome inválido.";
     if (!emailValido(email)) e.email = "Informe um e-mail válido.";
-    if (!senhaForte(senha)) e.senha = "Senha deve ter 8+ chars, 1 maiúscula e 1 número.";
+    if (!senhaForte(senha))
+      e.senha = "Senha deve ter 8+ chars, 1 maiúscula e 1 número.";
     if (senha !== confirmarSenha) e.confirmarSenha = "As senhas não coincidem.";
     setErros(e);
     return Object.keys(e).length === 0;
   }
 
-  function handleProximo() {
+  async function handleProximo() {
     setTentou(true);
     if (!validar()) return;
 
-    const dados = {
-      nome: nome.trim(),
-      sobrenome: sobrenome.trim(),
-      email: email.trim(),
-    };
+    try {
+      const usuario = {
+        nome: nome.trim() + " " + sobrenome.trim(),
+        sobrenome: sobrenome.trim(),
+        email: email.trim(),
+        senha: senha,
+      };
 
-    updateDadosPessoais(dados);
-    updateProfile({
-      nome: `${dados.nome} ${dados.sobrenome}`.trim(),
-      email: dados.email,
-    });
-    router.push("/formacao");
+      const response = await cadastrarUsuario(usuario);
+
+      await salvarTokenIdent(response.token);
+
+      console.log("Token salvo com sucesso!");
+
+      updateDadosPessoais(usuario);
+
+      updateProfile({
+        nome: `${usuario.nome} ${usuario.sobrenome}`.trim(),
+        email: usuario.email,
+      });
+
+      router.push("/formacao");
+    } catch (error) {
+      Alert.alert(
+        "Erro",
+        error instanceof Error ? error.message : "Erro inesperado",
+      );
+    }
   }
 
   function limpar(campo: string) {
@@ -151,7 +180,10 @@ export default function Cadastro() {
           placeholder="Seu primeiro nome"
           autoCapitalize="words"
           value={nome}
-          onChangeText={(v) => { setNome(v); limpar("nome"); }}
+          onChangeText={(v) => {
+            setNome(v);
+            limpar("nome");
+          }}
           erro={erros.nome}
         />
         <Input
@@ -159,7 +191,10 @@ export default function Cadastro() {
           placeholder="Seu sobrenome"
           autoCapitalize="words"
           value={sobrenome}
-          onChangeText={(v) => { setSobrenome(v); limpar("sobrenome"); }}
+          onChangeText={(v) => {
+            setSobrenome(v);
+            limpar("sobrenome");
+          }}
           erro={erros.sobrenome}
         />
         <Input
@@ -169,7 +204,10 @@ export default function Cadastro() {
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
-          onChangeText={(v) => { setEmail(v); limpar("email"); }}
+          onChangeText={(v) => {
+            setEmail(v);
+            limpar("email");
+          }}
           erro={erros.email}
         />
         <Input
@@ -179,7 +217,10 @@ export default function Cadastro() {
           secureTextEntry
           autoCapitalize="none"
           value={senha}
-          onChangeText={(v) => { setSenha(v); limpar("senha"); }}
+          onChangeText={(v) => {
+            setSenha(v);
+            limpar("senha");
+          }}
           erro={erros.senha}
         />
         <PasswordStrength senha={senha} />
@@ -191,7 +232,10 @@ export default function Cadastro() {
           secureTextEntry
           autoCapitalize="none"
           value={confirmarSenha}
-          onChangeText={(v) => { setConfirmarSenha(v); limpar("confirmarSenha"); }}
+          onChangeText={(v) => {
+            setConfirmarSenha(v);
+            limpar("confirmarSenha");
+          }}
           erro={erros.confirmarSenha}
         />
 
