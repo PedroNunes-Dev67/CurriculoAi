@@ -8,8 +8,8 @@ export type FormacaoEntry = {
   curso: string;
   tipoFormacao: string;
   dataInicio: string | null;
-  dataTermino: string | null;
-  cursando: boolean;
+  dataConclusao: string | null;
+  emAndamento: boolean;
 };
 
 export type ExperienciaEntry = {
