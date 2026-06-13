@@ -58,6 +58,8 @@ public class UsuarioService {
 
         logger.info("Iniciando o processo de criação de usuario");
 
+        if (repository.findByEmail(usuarioCadDTO.email()).isPresent()) throw new IllegalArgumentException("Email inválido para cadastro");
+
         //Registra como ROLE_CANDIDATO TODO: VER DEPOIS COMO UTILIZAR DE RECRUTADOR
         Role role = roleRepository.findById(1L)
                 .orElseThrow(() -> new ResourceNotFoundException("Role não encontrada"));
