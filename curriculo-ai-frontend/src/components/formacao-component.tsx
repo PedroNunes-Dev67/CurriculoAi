@@ -17,18 +17,20 @@ import { COLORS, FONT, INPUT_WIDTH, RADIUS, SPACING } from "./style";
 export type FormacaoData = {
   id?: string;
   curso: string;
-  nomeCursoOutro?: string; // Adicionado para espelhar a tipagem do pai
   tipoFormacao: string;
   dataInicio: Date | null;
-  dataTermino: Date | null;
-  cursando: boolean;
+  dataConclusao: Date | null;
+  emAndamento: boolean;
 };
 
 type Props = {
   numero: number;
   data: FormacaoData;
   erros: Partial<Record<keyof FormacaoData, string>>;
-  onUpdate: <K extends keyof FormacaoData>(campo: K, valor: FormacaoData[K]) => void;
+  onUpdate: <K extends keyof FormacaoData>(
+    campo: K,
+    valor: FormacaoData[K],
+  ) => void;
   onRemover: () => void;
   podeRemover: boolean;
 };
@@ -42,20 +44,26 @@ const TIPOS_FORMACAO = [
 ];
 
 const CURSOS_TECH = [
-  { label: "Análise e Desenvolvimento de Sistemas", value: "Análise e Desenvolvimento de Sistemas" },
-  { label: "Ciência da Computação", value: "Ciência da Computação" },
-  { label: "Engenharia de Software", value: "Engenharia de Software" },
-  { label: "Sistemas de Informação", value: "Sistemas de Informação" },
-  { label: "Engenharia da Computação", value: "Engenharia da Computação" },
-  { label: "Redes de Computadores", value: "Redes de Computadores" },
-  { label: "Banco de Dados", value: "Banco de Dados" },
-  { label: "Ciência de Dados / Inteligência Artificial", value: "Ciência de Dados / Inteligência Artificial" },
-  { label: "Segurança da Informação / CyberSec", value: "Segurança da Informação / CyberSec" },
-  { label: "Sistemas para Internet", value: "Sistemas para Internet" },
-  { label: "Gestão da Tecnologia da Informação", value: "Gestão da Tecnologia da Informação" },
-  { label: "Jogos Digitais", value: "Jogos Digitais" },
-  { label: "Engenharia de Controle e Automação", value: "Engenharia de Controle e Automação" },
-  { label: "Outro", value: "Outro" },
+  {
+    label: "Análise e Desenvolvimento de Sistemas",
+    value: "1",
+  },
+  { label: "Ciência da Computação", value: "4" },
+  { label: "Engenharia de Software", value: "5" },
+  { label: "Sistemas de Informação", value: "6" },
+  {
+    label: "Ciência de Dados ",
+    value: "12",
+  },
+  {
+    label: "Segurança da Informação ",
+    value: "14",
+  },
+  {
+    label: "Engenharia de Controle e Automação",
+    value: "16",
+  },
+  { label: "Outro", value: "17" },
 ];
 
 function DateField({
@@ -89,7 +97,7 @@ function DateField({
   return (
     <View style={{ width: INPUT_WIDTH, marginTop: SPACING.sm }}>
       <Text style={styles.label}>{label}</Text>
-      
+
       <TouchableOpacity
         style={[styles.dateField, erro && { borderColor: COLORS.borderError }]}
         onPress={() => {
@@ -108,7 +116,7 @@ function DateField({
           {formatted || "MM/AAAA"}
         </Text>
       </TouchableOpacity>
-      
+
       {erro ? <Text style={styles.erro}>{erro}</Text> : null}
 
       {show && Platform.OS === "android" && (
@@ -127,20 +135,26 @@ function DateField({
 
       {show && Platform.OS === "ios" && (
         <Modal transparent={true} animationType="slide" visible={show}>
-          <TouchableOpacity 
-            style={styles.modalOverlay} 
-            activeOpacity={1} 
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            activeOpacity={1}
             onPress={handleCancelIOS}
           >
-            <View 
-              style={styles.modalContent} 
+            <View
+              style={styles.modalContent}
               onStartShouldSetResponder={() => true}
             >
               <View style={styles.modalHeader}>
-                <TouchableOpacity onPress={handleCancelIOS} style={styles.modalBtn}>
+                <TouchableOpacity
+                  onPress={handleCancelIOS}
+                  style={styles.modalBtn}
+                >
                   <Text style={styles.modalCancelText}>Cancelar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleConfirmIOS} style={styles.modalBtn}>
+                <TouchableOpacity
+                  onPress={handleConfirmIOS}
+                  style={styles.modalBtn}
+                >
                   <Text style={styles.modalConfirmText}>Confirmar</Text>
                 </TouchableOpacity>
               </View>
@@ -200,7 +214,6 @@ export default function FormacaoComponent({
   onRemover,
   podeRemover,
 }: Props) {
-  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -211,14 +224,21 @@ export default function FormacaoComponent({
           <Text style={styles.tituloCard}>Formação {numero}</Text>
         </View>
         {podeRemover && (
-          <TouchableOpacity onPress={onRemover} style={styles.btnRemover} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <MaterialCommunityIcons name="trash-can-outline" size={18} color={COLORS.borderError} />
+          <TouchableOpacity
+            onPress={onRemover}
+            style={styles.btnRemover}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <MaterialCommunityIcons
+              name="trash-can-outline"
+              size={18}
+              color={COLORS.borderError}
+            />
           </TouchableOpacity>
         )}
       </View>
 
       <View style={styles.campos}>
-        
         {/* AQUI ESTÁ A MUDANÇA: O SelectModal de Curso entra no lugar do TextInput antigo */}
         <SelectModal
           label="Curso"
@@ -226,27 +246,11 @@ export default function FormacaoComponent({
           value={data.curso}
           onSelect={(v) => {
             onUpdate("curso", v);
-            if (v !== "Outro") {
-              onUpdate("nomeCursoOutro", ""); // Limpa o "outro" se escolher um curso da lista
-            }
           }}
           placeholder="Selecione o curso"
           icone="school-outline"
           erro={erros.curso}
         />
-
-        {/* E AQUI A CONDICIONAL: O input livre só aparece se ele marcou "Outro" */}
-        {data.curso === "Outro" && (
-          <View style={{ width: INPUT_WIDTH, marginTop: SPACING.sm }}>
-            <TouchableOpacity style={[styles.inputBox, erros.curso && { borderColor: COLORS.borderError }]} activeOpacity={1}>
-              <TextInputInline
-                placeholder="Qual o nome do curso?"
-                value={data.nomeCursoOutro || ""}
-                onChangeText={(v) => onUpdate("nomeCursoOutro", v)}
-              />
-            </TouchableOpacity>
-          </View>
-        )}
 
         <SelectModal
           label="Tipo de Formação"
@@ -265,23 +269,23 @@ export default function FormacaoComponent({
           erro={erros.dataInicio}
         />
 
-        {!data.cursando && (
+        {!data.emAndamento && (
           <DateField
             label="Data de Término"
-            value={data.dataTermino}
-            onChange={(d) => onUpdate("dataTermino", d)}
-            erro={erros.dataTermino}
+            value={data.dataConclusao}
+            onChange={(d) => onUpdate("dataConclusao", d)}
+            erro={erros.dataConclusao}
           />
         )}
 
         <Checkbox
           label="Cursando atualmente"
-          checked={data.cursando}
+          checked={data.emAndamento}
           onToggle={() => {
-            const novoEstado = !data.cursando;
-            onUpdate("cursando", novoEstado);
+            const novoEstado = !data.emAndamento;
+            onUpdate("emAndamento", novoEstado);
             if (novoEstado) {
-              onUpdate("dataTermino", null);
+              onUpdate("dataConclusao", null);
             }
           }}
         />
@@ -392,7 +396,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-    paddingBottom: 30, 
+    paddingBottom: 30,
   },
   modalHeader: {
     flexDirection: "row",
@@ -407,11 +411,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   modalCancelText: {
-    color: "#EF4444", 
+    color: "#EF4444",
     fontSize: 16,
   },
   modalConfirmText: {
-    color: "#3B82F6", 
+    color: "#3B82F6",
     fontSize: 16,
     fontWeight: "600",
   },

@@ -1,10 +1,5 @@
 import { API_URL } from "../config/app";
-
-type UsuarioCadastro = {
-  nome: string;
-  email: string;
-  senha: string;
-};
+import { UsuarioCadastro } from "../types/UsuarioCadastro";
 
 export async function cadastrarUsuario(usuarioCadastro: UsuarioCadastro) {
   const response = await fetch(`${API_URL}/usuario/create`, {

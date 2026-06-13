@@ -1,38 +1,45 @@
+import { salvarArea } from "@/src/services/AreaService";
+import { salvarFormacoes } from "@/src/services/FormacaoService";
+import { router } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import React, { useState } from "react";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import ButtonConfirm from "../../components/button-confirm-compent";
 import FormacaoComponent from "../../components/formacao-component";
 import SelectModal from "../../components/select-modal";
 import StepHeader from "../../components/step-header";
-import { COLORS, FONT, INPUT_WIDTH, RADIUS, SPACING } from "../../components/style";
+import {
+  COLORS,
+  FONT,
+  INPUT_WIDTH,
+  RADIUS,
+  SPACING,
+} from "../../components/style";
 import { useCurriculoData } from "../../context/curriculo-data-context";
 import { dateToIso } from "../../utils/date-format";
-import { router } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export type FormacaoData = {
   id: string;
   curso: string;
-  nomeCursoOutro?: string; // Campo auxiliar temporário
   tipoFormacao: string;
   dataInicio: Date | null;
-  dataTermino: Date | null;
-  cursando: boolean;
+  dataConclusao: Date | null;
+  emAndamento: boolean;
 };
 
 const AREAS = [
-  { label: "Backend", value: "Backend" },
-  { label: "Frontend", value: "Frontend" },
-  { label: "Full Stack", value: "Full Stack" },
-  { label: "Mobile", value: "Mobile" },
-  { label: "DevOps / SRE", value: "DevOps" },
-  { label: "Data Engineering", value: "Data Engineering" },
-  { label: "QA / Testes", value: "QA" },
-  { label: "UI/UX Engineering", value: "UI/UX Engineering" },
-  { label: "Software Engineering", value: "Software Engineering" },
-  { label: "Segurança / CyberSec", value: "Segurança" },
-  { label: "Machine Learning / IA", value: "Machine Learning" },
+  { label: "Backend", value: "31" },
+  { label: "Frontend", value: "32" },
+  { label: "Full Stack", value: "33" },
+  { label: "Mobile", value: "34" },
+  { label: "DevOps / SRE", value: "35" },
+  { label: "Data Engineering", value: "36" },
+  { label: "QA / Testes", value: "37" },
+  { label: "UI/UX Engineering", value: "38" },
+  { label: "Software Engineering", value: "39" },
+  { label: "Segurança / CyberSec", value: "40" },
+  { label: "Machine Learning / IA", value: "41" },
 ];
 
 export default function Formacao() {
@@ -40,7 +47,9 @@ export default function Formacao() {
   const [formacoes, setFormacoes] = useState<FormacaoData[]>([]);
   const [area, setArea] = useState("");
   const [areaErro, setAreaErro] = useState("");
-  const [errosGlobais, setErrosGlobais] = useState<Record<string, Partial<Record<keyof FormacaoData, string>>>>({});
+  const [errosGlobais, setErrosGlobais] = useState<
+    Record<string, Partial<Record<keyof FormacaoData, string>>>
+  >({});
 
   function adicionarFormacao() {
     if (!validarCampos()) return;
@@ -48,12 +57,11 @@ export default function Formacao() {
 
     const novaFormacao: FormacaoData = {
       id: Math.random().toString(36).substring(2, 9),
-      curso: "",
-      nomeCursoOutro: "", // Inicializado
+      curso: "0",
       tipoFormacao: "",
       dataInicio: null,
-      dataTermino: null,
-      cursando: false,
+      dataConclusao: null,
+      emAndamento: false,
     };
 
     setFormacoes((prev) => [...prev, novaFormacao]);
@@ -68,9 +76,13 @@ export default function Formacao() {
     });
   }
 
-  function atualizarFormacao(id: string, campo: keyof FormacaoData, valor: any) {
+  function atualizarFormacao(
+    id: string,
+    campo: keyof FormacaoData,
+    valor: any,
+  ) {
     setFormacoes((prev) =>
-      prev.map((f) => (f.id === id ? { ...f, [campo]: valor } : f))
+      prev.map((f) => (f.id === id ? { ...f, [campo]: valor } : f)),
     );
     setErrosGlobais((prev) => ({
       ...prev,
@@ -80,7 +92,10 @@ export default function Formacao() {
 
   function validarCampos(): boolean {
     let valido = true;
-    const novosErros: Record<string, Partial<Record<keyof FormacaoData, string>>> = {};
+    const novosErros: Record<
+      string,
+      Partial<Record<keyof FormacaoData, string>>
+    > = {};
 
     if (!area) {
       setAreaErro("Selecione sua área de atuação.");
@@ -89,12 +104,9 @@ export default function Formacao() {
 
     formacoes.forEach((f) => {
       const erroCard: Partial<Record<keyof FormacaoData, string>> = {};
-      
+
       if (!f.curso) {
         erroCard.curso = "Selecione o curso.";
-        valido = false;
-      } else if (f.curso === "Outro" && (!f.nomeCursoOutro || !f.nomeCursoOutro.trim())) {
-        erroCard.curso = "Especifique o nome do curso.";
         valido = false;
       }
 
@@ -102,19 +114,21 @@ export default function Formacao() {
         erroCard.tipoFormacao = "Selecione o tipo de formação.";
         valido = false;
       }
-      
+
       if (!f.dataInicio) {
         erroCard.dataInicio = "Data de início obrigatória.";
         valido = false;
       }
 
-      if (!f.cursando) {
-        if (!f.dataTermino) {
-          erroCard.dataTermino = "Data de término obrigatória.";
+      if (!f.emAndamento) {
+        if (!f.dataConclusao) {
+          erroCard.dataConclusao = "Data de término obrigatória.";
           valido = false;
         }
-        if (f.dataInicio && f.dataTermino && f.dataInicio > f.dataTermino) {
-          erroCard.dataTermino = "A data de término não pode ser anterior ao início.";
+
+        if (f.dataInicio && f.dataConclusao && f.dataInicio > f.dataConclusao) {
+          erroCard.dataConclusao =
+            "A data de término não pode ser anterior ao início.";
           valido = false;
         }
       }
@@ -130,21 +144,42 @@ export default function Formacao() {
   function salvarFormacaoNoContexto() {
     updateFormacao(
       area,
-      formacoes.map(({ nomeCursoOutro, curso, ...dados }) => ({
-        curso: curso === "Outro" ? (nomeCursoOutro || "") : curso,
-        tipoFormacao: dados.tipoFormacao,
-        dataInicio: dateToIso(dados.dataInicio),
-        dataTermino: dateToIso(dados.dataTermino),
-        cursando: dados.cursando,
-      }))
+      formacoes.map((f) => ({
+        curso: f.curso,
+        tipoFormacao: f.tipoFormacao,
+        dataInicio: dateToIso(f.dataInicio),
+        dataConclusao: dateToIso(f.dataConclusao),
+        emAndamento: f.emAndamento,
+      })),
     );
   }
 
-  function handleProximo() {
+  async function handleProximo() {
     if (!validarCampos()) return;
+    const temCursoInvalido = formacoes.some((f) => f.curso === "0");
+    if (temCursoInvalido) {
+      Alert.alert("Erro", "Selecione o curso de todas as formações.");
+      return;
+    }
 
     salvarFormacaoNoContexto();
-    router.push("/experiencia");
+
+    try {
+      const responseArea = await salvarArea(area);
+
+      console.log("Area cadastrada com sucesso");
+
+      const responseFormacoes = await salvarFormacoes(formacoes);
+
+      console.log("Formações salvar com sucesso");
+
+      router.push("/experiencia");
+    } catch (error) {
+      Alert.alert(
+        "Erro",
+        error instanceof Error ? error.message : "Erro inesperado",
+      );
+    }
   }
 
   function handleSemFormacao() {
@@ -174,7 +209,10 @@ export default function Formacao() {
           label="Área de Atuação"
           options={AREAS}
           value={area}
-          onSelect={(v: string) => { setArea(v); setAreaErro(""); }}
+          onSelect={(v: string) => {
+            setArea(v);
+            setAreaErro("");
+          }}
           placeholder="Selecione sua área"
           icone="code-tags"
           erro={areaErro}
@@ -192,7 +230,9 @@ export default function Formacao() {
             numero={index + 1}
             data={f}
             erros={errosGlobais[f.id] || {}}
-            onUpdate={(campo: keyof FormacaoData, valor: any) => atualizarFormacao(f.id, campo, valor)}
+            onUpdate={(campo: keyof FormacaoData, valor: any) =>
+              atualizarFormacao(f.id, campo, valor)
+            }
             onRemover={() => removerFormacao(f.id)}
             podeRemover={true}
           />
@@ -200,20 +240,15 @@ export default function Formacao() {
 
         {/* REGRA 3: Esconde o botão se atingir o máximo de 10 */}
         {formacoes.length < 10 && (
-          <TouchableOpacity onPress={adicionarFormacao} style={styles.btnAdicionar}>
+          <TouchableOpacity
+            onPress={adicionarFormacao}
+            style={styles.btnAdicionar}
+          >
             <Text style={styles.btnAdicionarTexto}>+ Adicionar formação</Text>
           </TouchableOpacity>
         )}
 
-        {temFormacao && <ButtonConfirm text="Próximo →" onPress={handleProximo} />}
-
-        {!temFormacao && (
-          <ButtonConfirm
-            text="Não tenho formação"
-            variant="ghost"
-            onPress={handleSemFormacao}
-          />
-        )}
+        <ButtonConfirm text="Próximo →" onPress={handleProximo} />
       </KeyboardAwareScrollView>
     </View>
   );
