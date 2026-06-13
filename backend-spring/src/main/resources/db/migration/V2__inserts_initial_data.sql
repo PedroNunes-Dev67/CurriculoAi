@@ -34,6 +34,17 @@ INSERT INTO area (nome_area) VALUES ('Esporte');
 INSERT INTO area (nome_area) VALUES ('Ciências');
 INSERT INTO area (nome_area) VALUES ('Pesquisa e Desenvolvimento');
 INSERT INTO area (nome_area) VALUES ('Serviço Social');
+INSERT INTO area (nome_area) VALUES ('Backend');
+INSERT INTO area (nome_area) VALUES ('Frontend');
+INSERT INTO area (nome_area) VALUES ('Full Stack');
+INSERT INTO area (nome_area) VALUES ('Mobile');
+INSERT INTO area (nome_area) VALUES ('DevOps');
+INSERT INTO area (nome_area) VALUES ('Data Engineering');
+INSERT INTO area (nome_area) VALUES ('QA');
+INSERT INTO area (nome_area) VALUES ('UI/UX Engineering');
+INSERT INTO area (nome_area) VALUES ('Software Engineering');
+INSERT INTO area (nome_area) VALUES ('Segurança da informação');
+INSERT INTO area (nome_area) VALUES ('Machine Learning');
 
 -- Empresa
 INSERT INTO empresa (nome) VALUES ('Accenture');
@@ -105,4 +116,9 @@ INSERT INTO curso (nome_curso) VALUES ('Medicina');
 INSERT INTO curso (nome_curso) VALUES ('Enfermagem');
 INSERT INTO curso (nome_curso) VALUES ('Engenharia Civil');
 INSERT INTO curso (nome_curso) VALUES ('Arquitetura');
+INSERT INTO curso (nome_curso) VALUES ('Ciência de dados');
+INSERT INTO curso (nome_curso) VALUES ('Inteligência artificial');
+INSERT INTO curso (nome_curso) VALUES ('Segurança da informação');
 INSERT INTO curso (nome_curso) VALUES ('Design Gráfico');
+INSERT INTO curso (nome_curso) VALUES ('Engenharia de controle e automação');
+INSERT INTO curso (nome_curso) VALUES ('Outro');
