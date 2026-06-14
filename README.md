@@ -1,97 +1,84 @@
-# 📄 CurriculoAI
+# CurriculoAI
 
-> Plataforma inteligente para geração e análise de currículos com IA
+![Java](https://img.shields.io/badge/Java_21-ED8B00?style=flat&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=flat&logo=springboot&logoColor=white)
+![React Native](https://img.shields.io/badge/React_Native-20232A?style=flat&logo=react&logoColor=61DAFB)
+![Expo](https://img.shields.io/badge/Expo-000020?style=flat&logo=expo&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
+![MIT License](https://img.shields.io/badge/license-MIT-green?style=flat)
 
----
+Você preenche seus dados, a IA monta o currículo. Simples assim.
 
-## 🚀 Sobre o Projeto
 
-O **CurriculoAI** é uma aplicação fullstack que permite ao usuário montar seu currículo profissional de forma guiada e, com um clique, gerar um currículo otimizado para ATS (Applicant Tracking Systems) usando inteligência artificial.
+## O problema
 
-O sistema coleta dados completos do candidato — experiências, formações, certificações, idiomas, habilidades e disponibilidade — e usa um prompt cuidadosamente engenheirado para produzir um currículo profissional em Markdown, que depois é convertido para PDF.
+A maioria dos currículos nem chega em pessoas e já cai no filtro automático (ATS). O CurriculoAI resolve isso: pega suas experiências, formações e habilidades e gera um currículo em PDF já otimizado pra passar nesses sistemas.
 
----
 
-## 🧱 Arquitetura
+## Como funciona
 
-O projeto é dividido em dois módulos principais:
+```
+você preenche os dados → IA estrutura e escreve → PDF gerado → currículo pronto
+```
+
+também análisamos currículos existentes, caso você queira feedback do que já tem.
+
+
+## Estrutura
 
 ```
 CurriculoAi/
-├── backend-spring/        # API REST com Spring Boot (Java 21)
-└── curriculo-ai-frontend/ # App mobile com React Native + Expo
+├── backend-spring/        # API REST — Java 21 + Spring Boot
+└── curriculo-ai-frontend/ # App mobile — React Native + Expo
 ```
 
----
 
-## ✨ Funcionalidades
+## Backend
 
-- **Cadastro e autenticação** de usuários com JWT
-- **Preenchimento guiado** de dados do currículo (experiência, formação, certificações, idiomas, projetos, redes sociais)
-- **Geração de currículo em Markdown** via Cerebras AI com prompt otimizado para ATS
-- **Geração de PDF** a partir do conteúdo gerado
-- **Análise do currículo** com feedback inteligente
-- **Perfil do usuário** com área de atuação e disponibilidade de trabalho (presencial, remoto, híbrido)
+![Java](https://img.shields.io/badge/Java_21-ED8B00?style=flat&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=flat&logo=springboot&logoColor=white)
 
----
+API feita com Spring Boot. Cuida da autenticação, dados do usuário e chama a Cerebras AI pra gerar/analisar o currículo.
 
-## 🖥️ Backend — Spring Boot
+**Stack:**
+- Java 21 + Spring Boot
+- Spring Security + JWT
+- JPA + PostgreSQL + Flyway
+- MapStruct, Swagger, Docker
 
-### Tecnologias
-
-| Tecnologia |
-|---|
-| Java | 
-| Spring Boot | 
-| Spring Security + JWT |
-| Spring Data JPA | 
-| PostgreSQL |
-| Flyway | 
-| MapStruct |
-| OpenAPI (Swagger) |
-| Docker |
-
-### Estrutura do Backend
+**Estrutura de pastas:**
 
 ```
 backend-spring/src/main/java/br/com/CurriculoAi/
-├── controllers/    # Endpoints REST
-├── services/       # Regras de negócio e integração com Cerebras
-├── entities/       # Entidades JPA (Usuario, Experiencia, Formacao, etc.)
-├── repositories/   # Spring Data Repositories
-├── DTO/            # DTOs de request e response
-├── mapper/         # MapStruct mappers
-├── security/       # JWT e configuração do Spring Security
-├── enums/          # Enums (ModeloDeTrabalho, NivelIdioma, TipoFormacao...)
-└── exceptions/     # Tratamento global de erros
+├── controllers/    # endpoints
+├── services/       # lógica de negócio + integração com Cerebras
+├── entities/       # entidades JPA
+├── repositories/   # Spring Data
+├── DTO/            # request/response
+├── mapper/         # MapStruct
+├── security/       # JWT
+├── enums/          # ModeloDeTrabalho, NivelIdioma...
+└── exceptions/     # erros globais
 ```
 
-### Como rodar o Backend
-
-**Pré-requisitos:** Java 21, Maven, PostgreSQL
+**Rodando:**
 
 ```bash
 cd backend-spring
-
-# Configurar as variáveis de ambiente em application.properties
-# ou application-prod.properties
-
 mvn spring-boot:run
 ```
 
-**Via Docker:**
+Com Docker:
 
 ```bash
-cd backend-spring
 docker build -t curriculo-ai-backend .
 docker run -p 8080:8080 curriculo-ai-backend
-
-#Configurar variavies para conexão com banco de dados (caso for usar PostgreSQL)
 ```
 
-A API ficará disponível em `http://localhost:8080`. A documentação Swagger estará em `http://localhost:8080/swagger-ui.html`.
+API em `http://localhost:8080` · Swagger em `http://localhost:8080/swagger-ui.html`
 
-### Variáveis de Ambiente (Backend)
+**`.env` do backend:**
 
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/curriculo_ai
@@ -104,41 +91,26 @@ cerebras.api.key=sua_chave_api_cerebras
 jwt.secret=seu_segredo_jwt
 ```
 
-### Banco de Dados
 
-O banco é gerenciado pelo **Flyway**. As migrations estão em `src/main/resources/db/migration/`.
+## Frontend
 
-Principais entidades:
+![React Native](https://img.shields.io/badge/React_Native-20232A?style=flat&logo=react&logoColor=61DAFB)
+![Expo](https://img.shields.io/badge/Expo-000020?style=flat&logo=expo&logoColor=white)
 
-- `usuario` — dados do candidato
-- `experiencia` — histórico profissional
-- `formacao` — formação acadêmica
-- `certificacao_user` — certificações
-- `idiomas_user` — idiomas e nível
-- `disponibilidade` — modelo e data de disponibilidade
-- `curriculo_usuario` — currículo gerado em Markdown
-- `avaliacao_curriculo` — análise/feedback da IA
+App mobile com React Native + Expo. Roteamento por arquivo via Expo Router.
 
----
+**Stack:**
+- React Native 0.81.5
+- Expo ~54 + Expo Router ~6
+- TypeScript ~5.9
+- React Navigation 7
 
-## 📱 Frontend — React Native + Expo
-
-### Tecnologias
-
-| Tecnologia | Versão |
-|---|---|
-| React Native | 0.81.5 |
-| Expo | ~54.0.33 |
-| Expo Router | ~6.0.23 |
-| TypeScript | ~5.9.2 |
-| React Navigation | 7.x |
-
-### Estrutura do Frontend
+**Estrutura de pastas:**
 
 ```
 curriculo-ai-frontend/src/
 ├── app/
-│   ├── (tabs)/         # Telas principais via file-based routing
+│   ├── (tabs)/
 │   │   ├── home.tsx
 │   │   ├── cadastro.tsx
 │   │   ├── experiencia.tsx
@@ -150,73 +122,65 @@ curriculo-ai-frontend/src/
 │   │   └── analise_curriculo.tsx
 │   ├── login.tsx
 │   └── _layout.tsx
-├── components/         # Componentes reutilizáveis
-├── context/            # Contextos React (dados do currículo, perfil)
-├── services/           # Comunicação com a API
-├── hooks/              # Custom hooks
-├── types/              # Tipos TypeScript
-└── utils/              # Utilitários (ex: formatação de datas)
+├── components/
+├── context/
+├── services/
+├── hooks/
+├── types/
+└── utils/
 ```
 
-### Como rodar o Frontend
-
-**Pré-requisitos:** Node.js 18+, Expo CLI
+**Rodando:**
 
 ```bash
 cd curriculo-ai-frontend
-
 npm install
-
-# Configurar a URL da API no .env
 cp .env.example .env
-# Edite o .env com a URL do backend
-
 npx expo start
 ```
 
-Escaneie o QR code com o **Expo Go** (Android/iOS) ou rode no emulador.
+Abre no celular com o Expo Go (iOS/Android) ou no emulador.
 
-### Variáveis de Ambiente (Frontend)
+**`.env` do frontend:**
 
 ```env
 EXPO_PUBLIC_API_URL=http://localhost:8080
 ```
 
+
+## A parte da IA
+
+![ChatGPT](https://img.shields.io/badge/ChatGPT-74AA9C?style=flat&logo=openai&logoColor=white)
+![Cerebras](https://img.shields.io/badge/Cerebras-FF6B35?style=flat&logoColor=white)
+
+O `CerebrasService` pega tudo que o usuário preencheu e manda pra Cerebras com um prompt bem estruturado. O prompt segue:
+
+- verbos de ação em cada experiência
+- ordem fixa: Resumo → Habilidades → Experiência → Educação → Certificações → Idiomas
+- tudo em português (tecnologias ficam em inglês mesmo)
+
+O retorno vem em Markdown e o `PdfService` converte pra PDF.
+
+
+## Endpoints
+
+| Método | Rota | O que faz |
+|--------|------|-----------|
+| `POST` | `/usuario` | cria conta |
+| `POST` | `/login` | autentica e devolve JWT |
+| `GET` | `/usuario/me` | retorna todos os dados do usuário |
+| `POST` | `/experiencia` | adiciona experiência |
+| `POST` | `/formacao` | adiciona formação |
+| `POST` | `/certificacao` | adiciona certificação |
+| `POST` | `/idioma` | adiciona idioma |
+| `POST` | `/disponibilidade` | salva disponibilidade |
+| `POST` | `/cerebras/gerar-curriculo` | gera o currículo com IA |
+| `POST` | `/cerebras/analisar-curriculo` | analisa currículo com IA |
+
+Documentação completa no Swagger depois de subir a API.
+
 ---
 
-## 🤖 Integração com IA (Cerebras)
+## Licença
 
-O coração do projeto é o `CerebrasService`, que recebe os dados completos do usuário e constrói um prompt detalhado para gerar um currículo profissional em Markdown.
-
-O prompt segue as boas práticas de:
-- Otimização para sistemas ATS
-- Verbos de ação fortes em cada experiência
-- Estrutura padronizada (Resumo → Habilidades → Experiência → Educação → Certificações → Idiomas)
-- Output 100% em português brasileiro (exceto nomes de tecnologias)
-
-O resultado em Markdown é então convertido para **PDF** via `PdfService`.
-
----
-
-## 📋 Endpoints Principais
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/usuario` | Cadastrar usuário |
-| `POST` | `/login` | Autenticar e obter JWT |
-| `GET` | `/usuario/me` | Buscar todos os dados do usuário |
-| `POST` | `/experiencia` | Adicionar experiência |
-| `POST` | `/formacao` | Adicionar formação |
-| `POST` | `/certificacao` | Adicionar certificação |
-| `POST` | `/idioma` | Adicionar idioma |
-| `POST` | `/disponibilidade` | Cadastrar disponibilidade |
-| `POST` | `/cerebras/gerar-curriculo` | Gerar currículo com IA |
-| `POST` | `/cerebras/analisar-curriculo` | Analisar currículo com IA |
-
-> A documentação completa dos endpoints está disponível no Swagger UI após subir a aplicação.
-
----
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT.
+![MIT License](https://img.shields.io/badge/license-MIT-green?style=flat)
