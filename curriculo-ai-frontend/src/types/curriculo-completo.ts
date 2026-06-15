@@ -33,7 +33,14 @@ export type ExperienciaDtoRequest = {
 export type CertificacaoEntry = {
   nome: string;
   instituicao: string;
-  anoConclusao: string;
+  dataConclusao: string | null;
+};
+
+export type CertificacaoDtoRequest = {
+  nomeCertificacao: string;
+  id_instituicao: number;
+  dataConclusao: string | null;
+  certificado: number[] | null;
 };
 
 export type IdiomaEntry = {
