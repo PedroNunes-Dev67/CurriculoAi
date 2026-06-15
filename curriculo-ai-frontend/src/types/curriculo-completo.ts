@@ -21,6 +21,15 @@ export type ExperienciaEntry = {
   area: string;
 };
 
+export type ExperienciaDtoRequest = {
+  id_area: number;
+  id_empresa: number;
+  dataInicio: string | null;
+  cargo: string;
+  dataFim: string | null;
+  trabalhoAtual: boolean;
+};
+
 export type CertificacaoEntry = {
   nome: string;
   instituicao: string;
