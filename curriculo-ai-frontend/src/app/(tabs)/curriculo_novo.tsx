@@ -1,9 +1,11 @@
+import { gerarCurriculo } from "@/src/services/CurriculoService";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import {
-  Linking,
+  ActivityIndicator,
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -22,7 +24,15 @@ const NIVEL_LABEL: Record<number, string> = {
   3: "Fluente",
 };
 
-function ScoreBar({ label, value, color }: { label: string; value: number; color: string }) {
+function ScoreBar({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value: number;
+  color: string;
+}) {
   return (
     <View style={styles.scoreRow}>
       <View style={styles.scoreLabelRow}>
@@ -30,7 +40,12 @@ function ScoreBar({ label, value, color }: { label: string; value: number; color
         <Text style={[styles.scoreValue, { color }]}>{value}%</Text>
       </View>
       <View style={styles.scoreTrack}>
-        <View style={[styles.scoreFill, { width: `${value}%`, backgroundColor: color }]} />
+        <View
+          style={[
+            styles.scoreFill,
+            { width: `${value}%`, backgroundColor: color },
+          ]}
+        />
       </View>
     </View>
   );
@@ -79,37 +94,76 @@ const CURRICULO_DOWNLOAD_URL = "https://seu-backend.com/api/curriculo/download";
 export default function CurriculoNovo() {
   const { data, hasCurriculoData, getNomeCompleto } = useCurriculoData();
   const { profile } = useUserProfile();
+  const [baixando, setBaixando] = React.useState(false);
 
   const nome = getNomeCompleto() || profile.nome || "Seu nome";
   const email = data.dadosPessoais?.email || profile.email || "";
   const temDados = hasCurriculoData();
+
+  async function baixarCurriculo() {
+    if (baixando) return;
+    try {
+      setBaixando(true);
+      await gerarCurriculo();
+    } catch (error) {
+      Alert.alert(
+        "Erro ao gerar currículo",
+        "Tente novamente em alguns instantes.",
+      );
+      console.log(error);
+    } finally {
+      setBaixando(false);
+    }
+  }
 
   return (
     <View style={styles.root}>
       <StatusBar style="light" />
 
       <View style={styles.topBar}>
-        <TouchableOpacity style={styles.iconBtn} onPress={() => router.back()} activeOpacity={0.7}>
-          <MaterialCommunityIcons name="arrow-left" size={22} color={COLORS.textPrimary} />
+        <TouchableOpacity
+          style={styles.iconBtn}
+          onPress={() => router.back()}
+          activeOpacity={0.7}
+        >
+          <MaterialCommunityIcons
+            name="arrow-left"
+            size={22}
+            color={COLORS.textPrimary}
+          />
         </TouchableOpacity>
         <Text style={styles.topTitle}>Seu currículo</Text>
         <View style={styles.iconBtnPlaceholder} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.heroBadge}>
-          <MaterialCommunityIcons name="file-document-check-outline" size={18} color={COLORS.primary} />
-          <Text style={styles.heroBadgeText}>Gerado com base no seu cadastro</Text>
+          <MaterialCommunityIcons
+            name="file-document-check-outline"
+            size={18}
+            color={COLORS.primary}
+          />
+          <Text style={styles.heroBadgeText}>
+            Gerado com base no seu cadastro
+          </Text>
         </View>
 
         {!temDados ? (
           <View style={styles.emptyCard}>
             <View style={styles.emptyIconWrap}>
-              <MaterialCommunityIcons name="clipboard-text-outline" size={40} color={COLORS.primary} />
+              <MaterialCommunityIcons
+                name="clipboard-text-outline"
+                size={40}
+                color={COLORS.primary}
+              />
             </View>
             <Text style={styles.emptyTitle}>Currículo ainda não montado</Text>
             <Text style={styles.emptyDesc}>
-              Preencha as etapas de cadastro para gerarmos seu currículo automaticamente.
+              Preencha as etapas de cadastro para gerarmos seu currículo
+              automaticamente.
             </Text>
           </View>
         ) : (
@@ -133,13 +187,19 @@ export default function CurriculoNovo() {
                   <Text style={styles.cvName}>{nome}</Text>
                   {email ? (
                     <View style={styles.cvContactRow}>
-                      <MaterialCommunityIcons name="email-outline" size={14} color="#64748b" />
+                      <MaterialCommunityIcons
+                        name="email-outline"
+                        size={14}
+                        color="#64748b"
+                      />
                       <Text style={styles.cvContact}>{email}</Text>
                     </View>
                   ) : null}
                   {data.areaAtuacao ? (
                     <View style={styles.cvAreaTag}>
-                      <Text style={styles.cvAreaTagText}>{data.areaAtuacao}</Text>
+                      <Text style={styles.cvAreaTagText}>
+                        {data.areaAtuacao}
+                      </Text>
                     </View>
                   ) : null}
                 </View>
@@ -157,7 +217,11 @@ export default function CurriculoNovo() {
                     <Text style={styles.cvItemTitle}>{f.curso}</Text>
                     <Text style={styles.cvItemSub}>{f.tipoFormacao}</Text>
                     <Text style={styles.cvItemMeta}>
-                      {formatPeriodo(f.dataInicio, f.cursando ? null : f.dataTermino, f.cursando)}
+                      {formatPeriodo(
+                        f.dataInicio,
+                        f.emAndamento ? null : f.dataConclusao,
+                        f.emAndamento,
+                      )}
                     </Text>
                   </View>
                 ))}
@@ -191,14 +255,17 @@ export default function CurriculoNovo() {
                     <Text style={styles.cvItemTitle}>{c.nome}</Text>
                     <Text style={styles.cvItemSub}>
                       {c.instituicao}
-                      {c.anoConclusao ? ` · ${c.anoConclusao}` : ""}
+                      {c.dataConclusao ? ` · ${c.dataConclusao}` : ""}
                     </Text>
                   </View>
                 ))}
               </SectionBlock>
 
               {data.disponibilidade ? (
-                <SectionBlock title="Disponibilidade" icon="calendar-clock-outline">
+                <SectionBlock
+                  title="Disponibilidade"
+                  icon="calendar-clock-outline"
+                >
                   <View style={styles.cvItem}>
                     <Text style={styles.cvItemSub}>
                       {data.disponibilidade.inicioImediato
@@ -211,7 +278,9 @@ export default function CurriculoNovo() {
                       </Text>
                     ) : null}
                   </View>
-                  {data.disponibilidade.idiomas.filter((i) => i.nome && i.nivel > 0).length > 0 ? (
+                  {data.disponibilidade.idiomas.filter(
+                    (i) => i.nome && i.nivel > 0,
+                  ).length > 0 ? (
                     <View style={styles.idiomasWrap}>
                       {data.disponibilidade.idiomas
                         .filter((i) => i.nome && i.nivel > 0)
@@ -228,7 +297,10 @@ export default function CurriculoNovo() {
               ) : null}
 
               {profile.redesSociais.length > 0 && (
-                <SectionBlock title="Redes sociais" icon="share-variant-outline">
+                <SectionBlock
+                  title="Redes sociais"
+                  icon="share-variant-outline"
+                >
                   {profile.redesSociais.map((rede) => (
                     <View key={rede.id} style={styles.cvItem}>
                       <Text style={styles.cvItemTitle}>{rede.plataforma}</Text>
@@ -244,9 +316,13 @@ export default function CurriculoNovo() {
                     <View key={projeto.id} style={styles.cvItem}>
                       <Text style={styles.cvItemTitle}>{projeto.nome}</Text>
                       {projeto.descricao ? (
-                        <Text style={styles.cvItemSub}>{projeto.descricao}</Text>
+                        <Text style={styles.cvItemSub}>
+                          {projeto.descricao}
+                        </Text>
                       ) : null}
-                      {projeto.link ? <Text style={styles.cvItemLink}>{projeto.link}</Text> : null}
+                      {projeto.link ? (
+                        <Text style={styles.cvItemLink}>{projeto.link}</Text>
+                      ) : null}
                     </View>
                   ))}
                 </SectionBlock>
@@ -255,7 +331,11 @@ export default function CurriculoNovo() {
 
             <View style={styles.statsCard}>
               <Text style={styles.statsTitle}>Qualidade do currículo</Text>
-              <ScoreBar label="Completude" value={calcularCompletude(data)} color={COLORS.primary} />
+              <ScoreBar
+                label="Completude"
+                value={calcularCompletude(data)}
+                color={COLORS.primary}
+              />
               <ScoreBar
                 label="Experiência"
                 value={data.experiencias.length > 0 ? 85 : 30}
@@ -272,12 +352,23 @@ export default function CurriculoNovo() {
 
         <View style={styles.actions}>
           <TouchableOpacity
-            style={styles.secondaryBtn}
-            onPress={() => Linking.openURL(CURRICULO_DOWNLOAD_URL)}
+            style={[styles.secondaryBtn, baixando && { opacity: 0.6 }]}
+            onPress={baixarCurriculo}
             activeOpacity={0.85}
+            disabled={baixando}
           >
-            <MaterialCommunityIcons name="download-outline" size={18} color={COLORS.primary} />
-            <Text style={styles.secondaryBtnText}>Download do currículo</Text>
+            {baixando ? (
+              <ActivityIndicator size="small" color={COLORS.primary} />
+            ) : (
+              <MaterialCommunityIcons
+                name="download-outline"
+                size={18}
+                color={COLORS.primary}
+              />
+            )}
+            <Text style={styles.secondaryBtnText}>
+              {baixando ? "Gerando currículo..." : "Download do currículo"}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -397,8 +488,18 @@ const styles = StyleSheet.create({
   },
   cvAvatarText: { color: COLORS.primary, fontSize: FONT.lg, fontWeight: "800" },
   cvHeaderInfo: { flex: 1, justifyContent: "center" },
-  cvName: { color: "#0f172a", fontSize: FONT.xl, fontWeight: "800", marginBottom: 4 },
-  cvContactRow: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6 },
+  cvName: {
+    color: "#0f172a",
+    fontSize: FONT.xl,
+    fontWeight: "800",
+    marginBottom: 4,
+  },
+  cvContactRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 6,
+  },
   cvContact: { color: "#475569", fontSize: FONT.sm },
   cvAreaTag: {
     alignSelf: "flex-start",
@@ -407,10 +508,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
-  cvAreaTagText: { color: COLORS.primaryDark, fontSize: FONT.xs, fontWeight: "700" },
-  cvDivider: { height: 1, backgroundColor: "rgba(15,23,42,0.08)", marginBottom: SPACING.md },
+  cvAreaTagText: {
+    color: COLORS.primaryDark,
+    fontSize: FONT.xs,
+    fontWeight: "700",
+  },
+  cvDivider: {
+    height: 1,
+    backgroundColor: "rgba(15,23,42,0.08)",
+    marginBottom: SPACING.md,
+  },
   cvSection: { marginBottom: SPACING.md },
-  cvSectionHeader: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: SPACING.sm },
+  cvSectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: SPACING.sm,
+  },
   cvSectionTitle: {
     color: "#0f172a",
     fontSize: FONT.sm,
@@ -424,14 +538,23 @@ const styles = StyleSheet.create({
   cvItemSub: { color: "#475569", fontSize: FONT.sm, marginTop: 2 },
   cvItemMeta: { color: "#64748b", fontSize: FONT.xs, marginTop: 2 },
   cvItemLink: { color: COLORS.primary, fontSize: FONT.xs, marginTop: 2 },
-  idiomasWrap: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: SPACING.xs },
+  idiomasWrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+    marginTop: SPACING.xs,
+  },
   idiomaChip: {
     backgroundColor: "rgba(59,130,246,0.1)",
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
-  idiomaChipText: { color: COLORS.primaryDark, fontSize: FONT.xs, fontWeight: "600" },
+  idiomaChipText: {
+    color: COLORS.primaryDark,
+    fontSize: FONT.xs,
+    fontWeight: "600",
+  },
   statsCard: {
     backgroundColor: COLORS.bgCard,
     borderRadius: RADIUS.lg,
@@ -447,7 +570,11 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   scoreRow: { marginBottom: SPACING.sm },
-  scoreLabelRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 6 },
+  scoreLabelRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 6,
+  },
   scoreLabel: { color: COLORS.textSecondary, fontSize: FONT.sm },
   scoreValue: { fontSize: FONT.sm, fontWeight: "700" },
   scoreTrack: {
@@ -485,5 +612,9 @@ const styles = StyleSheet.create({
     borderColor: "rgba(59,130,246,0.3)",
     marginBottom: SPACING.sm,
   },
-  secondaryBtnText: { color: COLORS.primary, fontSize: FONT.md, fontWeight: "700" },
+  secondaryBtnText: {
+    color: COLORS.primary,
+    fontSize: FONT.md,
+    fontWeight: "700",
+  },
 });

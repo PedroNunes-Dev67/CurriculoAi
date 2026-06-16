@@ -9,11 +9,12 @@ public enum TipoFormacao {
 
     // Superior
     TECNOLOGO("Tecnólogo"),
+    GRADUAÇÃO("Graduação"),
     BACHARELADO("Bacharelado"),
     LICENCIATURA("Licenciatura"),
 
     // Pós-graduação lato sensu
-    ESPECIALIZACAO("Especialização"),
+    ESPECIALIZAÇÃO("Especialização"),
     MBA("MBA"),
     RESIDENCIA("Residência"),
 
@@ -22,6 +23,7 @@ public enum TipoFormacao {
     MESTRADO_PROFISSIONAL("Mestrado Profissional"),
     DOUTORADO("Doutorado"),
     POS_DOUTORADO("Pós-Doutorado"),
+    POS_GRADUAÇÃO("Pós-Graduação"),
 
     // Outros
     CERTIFICACAO_TECNICA("Certificação Técnica"),
