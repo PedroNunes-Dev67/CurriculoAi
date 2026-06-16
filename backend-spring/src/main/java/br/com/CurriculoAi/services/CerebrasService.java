@@ -336,7 +336,7 @@ public class CerebrasService {
         return curriculoUsuarios
                 .stream()
                 .map(curriculo -> {
-                    return  new CurriculosDtoResponse(area, curriculo.getCurriculo());
+                    return  new CurriculosDtoResponse(area, curriculo.getCurriculo(), curriculo.getDataGeracao(), curriculo.getDataAtualizacao());
                 })
                 .toList();
     }
