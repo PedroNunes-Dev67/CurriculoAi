@@ -55,6 +55,7 @@ INSERT INTO empresa (nome) VALUES ('Microsoft');
 INSERT INTO empresa (nome) VALUES ('Itaú');
 INSERT INTO empresa (nome) VALUES ('Nubank');
 INSERT INTO empresa (nome) VALUES ('Magazine Luiza');
+INSERT INTO empresa (nome) VALUES ('Outra');
 
 -- Instituicao
 INSERT INTO instituicao (nome_instituicao) VALUES ('DIO');
@@ -63,6 +64,7 @@ INSERT INTO instituicao (nome_instituicao) VALUES ('Coursera');
 INSERT INTO instituicao (nome_instituicao) VALUES ('Udemy');
 INSERT INTO instituicao (nome_instituicao) VALUES ('SENAC');
 INSERT INTO instituicao (nome_instituicao) VALUES ('SENAI');
+INSERT INTO instituicao (nome_instituicao) VALUES ('Outra');
 
 -- Role
 INSERT INTO role (name_role) VALUES ('ROLE_CANDIDATO');

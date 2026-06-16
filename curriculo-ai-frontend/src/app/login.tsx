@@ -15,6 +15,7 @@ import ButtonConfirm from "../components/button-confirm-compent";
 import Divisao from "../components/divisao-component";
 import { Input } from "../components/input-component";
 import { COLORS, FONT, SPACING } from "../components/style";
+import { useCurriculoData } from "../context/curriculo-data-context";
 import { useUserProfile } from "../context/user-profile-context";
 import { salvarTokenJWT } from "../services/AuthService";
 import { buscarUsuarioLogado, loginUsuario } from "../services/UsuarioService";
@@ -27,6 +28,13 @@ function emailValido(email: string) {
 // ─── Tela ─────────────────────────────────────────────────────────────────────
 export default function Login() {
   const { updateProfile } = useUserProfile();
+  const {
+    updateDadosPessoais,
+    updateFormacao,
+    updateExperiencias,
+    updateCertificacoes,
+    updateDisponibilidade,
+  } = useCurriculoData();
 
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -57,14 +65,76 @@ export default function Login() {
 
       const usuario = await buscarUsuarioLogado();
 
-      console.log("Login efetuado");
+      console.log(JSON.stringify(usuario, null, 2));
 
+      // Perfil
       updateProfile({
         nome: usuario.usuario.nome,
-        email: email.trim(),
-        projetos: usuario.projetos,
+        email: usuario.usuario.email,
+        projetos:
+          usuario.projetos?.map((p: any) => ({
+            id: String(p.id),
+            nome: p.nome,
+            descricao: p.descricao,
+            link: p.link,
+          })) ?? [],
       });
 
+      // Dados pessoais
+      updateDadosPessoais({
+        nome: usuario.usuario.nome,
+        sobrenome: usuario.usuario.sobrenome ?? "",
+        email: usuario.usuario.email,
+        senha: "",
+      });
+
+      // Formação
+      updateFormacao(
+        usuario.area?.nomeArea ?? "",
+        usuario.formacoes?.map((f: any) => ({
+          curso: f.curso?.nomeCurso ?? "",
+          tipoFormacao: f.tipoFormacao ?? "",
+          dataInicio: f.dataInicio,
+          dataConclusao: f.dataConclusao,
+          emAndamento: f.emAndamento,
+        })) ?? [],
+      );
+
+      // Experiências
+      updateExperiencias(
+        usuario.experiencias?.map((e: any) => ({
+          cargo: e.cargo,
+          empresa: e.empresa?.nome ?? "",
+          inicio: e.dataInicio,
+          termino: e.dataFim,
+          atual: e.trabalhoAtual,
+          area: e.area?.nomeArea ?? "",
+        })) ?? [],
+      );
+
+      // Certificações
+      updateCertificacoes(
+        usuario.certificoes?.map((c: any) => ({
+          nome: c.instituicao?.nome ?? "", // temporário, porque seu DTO não possui nomeCertificacao
+          instituicao: c.instituicao?.nome ?? "",
+          dataConclusao: c.dataConclusao,
+        })) ?? [],
+      );
+
+      // Disponibilidade + idiomas
+      updateDisponibilidade({
+        inicioImediato: false, // seu DTO não possui esse campo
+        dataDisponibilidade:
+          usuario.disponibilidade?.disponibilidadeInicio ?? null,
+        modalidade: usuario.disponibilidade?.modeloTrabalho ?? "",
+        idiomas:
+          usuario.idiomas?.map((i: any) => ({
+            nome: i.idioma?.idiomaNome ?? "",
+            nivel: i.nivel,
+          })) ?? [],
+      });
+
+      console.log(JSON.stringify(usuario, null, 2));
       router.push("/(tabs)/home");
     } catch (error) {
       Alert.alert(
