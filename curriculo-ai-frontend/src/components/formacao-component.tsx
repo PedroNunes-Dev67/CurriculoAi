@@ -38,9 +38,9 @@ type Props = {
 const TIPOS_FORMACAO = [
   { label: "Graduação", value: "Graduação" },
   { label: "Especialização", value: "Especialização" },
-  { label: "Pós-graduação", value: "Pós-graduação" },
+  { label: "Pós-graduação", value: "Pos_graduação" },
   { label: "Mestrado", value: "Mestrado" },
-  { label: "Bootcamp / Curso Técnico", value: "Bootcamp / Curso Técnico" },
+  { label: "Doutorado", value: "Doutorado" },
 ];
 
 const CURSOS_TECH = [

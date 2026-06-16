@@ -2,6 +2,7 @@ export type DadosPessoais = {
   nome: string;
   sobrenome: string;
   email: string;
+  senha: string;
 };
 
 export type FormacaoEntry = {
@@ -21,10 +22,26 @@ export type ExperienciaEntry = {
   area: string;
 };
 
+export type ExperienciaDtoRequest = {
+  id_area: number;
+  id_empresa: number;
+  dataInicio: string | null;
+  cargo: string;
+  dataFim: string | null;
+  trabalhoAtual: boolean;
+};
+
 export type CertificacaoEntry = {
   nome: string;
   instituicao: string;
-  anoConclusao: string;
+  dataConclusao: string | null;
+};
+
+export type CertificacaoDtoRequest = {
+  nomeCertificacao: string;
+  id_instituicao: number;
+  dataConclusao: string | null;
+  certificado: number[] | null;
 };
 
 export type IdiomaEntry = {

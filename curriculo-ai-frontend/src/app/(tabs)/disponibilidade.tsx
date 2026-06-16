@@ -1,9 +1,14 @@
+import { salvarTokenJWT } from "@/src/services/AuthService";
+import { salvarDisponibilidade } from "@/src/services/DisponibilidadeService";
+import { salvarIdiomas } from "@/src/services/IdiomaUsuarioService";
+import { loginUsuario } from "@/src/services/UsuarioService";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import {
+  Alert,
   Modal,
   Platform,
   ScrollView,
@@ -15,11 +20,17 @@ import {
 import ButtonConfirm from "../../components/button-confirm-compent";
 import Checkbox from "../../components/checkbox";
 import StepHeader from "../../components/step-header";
-import { COLORS, FONT, INPUT_WIDTH, RADIUS, SPACING } from "../../components/style";
+import {
+  COLORS,
+  FONT,
+  INPUT_WIDTH,
+  RADIUS,
+  SPACING,
+} from "../../components/style";
 import { useCurriculoData } from "../../context/curriculo-data-context";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
-type Modalidade = "Presencial" | "Híbrido" | "Home Office" | "";
+type Modalidade = "Presencial" | "Hibrido" | "Remoto" | "";
 type NivelIdioma = 1 | 2 | 3;
 
 type Idioma = {
@@ -29,13 +40,43 @@ type Idioma = {
 
 // ─── Idiomas disponíveis ──────────────────────────────────────────────────────
 const IDIOMAS = [
-  "Português", "Inglês", "Espanhol", "Francês", "Alemão",
-  "Italiano", "Mandarim", "Japonês", "Coreano", "Árabe",
-  "Russo", "Hindi", "Neerlandês", "Polonês", "Turco",
+  "Português",
+  "Inglês",
+  "Espanhol",
+  "Francês",
+  "Alemão",
+  "Italiano",
+  "Mandarim",
+  "Japonês",
+  "Coreano",
+  "Árabe",
+  "Russo",
+  "Hindi",
+  "Neerlandês",
+  "Polonês",
+  "Turco",
 ];
 
 const NIVEL_TEXTO = ["", "Básico", "Intermediário", "Fluente"];
 const NIVEL_COR = ["", "#f59e0b", "#60a5fa", COLORS.success] as const;
+
+const IDIOMA_ID_MAP: Record<string, number> = {
+  Português: 1,
+  Inglês: 2,
+  Espanhol: 3,
+  Francês: 4,
+  Alemão: 5,
+  Italiano: 6,
+  Mandarim: 7,
+  Japonês: 8,
+  // os demais não estão no banco ainda
+};
+
+const NIVEL_MAP: Record<number, string> = {
+  1: "BASICO",
+  2: "INTERMEDIARIO",
+  3: "FLUENTE",
+};
 
 // ─── DateField (Padrão atualizado) ────────────────────────────────────────────
 function DateField({
@@ -67,9 +108,13 @@ function DateField({
   return (
     <View style={{ width: INPUT_WIDTH, marginTop: SPACING.sm }}>
       <Text style={s.fieldLabel}>Data de disponibilidade</Text>
-      
+
       <TouchableOpacity
-        style={[s.dateField, erro && { borderColor: COLORS.borderError }, disabled && { opacity: 0.4 }]}
+        style={[
+          s.dateField,
+          erro && { borderColor: COLORS.borderError },
+          disabled && { opacity: 0.4 },
+        ]}
         onPress={() => {
           if (!disabled) {
             setTempDate(value || new Date());
@@ -78,17 +123,17 @@ function DateField({
         }}
         activeOpacity={disabled ? 1 : 0.75}
       >
-        <MaterialCommunityIcons 
-          name="calendar-outline" 
-          size={18} 
-          color={disabled ? COLORS.textMuted : COLORS.accent} 
-          style={{ marginRight: SPACING.sm }} 
+        <MaterialCommunityIcons
+          name="calendar-outline"
+          size={18}
+          color={disabled ? COLORS.textMuted : COLORS.accent}
+          style={{ marginRight: SPACING.sm }}
         />
         <Text style={[s.dateText, !value && s.datePlaceholder]}>
           {disabled ? "Início imediato" : formatted || "DD/MM/AAAA"}
         </Text>
       </TouchableOpacity>
-      
+
       {erro ? <Text style={s.erroText}>{erro}</Text> : null}
 
       {show && Platform.OS === "android" && (
@@ -108,15 +153,12 @@ function DateField({
 
       {show && Platform.OS === "ios" && (
         <Modal transparent={true} animationType="slide" visible={show}>
-          <TouchableOpacity 
-            style={s.modalOverlay} 
-            activeOpacity={1} 
+          <TouchableOpacity
+            style={s.modalOverlay}
+            activeOpacity={1}
             onPress={handleCancelIOS}
           >
-            <View 
-              style={s.modalContent} 
-              onStartShouldSetResponder={() => true}
-            >
+            <View style={s.modalContent} onStartShouldSetResponder={() => true}>
               <View style={s.modalHeader}>
                 <TouchableOpacity onPress={handleCancelIOS} style={s.modalBtn}>
                   <Text style={s.modalCancelText}>Cancelar</Text>
@@ -170,15 +212,34 @@ function IdiomaItem({
           onPress={() => setOpen(true)}
           activeOpacity={0.75}
         >
-          <MaterialCommunityIcons name="translate" size={16} color={idioma.nome ? COLORS.accent : COLORS.textMuted} style={{ marginRight: 8 }} />
-          <Text style={[ii.selectorText, !idioma.nome && ii.selectorPlaceholder]}>
+          <MaterialCommunityIcons
+            name="translate"
+            size={16}
+            color={idioma.nome ? COLORS.accent : COLORS.textMuted}
+            style={{ marginRight: 8 }}
+          />
+          <Text
+            style={[ii.selectorText, !idioma.nome && ii.selectorPlaceholder]}
+          >
             {idioma.nome || "Selecione o idioma"}
           </Text>
-          <MaterialCommunityIcons name="chevron-down" size={16} color={COLORS.textMuted} />
+          <MaterialCommunityIcons
+            name="chevron-down"
+            size={16}
+            color={COLORS.textMuted}
+          />
         </TouchableOpacity>
         {podeRemover && (
-          <TouchableOpacity onPress={() => onRemove(index)} style={ii.btnRemove} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <MaterialCommunityIcons name="trash-can-outline" size={18} color={COLORS.borderError} />
+          <TouchableOpacity
+            onPress={() => onRemove(index)}
+            style={ii.btnRemove}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <MaterialCommunityIcons
+              name="trash-can-outline"
+              size={18}
+              color={COLORS.borderError}
+            />
           </TouchableOpacity>
         )}
       </View>
@@ -196,7 +257,14 @@ function IdiomaItem({
                   setOpen(false);
                 }}
               >
-                <Text style={[ii.optionText, idioma.nome === lang && ii.optionTextSelected]}>{lang}</Text>
+                <Text
+                  style={[
+                    ii.optionText,
+                    idioma.nome === lang && ii.optionTextSelected,
+                  ]}
+                >
+                  {lang}
+                </Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -205,7 +273,9 @@ function IdiomaItem({
 
       {/* Instrução e Nível em estrelas */}
       <View style={{ marginTop: SPACING.sm }}>
-        <Text style={ii.instrucaoLabel}>Selecione o nível de fluência desse idioma:</Text>
+        <Text style={ii.instrucaoLabel}>
+          Selecione o nível de fluência desse idioma:
+        </Text>
         <View style={ii.nivelRow}>
           {[1, 2, 3].map((n) => (
             <TouchableOpacity
@@ -213,7 +283,15 @@ function IdiomaItem({
               onPress={() => onChange(index, "nivel", n as NivelIdioma)}
               style={ii.nivelBtn}
             >
-              <Text style={{ fontSize: 26, color: idioma.nivel >= n ? "#FFD700" : "rgba(255,255,255,0.18)" }}>★</Text>
+              <Text
+                style={{
+                  fontSize: 26,
+                  color:
+                    idioma.nivel >= n ? "#FFD700" : "rgba(255,255,255,0.18)",
+                }}
+              >
+                ★
+              </Text>
             </TouchableOpacity>
           ))}
           {idioma.nivel > 0 && (
@@ -228,17 +306,46 @@ function IdiomaItem({
 }
 
 const ii = StyleSheet.create({
-  container: { width: INPUT_WIDTH, marginTop: SPACING.sm, backgroundColor: COLORS.bgCard, borderRadius: RADIUS.md, padding: SPACING.md, borderWidth: 1, borderColor: COLORS.border },
+  container: {
+    width: INPUT_WIDTH,
+    marginTop: SPACING.sm,
+    backgroundColor: COLORS.bgCard,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
   row: { flexDirection: "row", alignItems: "center", gap: SPACING.sm },
-  selector: { flex: 1, flexDirection: "row", alignItems: "center", backgroundColor: COLORS.bgInput, borderRadius: RADIUS.sm, paddingHorizontal: SPACING.md, height: 44, borderWidth: 1, borderColor: COLORS.border },
+  selector: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.bgInput,
+    borderRadius: RADIUS.sm,
+    paddingHorizontal: SPACING.md,
+    height: 44,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
   selectorText: { flex: 1, color: COLORS.textPrimary, fontSize: FONT.sm },
   selectorPlaceholder: { color: COLORS.textPlaceholder },
   btnRemove: { padding: 4 }, // Removido bordas para ficar igual a lixeira das outras telas
-  instrucaoLabel: { color: COLORS.textMuted, fontSize: FONT.xs, marginBottom: 4 },
+  instrucaoLabel: {
+    color: COLORS.textMuted,
+    fontSize: FONT.xs,
+    marginBottom: 4,
+  },
   nivelRow: { flexDirection: "row", alignItems: "center", gap: SPACING.xs },
   nivelBtn: { padding: 2 },
   nivelTexto: { fontSize: FONT.xs, fontWeight: "700", marginLeft: SPACING.sm },
-  dropdownContainer: { backgroundColor: COLORS.bgInput, borderRadius: RADIUS.sm, borderWidth: 1, borderColor: COLORS.border, marginTop: SPACING.sm, overflow: "hidden" },
+  dropdownContainer: {
+    backgroundColor: COLORS.bgInput,
+    borderRadius: RADIUS.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginTop: SPACING.sm,
+    overflow: "hidden",
+  },
   option: { paddingVertical: 10, paddingHorizontal: SPACING.md },
   optionSelected: { backgroundColor: "rgba(59,130,246,0.12)" },
   optionText: { color: COLORS.textSecondary, fontSize: FONT.sm },
@@ -246,11 +353,13 @@ const ii = StyleSheet.create({
 });
 
 // ─── Tela principal ───────────────────────────────────────────────────────────
-const MODALIDADES: Modalidade[] = ["Presencial", "Híbrido", "Home Office"];
+const MODALIDADES: Modalidade[] = ["Presencial", "Hibrido", "Remoto"];
 
 export default function Disponibilidade() {
-  const { updateDisponibilidade } = useCurriculoData();
-  const [dataDisponibilidade, setDataDisponibilidade] = useState<Date | null>(null);
+  const { data, updateDisponibilidade } = useCurriculoData();
+  const [dataDisponibilidade, setDataDisponibilidade] = useState<Date | null>(
+    null,
+  );
   const [imediato, setImediato] = useState(false);
   const [modalidade, setModalidade] = useState<Modalidade>("");
   const [idiomas, setIdiomas] = useState<Idioma[]>([{ nome: "", nivel: 0 }]);
@@ -277,12 +386,15 @@ export default function Disponibilidade() {
   function adicionarIdioma() {
     // REGRA: Só permite adicionar se o atual estiver preenchido
     if (!validarIdiomasPreenchidos()) {
-      setErros((prev) => ({ ...prev, idiomas: "Preencha o idioma atual antes de adicionar outro." }));
+      setErros((prev) => ({
+        ...prev,
+        idiomas: "Preencha o idioma atual antes de adicionar outro.",
+      }));
       return;
     }
-    
+
     // Limite sugerido de idiomas simultâneos
-    if (idiomas.length >= 8) return; 
+    if (idiomas.length >= 8) return;
 
     setIdiomas((prev) => [...prev, { nome: "", nivel: 0 }]);
     setErros((prev) => ({ ...prev, idiomas: "" }));
@@ -290,13 +402,15 @@ export default function Disponibilidade() {
 
   function validar(): boolean {
     const e: Record<string, string> = {};
-    
-    if (!imediato && !dataDisponibilidade) e.data = "Informe a data ou marque início imediato.";
+
+    if (!imediato && !dataDisponibilidade)
+      e.data = "Informe a data ou marque início imediato.";
     if (!modalidade) e.modalidade = "Selecione pelo menos uma modalidade.";
-    
+
     // REGRA: Impede avançar se houver algum card em branco
     if (!validarIdiomasPreenchidos()) {
-      e.idiomas = "Preencha os idiomas adicionados ou exclua os que estiverem em branco.";
+      e.idiomas =
+        "Preencha os idiomas adicionados ou exclua os que estiverem em branco.";
     } else if (idiomas.length === 0) {
       e.idiomas = "Informe pelo menos um idioma com nível.";
     }
@@ -305,7 +419,7 @@ export default function Disponibilidade() {
     return Object.keys(e).length === 0;
   }
 
-  function handleFinalizar() {
+  async function handleFinalizar() {
     if (!validar()) return;
 
     updateDisponibilidade({
@@ -317,7 +431,36 @@ export default function Disponibilidade() {
       idiomas: idiomas.map((i) => ({ nome: i.nome, nivel: i.nivel })),
     });
 
-    router.push("/(tabs)/curriculo_novo" as import("expo-router").Href);
+    const payloadDisponibilidade = {
+      disponibilidadeInicio: imediato
+        ? new Date().toISOString().split("T")[0]
+        : dataDisponibilidade!.toISOString().split("T")[0],
+      modeloTrabalho: modalidade,
+    };
+
+    const payloadIdiomas = idiomas.map((i) => ({
+      id_idioma: IDIOMA_ID_MAP[i.nome],
+      nivel: NIVEL_MAP[i.nivel],
+    }));
+
+    try {
+      await salvarDisponibilidade(payloadDisponibilidade);
+      await salvarIdiomas(payloadIdiomas);
+
+      // Login automático
+      const jwt = await loginUsuario({
+        email: data.dadosPessoais!.email,
+        senha: data.dadosPessoais!.senha,
+      });
+
+      await salvarTokenJWT(jwt);
+      router.push("/(tabs)/home" as import("expo-router").Href);
+    } catch (error) {
+      Alert.alert(
+        "Erro",
+        error instanceof Error ? error.message : "Erro inesperado",
+      );
+    }
   }
 
   return (
@@ -361,7 +504,9 @@ export default function Disponibilidade() {
         {/* ─── Modalidade ─── */}
         <View style={s.section}>
           <Text style={s.sectionTitle}>Modalidade de trabalho</Text>
-          {erros.modalidade ? <Text style={s.erroText}>{erros.modalidade}</Text> : null}
+          {erros.modalidade ? (
+            <Text style={s.erroText}>{erros.modalidade}</Text>
+          ) : null}
           <View style={s.modalidadeRow}>
             {MODALIDADES.map((m) => {
               const sel = modalidade === m;
@@ -369,15 +514,28 @@ export default function Disponibilidade() {
                 <TouchableOpacity
                   key={m}
                   style={[s.modalidadeBtn, sel && s.modalidadeBtnSel]}
-                  onPress={() => { setModalidade(m); setErros((e) => ({ ...e, modalidade: "" })); }}
+                  onPress={() => {
+                    setModalidade(m);
+                    setErros((e) => ({ ...e, modalidade: "" }));
+                  }}
                   activeOpacity={0.75}
                 >
                   <MaterialCommunityIcons
-                    name={m === "Presencial" ? "office-building" : m === "Híbrido" ? "laptop" : "home"}
+                    name={
+                      m === "Presencial"
+                        ? "office-building"
+                        : m === "Hibrido"
+                          ? "laptop"
+                          : "home"
+                    }
                     size={18}
                     color={sel ? COLORS.primary : COLORS.textMuted}
                   />
-                  <Text style={[s.modalidadeTexto, sel && s.modalidadeTextoSel]}>{m}</Text>
+                  <Text
+                    style={[s.modalidadeTexto, sel && s.modalidadeTextoSel]}
+                  >
+                    {m}
+                  </Text>
                 </TouchableOpacity>
               );
             })}
@@ -387,8 +545,12 @@ export default function Disponibilidade() {
         {/* ─── Idiomas ─── */}
         <View style={s.section}>
           <Text style={s.sectionTitle}>Idiomas que você domina</Text>
-          <Text style={s.sectionDesc}>Selecione um ou mais idiomas e indique seu nível</Text>
-          {erros.idiomas ? <Text style={s.erroText}>{erros.idiomas}</Text> : null}
+          <Text style={s.sectionDesc}>
+            Selecione um ou mais idiomas e indique seu nível
+          </Text>
+          {erros.idiomas ? (
+            <Text style={s.erroText}>{erros.idiomas}</Text>
+          ) : null}
 
           {idiomas.map((idioma, i) => (
             <IdiomaItem
@@ -403,7 +565,11 @@ export default function Disponibilidade() {
 
           {idiomas.length < 8 && (
             <TouchableOpacity onPress={adicionarIdioma} style={s.btnAddIdioma}>
-              <MaterialCommunityIcons name="plus" size={16} color={COLORS.textSecondary} />
+              <MaterialCommunityIcons
+                name="plus"
+                size={16}
+                color={COLORS.textSecondary}
+              />
               <Text style={s.btnAddIdiomaTexto}>Adicionar idioma</Text>
             </TouchableOpacity>
           )}
@@ -510,9 +676,26 @@ const s = StyleSheet.create({
     fontWeight: "600",
   },
   // Estilos do Modal do iOS
-  modalOverlay: { flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0, 0, 0, 0.4)" },
-  modalContent: { backgroundColor: "#FFFFFF", borderTopLeftRadius: 16, borderTopRightRadius: 16, paddingBottom: 30 },
-  modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: "#E5E5E5" },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+  },
+  modalContent: {
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    paddingBottom: 30,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E5E5",
+  },
   modalBtn: { paddingVertical: 8 },
   modalCancelText: { color: "#EF4444", fontSize: 16 },
   modalConfirmText: { color: "#3B82F6", fontSize: 16, fontWeight: "600" },
