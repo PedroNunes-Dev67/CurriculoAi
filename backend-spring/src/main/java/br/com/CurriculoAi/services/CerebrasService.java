@@ -2,10 +2,15 @@ package br.com.CurriculoAi.services;
 
 import br.com.CurriculoAi.DTO.request.CerebrasRequestDTO;
 import br.com.CurriculoAi.DTO.response.*;
+import br.com.CurriculoAi.entities.CurriculoUsuario;
+import br.com.CurriculoAi.entities.UsuarioCad;
+import br.com.CurriculoAi.repositories.CurriculoUsuarioRepository;
+import br.com.CurriculoAi.utils.services.UsuarioUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.format.DateTimeFormatter;
@@ -26,6 +31,13 @@ public class CerebrasService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final UsuarioUtils usuarioUtils;
+    private final CurriculoUsuarioRepository curriculoUsuarioRepository;
+
+    public CerebrasService(UsuarioUtils usuarioUtils, CurriculoUsuarioRepository curriculoUsuarioRepository) {
+        this.usuarioUtils = usuarioUtils;
+        this.curriculoUsuarioRepository = curriculoUsuarioRepository;
+    }
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MM/yyyy");
 
@@ -310,5 +322,22 @@ public class CerebrasService {
         }
 
         return sb.toString().trim();
+    }
+
+    @Transactional(readOnly = true)
+    public List<CurriculosDtoResponse> buscarCurriculos(){
+
+        UsuarioCad usuarioAutenticado = usuarioUtils.me();
+
+        List<CurriculoUsuario> curriculoUsuarios = curriculoUsuarioRepository.findByUsuario(usuarioAutenticado);
+
+        String area = usuarioAutenticado.getArea().getNomeArea();
+
+        return curriculoUsuarios
+                .stream()
+                .map(curriculo -> {
+                    return  new CurriculosDtoResponse(area, curriculo.getCurriculo());
+                })
+                .toList();
     }
 }
