@@ -64,13 +64,3 @@ export type CurriculoCompletoData = {
   certificacoes: CertificacaoEntry[];
   disponibilidade: DisponibilidadeData | null;
 };
-
-export type AnaliseCurriculoResult = {
-  scoreGeral: number;
-  scoreAts: number;
-  scoreClareza: number;
-  scorePalavrasChave: number;
-  pontosFortes: string[];
-  melhorias: string[];
-  resumo: string;
-};

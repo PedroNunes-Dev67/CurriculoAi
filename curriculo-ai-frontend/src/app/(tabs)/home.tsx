@@ -106,27 +106,6 @@ export default function Home() {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.heroCTASecondary}
-          activeOpacity={0.8}
-          onPress={() => router.push("/(tabs)/analise_curriculo" as Href)}
-        >
-          <View style={styles.heroCTALeft}>
-            <MaterialCommunityIcons
-              name="file-search-outline"
-              size={20}
-              color={COLORS.primary}
-            />
-            <Text style={styles.heroCTASecondaryText}>
-              Analisar o seu currículo atual
-            </Text>
-          </View>
-          <MaterialCommunityIcons
-            name="chevron-right"
-            size={22}
-            color={COLORS.primary}
-          />
-        </TouchableOpacity>
       </View>
 
       <Text style={styles.sectionTitle}>Seus currículos</Text>
@@ -295,18 +274,6 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
-  heroCTASecondary: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "rgba(59,130,246,0.08)",
-    borderRadius: RADIUS.md,
-    paddingVertical: 14,
-    paddingHorizontal: SPACING.md,
-    marginTop: SPACING.sm,
-    borderWidth: 1,
-    borderColor: "rgba(59,130,246,0.3)",
-  },
   heroCTALeft: {
     flexDirection: "row",
     alignItems: "center",
@@ -320,12 +287,6 @@ const styles = StyleSheet.create({
   },
   heroCTAText: {
     color: COLORS.white,
-    fontSize: FONT.md,
-    fontWeight: "700",
-    letterSpacing: 0.2,
-  },
-  heroCTASecondaryText: {
-    color: COLORS.primary,
     fontSize: FONT.md,
     fontWeight: "700",
     letterSpacing: 0.2,

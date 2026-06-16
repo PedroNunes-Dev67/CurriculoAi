@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import {
+  Linking,
   ScrollView,
   StyleSheet,
   Text,
@@ -73,6 +74,8 @@ function calcularCompletude(data: CurriculoCompletoData): number {
   return Math.min(score, 100);
 }
 
+const CURRICULO_DOWNLOAD_URL = "https://seu-backend.com/api/curriculo/download";
+
 export default function CurriculoNovo() {
   const { data, hasCurriculoData, getNomeCompleto } = useCurriculoData();
   const { profile } = useUserProfile();
@@ -108,14 +111,6 @@ export default function CurriculoNovo() {
             <Text style={styles.emptyDesc}>
               Preencha as etapas de cadastro para gerarmos seu currículo automaticamente.
             </Text>
-            <TouchableOpacity
-              style={styles.primaryBtn}
-              onPress={() => router.push("/(tabs)/cadastro")}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.primaryBtnText}>Preencher cadastro</Text>
-              <MaterialCommunityIcons name="arrow-right" size={20} color={COLORS.white} />
-            </TouchableOpacity>
           </View>
         ) : (
           <>
@@ -278,11 +273,11 @@ export default function CurriculoNovo() {
         <View style={styles.actions}>
           <TouchableOpacity
             style={styles.secondaryBtn}
-            onPress={() => router.push("/(tabs)/cadastro")}
+            onPress={() => Linking.openURL(CURRICULO_DOWNLOAD_URL)}
             activeOpacity={0.85}
           >
-            <MaterialCommunityIcons name="pencil-outline" size={18} color={COLORS.primary} />
-            <Text style={styles.secondaryBtnText}>Editar informações</Text>
+            <MaterialCommunityIcons name="download-outline" size={18} color={COLORS.primary} />
+            <Text style={styles.secondaryBtnText}>Download do currículo</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
