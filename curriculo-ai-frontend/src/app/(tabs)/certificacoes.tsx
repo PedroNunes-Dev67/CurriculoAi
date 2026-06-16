@@ -304,18 +304,9 @@ export default function Certificacoes() {
   async function handleProximo() {
     let listaFinal = [...salvas];
 
-    // Se o usuário preencheu algo mas não clicou em adicionar, inclui automaticamente
     if (atual.nomeCertificacao || atual.id_instituicao || atual.certificado) {
       if (!validar()) return;
       listaFinal.push(atual);
-    }
-
-    if (listaFinal.length === 0) {
-      Alert.alert(
-        "Atenção",
-        "Adicione ao menos uma certificação ou clique em 'Não tenho certificações'.",
-      );
-      return;
     }
 
     const payload = await Promise.all(
@@ -331,10 +322,17 @@ export default function Certificacoes() {
       })),
     );
 
-    salvarCertificacoesNoContexto(listaFinal);
-    const response = await salvarCertificacoes(payload);
-    console.log("Certificações salvas");
-    router.push("/disponibilidade");
+    try {
+      await salvarCertificacoes(payload);
+      salvarCertificacoesNoContexto(listaFinal);
+      console.log("Certificações salvas");
+      router.push("/disponibilidade");
+    } catch (error) {
+      Alert.alert(
+        "Erro",
+        error instanceof Error ? error.message : "Erro inesperado",
+      );
+    }
   }
 
   function handleSemCert() {

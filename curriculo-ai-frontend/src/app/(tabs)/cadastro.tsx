@@ -128,7 +128,7 @@ export default function Cadastro() {
         nome: nome.trim() + " " + sobrenome.trim(),
         sobrenome: sobrenome.trim(),
         email: email.trim(),
-        senha: senha,
+        senha,
       };
 
       const response = await cadastrarUsuario(usuario);

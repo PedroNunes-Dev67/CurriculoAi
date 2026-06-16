@@ -1,6 +1,8 @@
+import { pegarTokenJWT } from "@/src/services/AuthService";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Href, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -11,7 +13,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { COLORS, FONT, RADIUS, SPACING } from "../../components/style";
 import { useUserProfile } from "../../context/user-profile-context";
 import { useCurriculos } from "../../hooks/use-curriculos";
@@ -34,13 +35,17 @@ function CurriculoCard({ item }: { item: Curriculo }) {
       <View
         style={[
           styles.badge,
-          item.status === "Completo" ? styles.badgeCompleto : styles.badgeRascunho,
+          item.status === "Completo"
+            ? styles.badgeCompleto
+            : styles.badgeRascunho,
         ]}
       >
         <Text
           style={[
             styles.badgeText,
-            item.status === "Completo" ? styles.badgeTextCompleto : styles.badgeTextRascunho,
+            item.status === "Completo"
+              ? styles.badgeTextCompleto
+              : styles.badgeTextRascunho,
           ]}
         >
           {item.status}
@@ -56,9 +61,21 @@ export default function Home() {
     userId: profile.email || undefined,
   });
 
+  useEffect(() => {
+    async function verificarAutenticacao() {
+      const token = await pegarTokenJWT();
+
+      if (!token) {
+        router.replace("/login");
+      }
+    }
+
+    verificarAutenticacao();
+  }, []);
+
   const renderCurriculo: ListRenderItem<Curriculo> = useCallback(
     ({ item }) => <CurriculoCard item={item} />,
-    []
+    [],
   );
 
   const ListHeader = (
@@ -69,7 +86,8 @@ export default function Home() {
           <Text style={styles.heroTitleAccent}>IA</Text>
         </Text>
         <Text style={styles.heroDesc}>
-          Gere, melhore e otimize seu currículo para passar em qualquer processo seletivo.
+          Gere, melhore e otimize seu currículo para passar em qualquer processo
+          seletivo.
         </Text>
 
         <TouchableOpacity
@@ -81,7 +99,11 @@ export default function Home() {
             <Text style={styles.heroCTAPlus}>+</Text>
             <Text style={styles.heroCTAText}>Criar novo currículo</Text>
           </View>
-          <MaterialCommunityIcons name="chevron-right" size={22} color={COLORS.white} />
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={22}
+            color={COLORS.white}
+          />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -90,29 +112,25 @@ export default function Home() {
           onPress={() => router.push("/(tabs)/analise_curriculo" as Href)}
         >
           <View style={styles.heroCTALeft}>
-            <MaterialCommunityIcons name="file-search-outline" size={20} color={COLORS.primary} />
-            <Text style={styles.heroCTASecondaryText}>Analisar o seu currículo atual</Text>
+            <MaterialCommunityIcons
+              name="file-search-outline"
+              size={20}
+              color={COLORS.primary}
+            />
+            <Text style={styles.heroCTASecondaryText}>
+              Analisar o seu currículo atual
+            </Text>
           </View>
-          <MaterialCommunityIcons name="chevron-right" size={22} color={COLORS.primary} />
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={22}
+            color={COLORS.primary}
+          />
         </TouchableOpacity>
       </View>
 
       <Text style={styles.sectionTitle}>Seus currículos</Text>
     </>
-  );
-
-  const ListFooter = (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Recursos rápidos</Text>
-      <View style={styles.recursosGrid}>
-        {RECURSOS.map((item) => (
-          <TouchableOpacity key={item.id} style={styles.recursoCard} activeOpacity={0.75}>
-            <MaterialCommunityIcons name={item.icone} size={26} color={COLORS.primary} />
-            <Text style={styles.recursoLabel}>{item.label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </View>
   );
 
   const ListEmpty = (
@@ -124,7 +142,11 @@ export default function Home() {
         </>
       ) : error ? (
         <>
-          <MaterialCommunityIcons name="alert-circle-outline" size={28} color={COLORS.error} />
+          <MaterialCommunityIcons
+            name="alert-circle-outline"
+            size={28}
+            color={COLORS.error}
+          />
           <Text style={styles.emptyText}>{error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={refresh}>
             <Text style={styles.retryButtonText}>Tentar novamente</Text>
@@ -132,7 +154,11 @@ export default function Home() {
         </>
       ) : (
         <>
-          <MaterialCommunityIcons name="file-document-outline" size={28} color={COLORS.textMuted} />
+          <MaterialCommunityIcons
+            name="file-document-outline"
+            size={28}
+            color={COLORS.textMuted}
+          />
           <Text style={styles.emptyText}>Nenhum currículo encontrado.</Text>
         </>
       )}
@@ -156,7 +182,10 @@ export default function Home() {
           accessibilityLabel="Abrir perfil do usuário"
         >
           {profile.fotoUri ? (
-            <Image source={{ uri: profile.fotoUri }} style={styles.avatarImage} />
+            <Image
+              source={{ uri: profile.fotoUri }}
+              style={styles.avatarImage}
+            />
           ) : (
             <Text style={styles.avatarText}>{getInitials()}</Text>
           )}
@@ -168,7 +197,6 @@ export default function Home() {
         keyExtractor={(item) => item.id}
         renderItem={renderCurriculo}
         ListHeaderComponent={ListHeader}
-        ListFooterComponent={ListFooter}
         ListEmptyComponent={ListEmpty}
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}

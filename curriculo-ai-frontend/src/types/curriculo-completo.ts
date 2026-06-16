@@ -2,6 +2,7 @@ export type DadosPessoais = {
   nome: string;
   sobrenome: string;
   email: string;
+  senha: string;
 };
 
 export type FormacaoEntry = {

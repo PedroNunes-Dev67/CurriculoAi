@@ -9,14 +9,15 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import ButtonConfirm from "../components/button-confirm-compent";
 import Divisao from "../components/divisao-component";
 import { Input } from "../components/input-component";
-import { COLORS, FONT, INPUT_WIDTH, SPACING, RADIUS } from "../components/style";
+import { COLORS, FONT, SPACING } from "../components/style";
 import { useUserProfile } from "../context/user-profile-context";
+import { salvarTokenJWT } from "../services/AuthService";
+import { buscarUsuarioLogado, loginUsuario } from "../services/UsuarioService";
 
 // ─── Validação ────────────────────────────────────────────────────────────────
 function emailValido(email: string) {
@@ -25,7 +26,6 @@ function emailValido(email: string) {
 
 // ─── Tela ─────────────────────────────────────────────────────────────────────
 export default function Login() {
-  const usuario = { nome: "Pedro Silva", email: "pedro@gmail.com", senha: "1234" };
   const { updateProfile } = useUserProfile();
 
   const [email, setEmail] = useState("");
@@ -42,17 +42,37 @@ export default function Login() {
     return Object.keys(novosErros).length === 0;
   }
 
-  async function testarInput() {
+  async function login() {
     if (!validar()) return;
-    setLoading(true);
-    // Simula delay de API
-    await new Promise((r) => setTimeout(r, 600));
-    setLoading(false);
-    if (usuario.email === email.trim() && usuario.senha === senha) {
-      updateProfile({ nome: usuario.nome, email: usuario.email });
+
+    try {
+      setLoading(true);
+
+      const token = await loginUsuario({
+        email: email.trim(),
+        senha,
+      });
+
+      await salvarTokenJWT(token);
+
+      const usuario = await buscarUsuarioLogado();
+
+      console.log("Login efetuado");
+
+      updateProfile({
+        nome: usuario.usuario.nome,
+        email: email.trim(),
+        projetos: usuario.projetos,
+      });
+
       router.push("/(tabs)/home");
-    } else {
-      setErros({ senha: "E-mail ou senha incorretos." });
+    } catch (error) {
+      Alert.alert(
+        "Erro",
+        error instanceof Error ? error.message : "Erro ao realizar login",
+      );
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -82,9 +102,7 @@ export default function Login() {
 
         {/* Header */}
         <Text style={styles.titulo}>Bem-vindo de volta</Text>
-        <Text style={styles.subtitulo}>
-          Entre com sua conta para continuar
-        </Text>
+        <Text style={styles.subtitulo}>Entre com sua conta para continuar</Text>
 
         {/* Form */}
         <View style={styles.form}>
@@ -96,7 +114,10 @@ export default function Login() {
             autoCapitalize="none"
             autoComplete="email"
             value={email}
-            onChangeText={(v) => { setEmail(v); setErros((e) => ({ ...e, email: undefined })); }}
+            onChangeText={(v) => {
+              setEmail(v);
+              setErros((e) => ({ ...e, email: undefined }));
+            }}
             erro={erros.email}
           />
 
@@ -108,13 +129,16 @@ export default function Login() {
             autoCapitalize="none"
             secureTextEntry
             value={senha}
-            onChangeText={(v) => { setSenha(v); setErros((e) => ({ ...e, senha: undefined })); }}
+            onChangeText={(v) => {
+              setSenha(v);
+              setErros((e) => ({ ...e, senha: undefined }));
+            }}
             erro={erros.senha}
           />
 
           <ButtonConfirm
             text="Entrar"
-            onPress={testarInput}
+            onPress={login}
             loading={loading}
             disabled={loading}
           />
