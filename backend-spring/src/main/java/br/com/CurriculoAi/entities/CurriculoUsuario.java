@@ -25,9 +25,9 @@ public class CurriculoUsuario {
 
     @Lob
     //usar apenas no h2
-    @Column(name = "curriculo", nullable = false)
+    //@Column(name = "curriculo", nullable = false)
     // usar em prod
-    //@Column(name = "curriculo", nullable = false, columnDefinition = "OID")
+    @Column(name = "curriculo", nullable = false, columnDefinition = "OID")
     private byte[] curriculo;
 
     @Column(name = "data_criacao", nullable = false)
